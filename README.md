@@ -1327,12 +1327,6 @@ Window:AddMinimizeButton({
 local InfoTab = Window:MakeTab({ Title = "Info", Icon = "rbxassetid://10723415903" })
 
 
-InfoTab:AddDiscordInvite({
-    Name = "Nytherune Developers",
-    Description = "Join server",
-    Logo = "rbxassetid://18751483361",
-    Invite = "https://discord.gg/QQjR8XVy7g",
-})
 InfoTab:AddSection({ "Informações do Script" })
 InfoTab:AddParagraph({ "Você está usando:", "Linux hub Hub" })
 InfoTab:AddParagraph({"Novidades:", "Auto Kart Fling e Stephanny throw v1!"})
