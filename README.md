@@ -1164,7 +1164,7 @@ local function CreateLoadingScreen()
     StatusLabel.Size = UDim2.new(1, 0, 0, 30)
     StatusLabel.Position = UDim2.new(0, 0, 0, 250)
     StatusLabel.Text = "Preparando..."
-    StatusLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+    StatusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
     StatusLabel.TextScaled = true
     StatusLabel.Font = Enum.Font.Gotham
     StatusLabel.ZIndex = 12
@@ -1176,7 +1176,7 @@ local function CreateLoadingScreen()
     DotsLabel.Size = UDim2.new(0, 60, 0, 30)
     DotsLabel.Position = UDim2.new(1, -60, 0, 250)
     DotsLabel.Text = ""
-    DotsLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+    DotsLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
     DotsLabel.TextScaled = true
     DotsLabel.Font = Enum.Font.Gotham
     DotsLabel.ZIndex = 12
@@ -1235,7 +1235,7 @@ local function StartLoadingSequence()
         local percentTween = TweenService:Create(
             percentageLabel,
             TweenInfo.new(0.1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
-            {TextColor3 = Color3.fromRGB(147 + (percentage * 0.5), 51 + (percentage * 0.8), 234)}
+            {TextColor3 = Color3.fromRGB(200 + (percentage * 0.5), 51 + (percentage * 0.8), 200)}
         )
         percentTween:Play()
         
