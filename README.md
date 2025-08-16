@@ -1235,7 +1235,7 @@ local function StartLoadingSequence()
         local percentTween = TweenService:Create(
             percentageLabel,
             TweenInfo.new(0.1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
-            {TextColor3 = Color3.fromRGB(200 + (percentage * 0.5), 51 + (percentage * 0.8), 200)}
+            {TextColor3 = Color3.fromRGB(255 + (percentage * 0), 255 + (percentage * 0), 255)}
         )
         percentTween:Play()
         
