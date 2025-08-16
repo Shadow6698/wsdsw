@@ -843,7 +843,7 @@ local function CreateStarParticle(parent, x, y)
     gradient.Parent = star
     gradient.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(147, 51, 234)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(200, 200, 200)),
         ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
     })
     
@@ -918,7 +918,7 @@ local function CreateAdvancedBackground(parent)
     gradient1.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, Color3.fromRGB(5, 5, 20)),
         ColorSequenceKeypoint.new(0.3, Color3.fromRGB(0, 0, 0)),
-        ColorSequenceKeypoint.new(0.7, Color3.fromRGB(10, 0, 15)),
+        ColorSequenceKeypoint.new(0.7, Color3.fromRGB(200, 220, 200)),
         ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))
     })
     gradient1.Rotation = 45
@@ -944,7 +944,7 @@ local function CreateAdvancedBackground(parent)
     local overlayGradient = Instance.new("UIGradient")
     overlayGradient.Parent = overlay
     overlayGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 0, 30)),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 220, 200)),
         ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 0, 0)),
         ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 0, 20))
     })
@@ -966,7 +966,7 @@ local function CreatePulsingCircles(parent)
         local circle = Instance.new("Frame")
         circle.Name = "PulsingCircle" .. i
         circle.Parent = parent
-        circle.BackgroundColor3 = Color3.fromRGB(147, 51, 234)
+        circle.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
         circle.BorderSizePixel = 0
         circle.Size = UDim2.new(0, 100 + (i * 50), 0, 100 + (i * 50))
         circle.Position = UDim2.new(0.5, -(50 + (i * 25)), 0.5, -(50 + (i * 25)))
@@ -1035,7 +1035,7 @@ local function CreateLoadingScreen()
     
     local titleStroke = Instance.new("UIStroke")
     titleStroke.Parent = TitleLabel
-    titleStroke.Color = Color3.fromRGB(147, 51, 234)
+    titleStroke.Color = Color3.fromRGB(200, 200, 200)
     titleStroke.Thickness = 2
     titleStroke.Transparency = 0.5
     
