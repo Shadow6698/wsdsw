@@ -11226,18 +11226,84 @@ UniversalTab:AddButton({
 local MiscTab = Window:MakeTab({ Title = "Protection", Icon = "rbxassetid://6031074219" })
 
 -- ====================================
--- SISTEMA DE PROTEÇÃO ANTI-FLING
+-- ANTI SIT
 -- ====================================
+MiscTab:AddSection({ "Anti Sit" })
+local antiSitEnabled = false
+local connections = {}
+local function setupAntiSit(character)
+    if not antiSitEnabled then return end
+    
+    local humanoid = character:WaitForChild("Humanoid")
+    
+    -- Habilita/desabilita o estado de sentar
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, not antiSitEnabled)
+    
+    -- Conexão para quando o personagem tentar sentar
+    local sitConnection = humanoid.StateChanged:Connect(function(_, newState)
+        if antiSitEnabled and newState == Enum.HumanoidStateType.Seated then
+            humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+        end
+    end)
+    
+    table.insert(connections, sitConnection)
+end
+local function cleanupConnections()
+    for _, connection in ipairs(connections) do
+        connection:Disconnect()
+    end
+    connections = {}
+end
+local function resetSittingState(character)
+    if character then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+        end
+    end
+end
+MiscTab:AddToggle({
+    Name = "Anti Sit",
+    Description = "Não Deixa seu personagem Sentar",
+    Default = false,
+    Callback = function(Value)
+        antiSitEnabled = Value
+        local player = game.Players.LocalPlayer
+        
+        cleanupConnections()
+        
+        if Value then
+            -- Conexão para quando o personagem é recarregado
+            local charAddedConn = player.CharacterAdded:Connect(function(character)
+                setupAntiSit(character)
+            end)
+            table.insert(connections, charAddedConn)
+            
+            -- Aplicar ao personagem atual
+            if player.Character then
+                setupAntiSit(player.Character)
+            end
+        else
+            -- Restaurar habilidade de sentar
+            if player.Character then
+                resetSittingState(player.Character)
+            end
+        end
+    end
+})
 
-ProtectionTab:AddSection({
+-- ====================================
+-- ANTI FLING
+-- ====================================
+MiscTab:AddSection({
     Name = "Anti Fling"
 })
 
--- Variáveis globais para Anti-Fling
+-- Variáveis globais para controle do Anti-Fling
 local antiFlingEnabled = false
 local antiFlingConnections = {}
 
--- Função para limpar conexões do Anti-Fling
+-- Função para limpar todas as conexões do Anti-Fling
 local function cleanupAntiFlingConnections()
     for i, connection in pairs(antiFlingConnections) do
         if connection then
@@ -11342,7 +11408,7 @@ local function cleanWorkspace()
     end)
 end
 
--- Função para configurar player no Anti-Fling
+-- Função para setup do player no Anti-Fling
 local function setupPlayerAntiFling(player)
     if not antiFlingEnabled or not player then return end
     
@@ -11371,8 +11437,7 @@ local function setupPlayerAntiFling(player)
     table.insert(antiFlingConnections, charConn)
 end
 
--- Toggle Anti-Fling
-ProtectionTab:AddToggle({
+MiscTab:AddToggle({
     Name = "Anti Fling Tudo",
     Description = "Anti fling para barco, carro, navio, boat, canoe",
     Default = false,
@@ -11486,97 +11551,6 @@ ProtectionTab:AddToggle({
         end
     end
 })
-
--- ====================================
--- SISTEMA ANTI-SIT
--- ====================================
-
-MiscTab:AddSection({
-    Name = "Anti Sit"
-})
-
--- Variáveis globais para Anti-Sit
-local antiSitEnabled = false
-local antiSitConnections = {}
-
--- Função para limpar conexões do Anti-Sit
-local function cleanupAntiSitConnections()
-    for _, connection in ipairs(antiSitConnections) do
-        connection:Disconnect()
-    end
-    antiSitConnections = {}
-end
-
--- Função para configurar Anti-Sit no personagem
-local function setupAntiSit(character)
-    if not antiSitEnabled then return end
-    
-    local humanoid = character:WaitForChild("Humanoid")
-    
-    -- Habilita/desabilita o estado de sentar
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, not antiSitEnabled)
-    
-    -- Conexão para quando o personagem tentar sentar
-    local sitConnection = humanoid.StateChanged:Connect(function(_, newState)
-        if antiSitEnabled and newState == Enum.HumanoidStateType.Seated then
-            humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
-        end
-    end)
-    
-    table.insert(antiSitConnections, sitConnection)
-end
-
--- Função para restaurar estado de sentar
-local function resetSittingState(character)
-    if character then
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
-        end
-    end
-end
-
--- Toggle Anti-Sit
-MiscTab:AddToggle({
-    Name = "Anti Sit",
-    Description = "Não deixa seu personagem sentar",
-    Default = false,
-    Callback = function(Value)
-        antiSitEnabled = Value
-        local player = game.Players.LocalPlayer
-        
-        cleanupAntiSitConnections()
-        
-        if Value then
-            print("Anti-Sit Ativado!")
-            
-            -- Conexão para quando o personagem é recarregado
-            local charAddedConn = player.CharacterAdded:Connect(function(character)
-                setupAntiSit(character)
-            end)
-            table.insert(antiSitConnections, charAddedConn)
-            
-            -- Aplicar ao personagem atual
-            if player.Character then
-                setupAntiSit(player.Character)
-            end
-        else
-            print("Anti-Sit Desativado!")
-            
-            -- Restaurar habilidade de sentar
-            if player.Character then
-                resetSittingState(player.Character)
-            end
-        end
-    end
-})
-
-
-
-
-
-
-
 
 
 
