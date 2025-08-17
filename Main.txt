@@ -11225,30 +11225,34 @@ UniversalTab:AddButton({
 
 local MiscTab = Window:MakeTab({ Title = "Protection", Icon = "rbxassetid://6031074219" })
 
--- Anti Sit (código existente)
+-- ANTI SIT
 MiscTab:AddSection({ "Anti Sit" })
 local antiSitEnabled = false
-local connections = {}
+local antiSitConnections = {}
+
 local function setupAntiSit(character)
     if not antiSitEnabled then return end
     
     local humanoid = character:WaitForChild("Humanoid")
+    
+    -- Habilita/desabilita o estado de sentar
     humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, not antiSitEnabled)
     
+    -- Conexão para quando o personagem tentar sentar
     local sitConnection = humanoid.StateChanged:Connect(function(_, newState)
         if antiSitEnabled and newState == Enum.HumanoidStateType.Seated then
             humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
         end
     end)
     
-    table.insert(connections, sitConnection)
+    table.insert(antiSitConnections, sitConnection)
 end
 
-local function cleanupConnections()
-    for _, connection in ipairs(connections) do
+local function cleanupAntiSitConnections()
+    for _, connection in ipairs(antiSitConnections) do
         connection:Disconnect()
     end
-    connections = {}
+    antiSitConnections = {}
 end
 
 local function resetSittingState(character)
@@ -11268,18 +11272,21 @@ MiscTab:AddToggle({
         antiSitEnabled = Value
         local player = game.Players.LocalPlayer
         
-        cleanupConnections()
+        cleanupAntiSitConnections()
         
         if Value then
+            -- Conexão para quando o personagem é recarregado
             local charAddedConn = player.CharacterAdded:Connect(function(character)
                 setupAntiSit(character)
             end)
-            table.insert(connections, charAddedConn)
+            table.insert(antiSitConnections, charAddedConn)
             
+            -- Aplicar ao personagem atual
             if player.Character then
                 setupAntiSit(player.Character)
             end
         else
+            -- Restaurar habilidade de sentar
             if player.Character then
                 resetSittingState(player.Character)
             end
@@ -11287,10 +11294,10 @@ MiscTab:AddToggle({
     end
 })
 
+-- ANTI FLING
 MiscTab:AddSection({ "Anti Fling" })
-
 local antiFlingEnabled = false
-local connections = {}
+local antiFlingConnections = {}
 local player = game.Players.LocalPlayer
 
 -- Função para configurar anti-fling para um personagem
@@ -11331,18 +11338,18 @@ local function setupAntiFling(character)
         end
     end)
     
-    table.insert(connections, heartbeatConnection)
+    table.insert(antiFlingConnections, heartbeatConnection)
     print("Anti-fling ativado para: " .. player.Name)
 end
 
--- Função para limpar todas as conexões
-local function cleanupConnections()
-    for _, connection in ipairs(connections) do
+-- Função para limpar todas as conexões do anti-fling
+local function cleanupAntiFlingConnections()
+    for _, connection in ipairs(antiFlingConnections) do
         if connection then
             connection:Disconnect()
         end
     end
-    connections = {}
+    antiFlingConnections = {}
 end
 
 -- Função para restaurar colisões normais
@@ -11436,7 +11443,7 @@ local function monitorVehicles()
         end
     end)
     
-    table.insert(connections, vehicleConnection)
+    table.insert(antiFlingConnections, vehicleConnection)
 end
 
 MiscTab:AddToggle({
@@ -11446,14 +11453,14 @@ MiscTab:AddToggle({
     Callback = function(Value)
         antiFlingEnabled = Value
         
-        cleanupConnections()
+        cleanupAntiFlingConnections()
         
         if Value then
             -- Conexão para quando o personagem é recarregado
             local charAddedConn = player.CharacterAdded:Connect(function(character)
                 setupAntiFling(character)
             end)
-            table.insert(connections, charAddedConn)
+            table.insert(antiFlingConnections, charAddedConn)
             
             -- Aplicar ao personagem atual
             if player.Character then
@@ -11480,7 +11487,7 @@ MiscTab:AddToggle({
                 end
             end)
             
-            table.insert(connections, periodicRemoval)
+            table.insert(antiFlingConnections, periodicRemoval)
             
         else
             -- Restaurar colisões normais
