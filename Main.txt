@@ -11294,160 +11294,117 @@ MiscTab:AddToggle({
     end
 })
 
-MiscTab:AddSection({ "Anti Vehicle" })
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local remote = ReplicatedStorage:WaitForChild("ToggleAntiBoats")
 
--- Variáveis de controle
-local antiVehicleEnabled = false
-local connections = {}
-local monitoringLoop = nil
+MiscTab:AddToggle({
+    Name = "Anti Boats",
+    Description = "Remove barcos e veículos (server inteiro)",
+    Default = false,
+    Callback = function(Value)
+        remote:FireServer(Value) -- Envia pro server
+    end
+})
+-- Anti-Boats / Anti-Fling com Toggle (Server-Side)
+-- Coloque no ServerScriptService
 
--- Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local workspace = game:GetService("Workspace")
+local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- Remote para controlar o toggle via client
+local remote = Instance.new("RemoteEvent")
+remote.Name = "ToggleAntiBoats"
+remote.Parent = ReplicatedStorage
+
+-- Estado inicial (desligado)
+local antiBoatsEnabled = false
 
 -- Função para remover todas as partes especificadas de um veículo
 local function removeVehicleParts(vehicle)
-    if not vehicle or not antiVehicleEnabled then return end
+    if not antiBoatsEnabled or not vehicle then return end
     
-    -- Ejetar qualquer player que esteja no veículo
-    local humanoidRootParts = {}
+    -- Ejetar players próximos
     for _, player in pairs(Players:GetPlayers()) do
         if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            table.insert(humanoidRootParts, player.Character.HumanoidRootPart)
+            local rootPart = player.Character.HumanoidRootPart
+            if (rootPart.Position - vehicle.PrimaryPart.Position).Magnitude < 50 then
+                rootPart.CFrame = rootPart.CFrame + Vector3.new(0, 100, 0)
+            end
         end
     end
-    
-    -- Teleportar players para longe do veículo antes de destruí-lo
-    for _, rootPart in pairs(humanoidRootParts) do
-        if vehicle.PrimaryPart and (rootPart.Position - vehicle.PrimaryPart.Position).Magnitude < 50 then
-            rootPart.CFrame = rootPart.CFrame + Vector3.new(0, 100, 0)
-        end
-    end
-    
-    -- Desabilitar todos os scripts do veículo
+
     for _, obj in pairs(vehicle:GetDescendants()) do
         if obj:IsA("Script") or obj:IsA("LocalScript") then
             obj.Disabled = true
             obj:Destroy()
         end
-        -- Remover todas as partes com colisão
         if obj:IsA("BasePart") then
             obj.CanCollide = false
             obj.Anchored = true
         end
-        -- Remover welds e constraints
         if obj:IsA("Weld") or obj:IsA("WeldConstraint") or obj:IsA("Motor6D") then
             obj:Destroy()
         end
     end
-    
-    -- Remover partes específicas do veículo
-    local body = vehicle:FindFirstChild("Body")
-    if body then
-        body:Destroy()
+
+    spawn(function()
+        task.wait(0.5)
+        if vehicle and vehicle.Parent then
+            vehicle:Destroy()
+        end
+    end)
+end
+
+-- Remover todos os boats de Vehicles
+local function removeAllBoats()
+    if not antiBoatsEnabled then return end
+    local vehicles = Workspace:FindFirstChild("Vehicles")
+    if not vehicles then return end
+    for _, vehicle in pairs(vehicles:GetChildren()) do
+        removeVehicleParts(vehicle)
     end
 end
 
--- Função para remover partes específicas do aeroporto, helicópteros e canoas
+-- Remover helicópteros, canoas e airport
 local function removeAirportHeliAndCanoeParts()
-    if not antiVehicleEnabled then return end
-    
-    local workspaceCom = workspace:FindFirstChild("WorkspaceCom")
+    if not antiBoatsEnabled then return end
+    local workspaceCom = Workspace:FindFirstChild("WorkspaceCom")
     if workspaceCom then
-        -- Remover partes do aeroporto
         local airport = workspaceCom:FindFirstChild("001_Airport")
         if airport then
             local airportHanger = airport:FindFirstChild("AirportHanger")
-            if airportHanger then
-                airportHanger:Destroy()
-            end
+            if airportHanger then airportHanger:Destroy() end
         end
-        
-        -- Remover armazenamento de helicópteros
+
         local heliStorage = workspaceCom:FindFirstChild("001_HeliStorage")
         if heliStorage then
             local policeStationHeli = heliStorage:FindFirstChild("PoliceStationHeli")
-            if policeStationHeli then
-                policeStationHeli:Destroy()
-            end
+            if policeStationHeli then policeStationHeli:Destroy() end
         end
-        
-        -- Remover botão de clone de helicóptero
+
         local heliCloneButton = workspaceCom:FindFirstChild("001_HeliCloneButton")
-        if heliCloneButton then
-            heliCloneButton:Destroy()
-        end
-        
-        -- Remover armazenamento de canoas completo
+        if heliCloneButton then heliCloneButton:Destroy() end
+
         local canoeStorage = workspaceCom:FindFirstChild("001_CanoeStorage")
-        if canoeStorage then
-            canoeStorage:Destroy()
-        end
-        
-        -- Remover botão de clone de canoa
+        if canoeStorage then canoeStorage:Destroy() end
+
         local canoeCloneButton = workspaceCom:FindFirstChild("001_CanoeCloneButton")
-        if canoeCloneButton then
-            canoeCloneButton:Destroy()
-        end
+        if canoeCloneButton then canoeCloneButton:Destroy() end
     end
-    
-    -- Remover HeliSpawnPad do Model
-    local model = workspace:FindFirstChild("Model")
+
+    local model = Workspace:FindFirstChild("Model")
     if model then
         local heliSpawnPad = model:FindFirstChild("HeliSpawnPad")
-        if heliSpawnPad then
-            heliSpawnPad:Destroy()
-        end
+        if heliSpawnPad then heliSpawnPad:Destroy() end
     end
 end
 
--- Função para remover todos os veículos
-local function removeAllBoats()
-    if not antiVehicleEnabled then return end
-    
-    local vehicles = workspace:FindFirstChild("Vehicles")
-    if not vehicles then return end
-    
-    for _, vehicle in pairs(vehicles:GetChildren()) do
-        -- Ejetar players antes de destruir
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Character and player.Character:FindFirstChild("Humanoid") then
-                local humanoid = player.Character.Humanoid
-                -- Forçar o player a sair do assento
-                if humanoid.Sit then
-                    humanoid.Sit = false
-                end
-                -- Teleportar para longe se estiver muito perto
-                if player.Character:FindFirstChild("HumanoidRootPart") then
-                    local distance = (player.Character.HumanoidRootPart.Position - vehicle:GetModelCFrame().Position).Magnitude
-                    if distance < 30 then
-                        player.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame + Vector3.new(0, 50, 0)
-                    end
-                end
-            end
-        end
-        
-        -- Remove o veículo
-        removeVehicleParts(vehicle)
-        
-        -- Destruir completamente após um tempo
-        spawn(function()
-            wait(0.5)
-            if vehicle and vehicle.Parent then
-                vehicle:Destroy()
-            end
-        end)
-    end
-end
-
--- Função para desabilitar colisão do humanoid com boats
+-- Desabilitar colisão dos players
 local function disableHumanoidBoatCollision(player)
-    if not antiVehicleEnabled then return end
-    
+    if not antiBoatsEnabled then return end
     local character = player.Character or player.CharacterAdded:Wait()
-    
-    -- Desabilita colisão com boats para todas as partes do personagem
     for _, part in pairs(character:GetChildren()) do
         if part:IsA("BasePart") then
             part.CanCollide = false
@@ -11455,151 +11412,81 @@ local function disableHumanoidBoatCollision(player)
     end
 end
 
--- Função para monitorar veículos
-local function setupVehicleMonitoring()
-    if not antiVehicleEnabled then return end
-    
-    local vehicles = workspace:FindFirstChild("Vehicles")
+-- Monitor de boats
+local function monitorBoats()
+    local vehicles = Workspace:FindFirstChild("Vehicles")
     if not vehicles then
         vehicles = Instance.new("Folder")
         vehicles.Name = "Vehicles"
-        vehicles.Parent = workspace
+        vehicles.Parent = Workspace
     end
-    
-    -- Remove veículos existentes
-    removeAllBoats()
-    
-    -- Monitora novos veículos sendo adicionados
-    local vehicleConnection = vehicles.ChildAdded:Connect(function(child)
-        if not antiVehicleEnabled then return end
-        
-        wait(0.1)
-        
-        -- Ejetar qualquer player que possa estar no veículo
-        spawn(function()
-            for _, player in pairs(Players:GetPlayers()) do
-                if player.Character and player.Character:FindFirstChild("Humanoid") then
-                    player.Character.Humanoid.Sit = false
-                end
-            end
-        end)
-        
-        -- Remove o veículo
+
+    vehicles.ChildAdded:Connect(function(child)
+        if not antiBoatsEnabled then return end
+        task.wait(0.2)
         removeVehicleParts(child)
-        spawn(function()
-            wait(0.5)
-            if child and child.Parent then
-                child:Destroy()
-            end
-        end)
     end)
-    
-    table.insert(connections, vehicleConnection)
 end
 
--- Função para configurar jogadores
+-- Configura players
 local function setupPlayer(player)
-    if not antiVehicleEnabled then return end
-    
-    local charConnection = player.CharacterAdded:Connect(function()
-        wait(1)
+    player.CharacterAdded:Connect(function()
+        task.wait(1)
         disableHumanoidBoatCollision(player)
     end)
-    
-    table.insert(connections, charConnection)
-    
     if player.Character then
         disableHumanoidBoatCollision(player)
     end
 end
 
--- Função para limpar conexões
-local function cleanupConnections()
-    for _, connection in ipairs(connections) do
-        if connection then
-            connection:Disconnect()
-        end
-    end
-    connections = {}
-    
-    if monitoringLoop then
-        monitoringLoop:Disconnect()
-        monitoringLoop = nil
-    end
+-- Conectar players existentes
+for _, player in pairs(Players:GetPlayers()) do
+    setupPlayer(player)
 end
+Players.PlayerAdded:Connect(setupPlayer)
 
--- Função para iniciar monitoramento contínuo
-local function startMonitoring()
-    if monitoringLoop then return end
-    
-    monitoringLoop = spawn(function()
-        while antiVehicleEnabled do
-            wait(2)
-            
-            -- Remover partes do aeroporto, helicópteros e canoas periodicamente
-            removeAirportHeliAndCanoeParts()
-            
-            -- Forçar todos os players a saírem de qualquer assento
-            for _, player in pairs(Players:GetPlayers()) do
-                if player.Character and player.Character:FindFirstChild("Humanoid") then
-                    local humanoid = player.Character.Humanoid
-                    if humanoid.Sit then
-                        humanoid.Sit = false
-                        humanoid.PlatformStand = false
-                    end
+-- Loops principais
+RunService.Heartbeat:Connect(function()
+    if not antiBoatsEnabled then return end
+    local vehicles = Workspace:FindFirstChild("Vehicles")
+    if vehicles then
+        for _, vehicle in pairs(vehicles:GetChildren()) do
+            for _, script in pairs(vehicle:GetDescendants()) do
+                if script:IsA("Script") or script:IsA("LocalScript") then
+                    script.Disabled = true
                 end
             end
-            
-            removeAllBoats()
-        end
-    end)
-end
-
--- Toggle do Anti Vehicle
-MiscTab:AddToggle({
-    Name = "Anti Vehicle",
-    Description = "Remove todos os veículos do jogo automaticamente",
-    Default = false,
-    Callback = function(Value)
-        antiVehicleEnabled = Value
-        
-        cleanupConnections()
-        
-        if Value then
-            -- Configurar jogadores existentes
-            for _, player in pairs(Players:GetPlayers()) do
-                setupPlayer(player)
+            for _, part in pairs(vehicle:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
             end
-            
-            -- Configurar novos jogadores
-            local playerConnection = Players.PlayerAdded:Connect(setupPlayer)
-            table.insert(connections, playerConnection)
-            
-            -- Iniciar monitoramento de veículos
-            setupVehicleMonitoring()
-            
-            -- Iniciar loop de monitoramento contínuo
-            startMonitoring()
-            
-            -- Remover estruturas inicialmente
-            removeAirportHeliAndCanoeParts()
-            
-            print("Anti Vehicle ativado!")
-        else
-            print("Anti Vehicle desativado!")
         end
     end
-})
+end)
 
+-- Backup loop
+task.spawn(function()
+    while true do
+        task.wait(2)
+        if antiBoatsEnabled then
+            removeAirportHeliAndCanoeParts()
+            removeAllBoats()
+        end
+    end
+end)
 
-
-
-
-
-
-
-
-
-
-
-
+-- Recebe Toggle do Client
+remote.OnServerEvent:Connect(function(player, state)
+    if typeof(state) == "boolean" then
+        antiBoatsEnabled = state
+        if state then
+            print("🔴 Anti-Boats (Anti-Fling) ATIVADO pelo "..player.Name)
+            removeAirportHeliAndCanoeParts()
+            removeAllBoats()
+            monitorBoats()
+        else
+            print("⚪ Anti-Boats (Anti-Fling) DESATIVADO pelo "..player.Name)
+        end
+    end
+end)
