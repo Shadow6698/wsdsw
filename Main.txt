@@ -11294,43 +11294,12 @@ MiscTab:AddToggle({
     end
 })
 
-MiscTab:AddSection({ "Anti Fling" })
 
-local antiFlingLoaded = false
 
-MiscTab:AddButton({
-    Name = "Load Anti Fling GUI",
-    Description = "Carrega o GUI Anti Fling para proteção contra fling",
-    Callback = function()
-        if antiFlingLoaded then
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "Anti Fling";
-                Text = "O Anti Fling GUI já foi carregado!";
-                Duration = 3;
-            })
-            return
-        end
-        
-        local success, errorMessage = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/antflinggui/refs/heads/main/Main.txt"))()
-        end)
-        
-        if success then
-            antiFlingLoaded = true
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "Anti Fling";
-                Text = "Anti Fling GUI carregado com sucesso!";
-                Duration = 3;
-            })
-        else
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "Anti Fling";
-                Text = "Erro ao carregar o Anti Fling GUI: " .. tostring(errorMessage);
-                Duration = 5;
-            })
-        end
-    end
-})
+
+
+
+
 
 
 
