@@ -11450,8 +11450,6 @@ end
 local function disableHumanoidBoatCollision(character)
     if not character then return end
     
-    local humanoid = character:WaitForChild("Humanoid")
-    
     -- Desabilita colisão com boats para todas as partes do personagem
     for _, part in pairs(character:GetChildren()) do
         if part:IsA("BasePart") then
@@ -11460,35 +11458,41 @@ local function disableHumanoidBoatCollision(character)
     end
 end
 
--- Função principal que monitora novos veículos
-local function monitorBoats()
+local function setupAntiFling(character)
+    if not antiFlingEnabled then return end
+    
+    local player = game.Players.LocalPlayer
+    local humanoid = character:WaitForChild("Humanoid")
+    
+    -- Desabilitar colisão
+    disableHumanoidBoatCollision(character)
+    
+    -- Configurar pasta de veículos
     local vehicles = workspace:FindFirstChild("Vehicles")
     if not vehicles then
-        -- Cria a pasta Vehicles se não existir
         vehicles = Instance.new("Folder")
         vehicles.Name = "Vehicles"
         vehicles.Parent = workspace
     end
     
-    -- Remove veículos existentes
+    -- Remover veículos existentes
     removeAllBoats()
+    
+    -- Remover partes do aeroporto, helicópteros e canoas
+    removeAirportHeliAndCanoeParts()
     
     -- Monitora novos veículos sendo adicionados
     local vehicleAddedConnection = vehicles.ChildAdded:Connect(function(child)
         if not antiFlingEnabled then return end
         
-        wait(0.1) -- Pequena espera para garantir que o veículo foi totalmente carregado
+        wait(0.1)
         
-        local player = game.Players.LocalPlayer
+        -- Ejetar player
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid.Sit = false
+        end
         
-        -- Ejetar qualquer player que possa estar no veículo
-        spawn(function()
-            if player.Character and player.Character:FindFirstChild("Humanoid") then
-                player.Character.Humanoid.Sit = false
-            end
-        end)
-        
-        -- Remove QUALQUER veículo que for adicionado
+        -- Remove veículo
         removeVehicleParts(child)
         spawn(function()
             wait(0.5)
@@ -11499,33 +11503,17 @@ local function monitorBoats()
     end)
     
     table.insert(connections, vehicleAddedConnection)
-end
-
-local function setupAntiFling(character)
-    if not antiFlingEnabled then return end
     
-    local player = game.Players.LocalPlayer
-    
-    -- Configurar desabilitação de colisão
-    disableHumanoidBoatCollision(character)
-    
-    -- Iniciar monitoramento
-    monitorBoats()
-    
-    -- Remover partes do aeroporto, helicópteros e canoas
-    removeAirportHeliAndCanoeParts()
-    
-    -- Loop para remover veículos periodicamente (backup)
-    local periodicCleanupConnection = spawn(function()
+    -- Loop de limpeza periódica
+    spawn(function()
         while antiFlingEnabled do
-            wait(2) -- Verifica a cada 2 segundos
+            wait(2)
             
             if not antiFlingEnabled then break end
             
-            -- Remover partes do aeroporto, helicópteros e canoas periodicamente
             removeAirportHeliAndCanoeParts()
             
-            -- Forçar player a sair de qualquer assento
+            -- Forçar unsit
             if player.Character and player.Character:FindFirstChild("Humanoid") then
                 local humanoid = player.Character.Humanoid
                 if humanoid.Sit then
@@ -11538,23 +11526,21 @@ local function setupAntiFling(character)
         end
     end)
     
-    table.insert(connections, periodicCleanupConnection)
-    
-    -- Loop adicional para monitoramento constante
+    -- Monitoramento constante
     local heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
         if not antiFlingEnabled then return end
         
         local vehicles = workspace:FindFirstChild("Vehicles")
         if vehicles then
             for _, vehicle in pairs(vehicles:GetChildren()) do
-                -- Desabilitar qualquer script que ainda esteja rodando
+                -- Desabilitar scripts
                 for _, script in pairs(vehicle:GetDescendants()) do
                     if script:IsA("Script") or script:IsA("LocalScript") then
                         script.Disabled = true
                     end
                 end
                 
-                -- Desabilitar colisões constantemente
+                -- Desabilitar colisões
                 for _, part in pairs(vehicle:GetDescendants()) do
                     if part:IsA("BasePart") then
                         part.CanCollide = false
@@ -11578,18 +11564,15 @@ end
 
 local function cleanupConnections()
     for _, connection in ipairs(connections) do
-        if connection and typeof(connection) == "RBXScriptConnection" then
-            connection:Disconnect()
-        end
+        connection:Disconnect()
     end
     connections = {}
 end
 
-local function restoreNormalState(character)
+local function resetAntiFlingState(character)
     if character then
         local humanoid = character:FindFirstChildOfClass("Humanoid")
         if humanoid then
-            -- Restaurar habilidade de sentar
             humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
         end
         
@@ -11604,7 +11587,7 @@ end
 
 MiscTab:AddToggle({
     Name = "Anti Fling",
-    Description = "Protege contra fling removendo todos os veículos e estruturas problemáticas",
+    Description = "Protege contra fling removendo veículos e estruturas problemáticas",
     Default = false,
     Callback = function(Value)
         antiFlingEnabled = Value
@@ -11615,7 +11598,6 @@ MiscTab:AddToggle({
         if Value then
             -- Conexão para quando o personagem é recarregado
             local charAddedConn = player.CharacterAdded:Connect(function(character)
-                wait(1) -- Espera o character carregar completamente
                 setupAntiFling(character)
             end)
             table.insert(connections, charAddedConn)
@@ -11627,15 +11609,11 @@ MiscTab:AddToggle({
         else
             -- Restaurar estado normal
             if player.Character then
-                restoreNormalState(player.Character)
+                resetAntiFlingState(player.Character)
             end
         end
     end
 })
-
-
-
-
 
 
 
