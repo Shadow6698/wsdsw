@@ -11296,12 +11296,21 @@ MiscTab:AddToggle({
 
 -- Anti Fling Section
 MiscTab:AddSection({ "Anti Fling" })
-
 MiscTab:AddButton({
     Name = "Load Anti Fling",
     Description = "Carrega o sistema Anti Fling",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/antflinggui/refs/heads/main/Main.txt"))()
+    end
+})
+
+-- Anti Fling Ball Section
+MiscTab:AddSection({ "Anti Fling Ball" })
+MiscTab:AddButton({
+    Name = "Load Anti Fling Ball",
+    Description = "Carrega o sistema Anti Fling Ball de proteção",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/antflingball2/refs/heads/main/Main.txt"))()
     end
 })
 
