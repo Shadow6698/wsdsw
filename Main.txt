@@ -11223,7 +11223,7 @@ UniversalTab:AddButton({
     end
 })
 
-local MiscTab = Window:MakeTab({ Title = "Misc", Icon = "rbxassetid://13364900349" })
+local MiscTab = Window:MakeTab({ Title = "Protection", Icon = "rbxassetid://6031074219" })
 
 MiscTab:AddSection({ "Anti Sit" })
 
