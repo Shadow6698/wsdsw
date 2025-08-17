@@ -11294,7 +11294,186 @@ MiscTab:AddToggle({
     end
 })
 
+MiscTab:AddSection({ "Anti Fling Ball" })
 
+local antiFlingBallEnabled = false
+local ballConnections = {}
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Função para remover todas as bolas do jogo
+local function removeSoccerBalls()
+    if not antiFlingBallEnabled then return end
+    
+    -- Remove do workspace
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("BasePart") and (obj.Name:lower():find("ball") or obj.Name:lower():find("soccer")) then
+            obj:Destroy()
+        elseif obj:IsA("Tool") and (obj.Name:lower():find("ball") or obj.Name:lower():find("soccer")) then
+            obj:Destroy()
+        elseif obj:IsA("Model") and (obj.Name:lower():find("ball") or obj.Name:lower():find("soccer")) then
+            obj:Destroy()
+        end
+    end
+    
+    -- Remove especificamente do WorkspaceCom
+    local workspaceCom = workspace:FindFirstChild("WorkspaceCom")
+    if workspaceCom then
+        local giveTools = workspaceCom:FindFirstChild("001_GiveTools")
+        if giveTools then
+            for _, child in pairs(giveTools:GetChildren()) do
+                if child.Name == "SoccerBall" or child.Name:lower():find("ball") then
+                    child:Destroy()
+                end
+            end
+        end
+    end
+    
+    -- Remove do player (backpack, character, etc)
+    if player then
+        -- Remove do Backpack
+        if player:FindFirstChild("Backpack") then
+            for _, child in pairs(player.Backpack:GetChildren()) do
+                if child.Name:lower():find("ball") or child.Name:lower():find("soccer") then
+                    child:Destroy()
+                end
+            end
+        end
+        
+        -- Remove do Character
+        if player.Character then
+            for _, child in pairs(player.Character:GetChildren()) do
+                if child.Name:lower():find("ball") or child.Name:lower():find("soccer") then
+                    child:Destroy()
+                end
+            end
+        end
+    end
+end
+
+-- Função para monitorar adições de bolas ao personagem
+local function setupBallMonitoring(character)
+    if not antiFlingBallEnabled then return end
+    
+    -- Monitora adições diretas ao Character
+    local charConnection = character.ChildAdded:Connect(function(child)
+        if not antiFlingBallEnabled then return end
+        
+        if child.Name:lower():find("ball") or child.Name == "SoccerBall" or child.Name:lower():find("soccer") then
+            wait(0.1) -- Pequeno delay para garantir que foi totalmente adicionado
+            if child and child.Parent then
+                child:Destroy()
+            end
+        end
+    end)
+    table.insert(ballConnections, charConnection)
+    
+    -- Monitora adições ao Humanoid
+    local humanoid = character:WaitForChild("Humanoid")
+    if humanoid then
+        local humanoidConnection = humanoid.ChildAdded:Connect(function(child)
+            if not antiFlingBallEnabled then return end
+            
+            if child.Name:lower():find("ball") or child.Name == "SoccerBall" or child.Name:lower():find("soccer") then
+                wait(0.1)
+                if child and child.Parent then
+                    child:Destroy()
+                end
+            end
+        end)
+        table.insert(ballConnections, humanoidConnection)
+    end
+end
+
+-- Função para monitorar o backpack
+local function setupBackpackMonitoring()
+    if not antiFlingBallEnabled or not player:FindFirstChild("Backpack") then return end
+    
+    local backpackConnection = player.Backpack.ChildAdded:Connect(function(child)
+        if not antiFlingBallEnabled then return end
+        
+        if child.Name:lower():find("ball") or child.Name:lower():find("soccer") then
+            wait(0.1)
+            if child and child.Parent then
+                child:Destroy()
+            end
+        end
+    end)
+    table.insert(ballConnections, backpackConnection)
+end
+
+-- Função para limpar todas as conexões
+local function cleanupBallConnections()
+    for _, connection in ipairs(ballConnections) do
+        if connection then
+            connection:Disconnect()
+        end
+    end
+    ballConnections = {}
+end
+
+-- Função principal para configurar o anti fling ball
+local function setupAntiFlingBall()
+    if not antiFlingBallEnabled then return end
+    
+    -- Configurar monitoramento para personagem atual
+    if player.Character then
+        setupBallMonitoring(player.Character)
+    end
+    
+    -- Configurar monitoramento do backpack
+    setupBackpackMonitoring()
+    
+    -- Conexão para quando o personagem spawna/respawna
+    local charAddedConnection = player.CharacterAdded:Connect(function(character)
+        if antiFlingBallEnabled then
+            wait(1) -- Espera o personagem carregar completamente
+            setupBallMonitoring(character)
+            removeSoccerBalls() -- Remove qualquer bola que já esteja presente
+        end
+    end)
+    table.insert(ballConnections, charAddedConnection)
+    
+    -- Loop contínuo para remover bolas
+    local heartbeatConnection = RunService.Heartbeat:Connect(function()
+        if antiFlingBallEnabled then
+            removeSoccerBalls()
+        end
+    end)
+    table.insert(ballConnections, heartbeatConnection)
+    
+    -- Spawn para remoção mais agressiva
+    spawn(function()
+        while antiFlingBallEnabled do
+            removeSoccerBalls()
+            wait(0.1) -- Verifica a cada 0.1 segundos
+        end
+    end)
+end
+
+-- Toggle do Anti Fling Ball
+MiscTab:AddToggle({
+    Name = "Anti Fling Ball",
+    Description = "Remove automaticamente todas as bolas do jogo para evitar fling",
+    Default = false,
+    Callback = function(Value)
+        antiFlingBallEnabled = Value
+        
+        -- Limpar conexões anteriores
+        cleanupBallConnections()
+        
+        if Value then
+            -- Ativar anti fling ball
+            setupAntiFlingBall()
+            -- Remoção inicial
+            removeSoccerBalls()
+            print("Anti Fling Ball ativado!")
+        else
+            print("Anti Fling Ball desativado!")
+        end
+    end
+})
 
 
 
