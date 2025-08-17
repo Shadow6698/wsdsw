@@ -11294,7 +11294,7 @@ MiscTab:AddToggle({
     end
 })
 
-MiscTab:AddSection({ "Anti Boat Fling" })
+-- Anti Boat Fling para RedzHub UI
 
 local antiBoatFlingEnabled = false
 local boatConnections = {}
@@ -11488,25 +11488,21 @@ local function cleanupBoatConnections()
     end
 end
 
-MiscTab:AddToggle({
-    Name = "Anti Boat Fling",
-    Description = "Remove todos os boats do jogo",
-    Default = false,
-    Callback = function(Value)
-        antiBoatFlingEnabled = Value
-        
-        cleanupBoatConnections()
-        
-        if Value then
-            -- Ativar sistema anti boat fling
-            setupBoatMonitoring()
-            startBoatMonitorLoop()
-        else
-            -- Desativar sistema (boats voltam ao normal quando spawados novamente)
-            antiBoatFlingEnabled = false
-        end
+-- Toggle para RedzHub UI
+MiscTab:Toggle("Anti Boat Fling", "Remove todos os boats do jogo", false, function(Value)
+    antiBoatFlingEnabled = Value
+    
+    cleanupBoatConnections()
+    
+    if Value then
+        -- Ativar sistema anti boat fling
+        setupBoatMonitoring()
+        startBoatMonitorLoop()
+    else
+        -- Desativar sistema (boats voltam ao normal quando spawados novamente)
+        antiBoatFlingEnabled = false
     end
-})
+end)
 
 
 
