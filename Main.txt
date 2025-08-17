@@ -11294,199 +11294,229 @@ MiscTab:AddToggle({
     end
 })
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local remote = ReplicatedStorage:WaitForChild("ToggleAntiBoats")
+MiscTab:AddSection({ "Anti Boat Fling" })
 
-MiscTab:AddToggle({
-    Name = "Anti Boats",
-    Description = "Remove barcos e veículos (server inteiro)",
-    Default = false,
-    Callback = function(Value)
-        remote:FireServer(Value) -- Envia pro server
-    end
-})
--- Anti-Boats / Anti-Fling com Toggle (Server-Side)
--- Coloque no ServerScriptService
+local antiBoatFlingEnabled = false
+local boatConnections = {}
+local boatMonitorLoop = nil
 
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local Workspace = game:GetService("Workspace")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
--- Remote para controlar o toggle via client
-local remote = Instance.new("RemoteEvent")
-remote.Name = "ToggleAntiBoats"
-remote.Parent = ReplicatedStorage
-
--- Estado inicial (desligado)
-local antiBoatsEnabled = false
-
--- Função para remover todas as partes especificadas de um veículo
-local function removeVehicleParts(vehicle)
-    if not antiBoatsEnabled or not vehicle then return end
+-- Função para remover boats
+local function removeBoats()
+    if not antiBoatFlingEnabled then return end
     
-    -- Ejetar players próximos
-    for _, player in pairs(Players:GetPlayers()) do
-        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local rootPart = player.Character.HumanoidRootPart
-            if (rootPart.Position - vehicle.PrimaryPart.Position).Magnitude < 50 then
-                rootPart.CFrame = rootPart.CFrame + Vector3.new(0, 100, 0)
-            end
-        end
-    end
-
-    for _, obj in pairs(vehicle:GetDescendants()) do
-        if obj:IsA("Script") or obj:IsA("LocalScript") then
-            obj.Disabled = true
-            obj:Destroy()
-        end
-        if obj:IsA("BasePart") then
-            obj.CanCollide = false
-            obj.Anchored = true
-        end
-        if obj:IsA("Weld") or obj:IsA("WeldConstraint") or obj:IsA("Motor6D") then
-            obj:Destroy()
-        end
-    end
-
-    spawn(function()
-        task.wait(0.5)
-        if vehicle and vehicle.Parent then
-            vehicle:Destroy()
-        end
-    end)
-end
-
--- Remover todos os boats de Vehicles
-local function removeAllBoats()
-    if not antiBoatsEnabled then return end
-    local vehicles = Workspace:FindFirstChild("Vehicles")
+    local Players = game:GetService("Players")
+    local workspace = game:GetService("Workspace")
+    local vehicles = workspace:FindFirstChild("Vehicles")
     if not vehicles then return end
+    
     for _, vehicle in pairs(vehicles:GetChildren()) do
-        removeVehicleParts(vehicle)
-    end
-end
-
--- Remover helicópteros, canoas e airport
-local function removeAirportHeliAndCanoeParts()
-    if not antiBoatsEnabled then return end
-    local workspaceCom = Workspace:FindFirstChild("WorkspaceCom")
-    if workspaceCom then
-        local airport = workspaceCom:FindFirstChild("001_Airport")
-        if airport then
-            local airportHanger = airport:FindFirstChild("AirportHanger")
-            if airportHanger then airportHanger:Destroy() end
-        end
-
-        local heliStorage = workspaceCom:FindFirstChild("001_HeliStorage")
-        if heliStorage then
-            local policeStationHeli = heliStorage:FindFirstChild("PoliceStationHeli")
-            if policeStationHeli then policeStationHeli:Destroy() end
-        end
-
-        local heliCloneButton = workspaceCom:FindFirstChild("001_HeliCloneButton")
-        if heliCloneButton then heliCloneButton:Destroy() end
-
-        local canoeStorage = workspaceCom:FindFirstChild("001_CanoeStorage")
-        if canoeStorage then canoeStorage:Destroy() end
-
-        local canoeCloneButton = workspaceCom:FindFirstChild("001_CanoeCloneButton")
-        if canoeCloneButton then canoeCloneButton:Destroy() end
-    end
-
-    local model = Workspace:FindFirstChild("Model")
-    if model then
-        local heliSpawnPad = model:FindFirstChild("HeliSpawnPad")
-        if heliSpawnPad then heliSpawnPad:Destroy() end
-    end
-end
-
--- Desabilitar colisão dos players
-local function disableHumanoidBoatCollision(player)
-    if not antiBoatsEnabled then return end
-    local character = player.Character or player.CharacterAdded:Wait()
-    for _, part in pairs(character:GetChildren()) do
-        if part:IsA("BasePart") then
-            part.CanCollide = false
+        -- Verificar se é um boat (pode ajustar essa lógica conforme necessário)
+        if vehicle.Name:lower():find("boat") or vehicle.Name:lower():find("canoe") then
+            -- Ejetar players antes de destruir
+            for _, player in pairs(Players:GetPlayers()) do
+                if player.Character and player.Character:FindFirstChild("Humanoid") then
+                    local humanoid = player.Character.Humanoid
+                    -- Forçar o player a sair do assento
+                    if humanoid.Sit then
+                        humanoid.Sit = false
+                    end
+                    -- Teleportar para longe se estiver muito perto
+                    if player.Character:FindFirstChild("HumanoidRootPart") then
+                        local distance = (player.Character.HumanoidRootPart.Position - vehicle:GetModelCFrame().Position).Magnitude
+                        if distance < 30 then
+                            player.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame + Vector3.new(0, 50, 0)
+                        end
+                    end
+                end
+            end
+            
+            -- Desabilitar colisões e scripts do boat
+            for _, obj in pairs(vehicle:GetDescendants()) do
+                if obj:IsA("Script") or obj:IsA("LocalScript") then
+                    obj.Disabled = true
+                    obj:Destroy()
+                end
+                if obj:IsA("BasePart") then
+                    obj.CanCollide = false
+                    obj.Anchored = true
+                end
+                if obj:IsA("Weld") or obj:IsA("WeldConstraint") or obj:IsA("Motor6D") then
+                    obj:Destroy()
+                end
+            end
+            
+            -- Destruir o boat após um tempo
+            spawn(function()
+                wait(0.5)
+                if vehicle and vehicle.Parent then
+                    vehicle:Destroy()
+                end
+            end)
         end
     end
 end
 
--- Monitor de boats
-local function monitorBoats()
-    local vehicles = Workspace:FindFirstChild("Vehicles")
+-- Função para monitorar novos boats
+local function setupBoatMonitoring()
+    if not antiBoatFlingEnabled then return end
+    
+    local workspace = game:GetService("Workspace")
+    local vehicles = workspace:FindFirstChild("Vehicles")
     if not vehicles then
+        -- Cria a pasta Vehicles se não existir
         vehicles = Instance.new("Folder")
         vehicles.Name = "Vehicles"
-        vehicles.Parent = Workspace
+        vehicles.Parent = workspace
     end
-
-    vehicles.ChildAdded:Connect(function(child)
-        if not antiBoatsEnabled then return end
-        task.wait(0.2)
-        removeVehicleParts(child)
-    end)
-end
-
--- Configura players
-local function setupPlayer(player)
-    player.CharacterAdded:Connect(function()
-        task.wait(1)
-        disableHumanoidBoatCollision(player)
-    end)
-    if player.Character then
-        disableHumanoidBoatCollision(player)
-    end
-end
-
--- Conectar players existentes
-for _, player in pairs(Players:GetPlayers()) do
-    setupPlayer(player)
-end
-Players.PlayerAdded:Connect(setupPlayer)
-
--- Loops principais
-RunService.Heartbeat:Connect(function()
-    if not antiBoatsEnabled then return end
-    local vehicles = Workspace:FindFirstChild("Vehicles")
-    if vehicles then
-        for _, vehicle in pairs(vehicles:GetChildren()) do
-            for _, script in pairs(vehicle:GetDescendants()) do
-                if script:IsA("Script") or script:IsA("LocalScript") then
-                    script.Disabled = true
+    
+    -- Remove boats existentes
+    removeBoats()
+    
+    -- Monitora novos boats sendo adicionados
+    local childAddedConn = vehicles.ChildAdded:Connect(function(child)
+        if not antiBoatFlingEnabled then return end
+        
+        wait(0.1) -- Pequena espera para garantir que o boat foi totalmente carregado
+        
+        -- Verificar se é um boat
+        if child.Name:lower():find("boat") or child.Name:lower():find("canoe") then
+            local Players = game:GetService("Players")
+            -- Ejetar qualquer player que possa estar no boat
+            spawn(function()
+                for _, player in pairs(Players:GetPlayers()) do
+                    if player.Character and player.Character:FindFirstChild("Humanoid") then
+                        player.Character.Humanoid.Sit = false
+                    end
+                end
+            end)
+            
+            -- Desabilitar e remover o boat
+            for _, obj in pairs(child:GetDescendants()) do
+                if obj:IsA("Script") or obj:IsA("LocalScript") then
+                    obj.Disabled = true
+                    obj:Destroy()
+                end
+                if obj:IsA("BasePart") then
+                    obj.CanCollide = false
+                    obj.Anchored = true
                 end
             end
-            for _, part in pairs(vehicle:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = false
+            
+            spawn(function()
+                wait(0.5)
+                if child and child.Parent then
+                    child:Destroy()
+                end
+            end)
+        end
+    end)
+    
+    table.insert(boatConnections, childAddedConn)
+end
+
+-- Função para iniciar o loop de monitoramento
+local function startBoatMonitorLoop()
+    if boatMonitorLoop then return end
+    
+    local RunService = game:GetService("RunService")
+    local Players = game:GetService("Players")
+    
+    boatMonitorLoop = spawn(function()
+        while antiBoatFlingEnabled do
+            wait(2) -- Verifica a cada 2 segundos
+            
+            if antiBoatFlingEnabled then
+                -- Forçar todos os players a saírem de qualquer boat
+                for _, player in pairs(Players:GetPlayers()) do
+                    if player.Character and player.Character:FindFirstChild("Humanoid") then
+                        local humanoid = player.Character.Humanoid
+                        if humanoid.Sit then
+                            humanoid.Sit = false
+                            humanoid.PlatformStand = false
+                        end
+                    end
+                end
+                
+                removeBoats()
+            end
+        end
+    end)
+    
+    -- Loop adicional para monitoramento constante dos boats
+    local constantMonitorLoop = spawn(function()
+        local workspace = game:GetService("Workspace")
+        while antiBoatFlingEnabled do
+            RunService.Heartbeat:Wait()
+            
+            if antiBoatFlingEnabled then
+                local vehicles = workspace:FindFirstChild("Vehicles")
+                if vehicles then
+                    for _, vehicle in pairs(vehicles:GetChildren()) do
+                        if vehicle.Name:lower():find("boat") or vehicle.Name:lower():find("canoe") then
+                            -- Desabilitar qualquer script que ainda esteja rodando
+                            for _, script in pairs(vehicle:GetDescendants()) do
+                                if script:IsA("Script") or script:IsA("LocalScript") then
+                                    script.Disabled = true
+                                end
+                            end
+                            
+                            -- Desabilitar colisões constantemente
+                            for _, part in pairs(vehicle:GetDescendants()) do
+                                if part:IsA("BasePart") then
+                                    part.CanCollide = false
+                                end
+                            end
+                        end
+                    end
                 end
             end
         end
-    end
-end)
+    end)
+end
 
--- Backup loop
-task.spawn(function()
-    while true do
-        task.wait(2)
-        if antiBoatsEnabled then
-            removeAirportHeliAndCanoeParts()
-            removeAllBoats()
+-- Função para limpar conexões
+local function cleanupBoatConnections()
+    for _, connection in ipairs(boatConnections) do
+        if connection then
+            connection:Disconnect()
         end
     end
-end)
+    boatConnections = {}
+    
+    if boatMonitorLoop then
+        boatMonitorLoop = nil
+    end
+end
 
--- Recebe Toggle do Client
-remote.OnServerEvent:Connect(function(player, state)
-    if typeof(state) == "boolean" then
-        antiBoatsEnabled = state
-        if state then
-            print("🔴 Anti-Boats (Anti-Fling) ATIVADO pelo "..player.Name)
-            removeAirportHeliAndCanoeParts()
-            removeAllBoats()
-            monitorBoats()
+MiscTab:AddToggle({
+    Name = "Anti Boat Fling",
+    Description = "Remove todos os boats do jogo",
+    Default = false,
+    Callback = function(Value)
+        antiBoatFlingEnabled = Value
+        
+        cleanupBoatConnections()
+        
+        if Value then
+            -- Ativar sistema anti boat fling
+            setupBoatMonitoring()
+            startBoatMonitorLoop()
         else
-            print("⚪ Anti-Boats (Anti-Fling) DESATIVADO pelo "..player.Name)
+            -- Desativar sistema (boats voltam ao normal quando spawados novamente)
+            antiBoatFlingEnabled = false
         end
     end
-end)
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
