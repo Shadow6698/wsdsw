@@ -1343,553 +1343,288 @@ InfoTab:AddButton({
     end
 })
 
-local Tab1 = Window:MakeTab({"Spoofed Gamepass", "gamepad"})
+local Tab1 = Window:MakeTab({"Scripts fun/legais"})
 
-local Section = Tab1:AddSection({"Aviso: visual apenas pra vc!"})
+local Section = Tab1:AddSection({"contem diversos scripts pra se divertir"})
 
--- TextBox Premium funcional
-Tab1:AddTextBox({
-    Name = "[🟢] Chat como Premium",
-    Description = "Use o chat como se fosse premium",
-    PlaceholderText = "Oi eu sou premium!",
-    Callback = function(Value)
-        local Players = game:GetService("Players")
-        local LocalPlayer = Players.LocalPlayer
-        local chatService = game:GetService("TextChatService")
-
-        if chatService.ChatVersion == Enum.ChatVersion.TextChatService then
-            local msg = ". \r[Premium] " .. LocalPlayer.Name .. ": " .. Value
-            chatService.TextChannels.RBXGeneral:SendAsync(msg)
-        end
-    end
-})
-
--- Botão: Casa Premium 1 (classe alta)
+-- Flash (Velocidade)
 Tab1:AddButton({
-    Name = "[🌟] Casa Premium 1 (casa do classe alta)",
+    Name = "Flash",
+    Description = "Sistema de velocidade super rápida",
     Callback = function()
-        -- Casa do classe alta
-        local targetPosition = Vector3.new(1011, 3, 824)
-        local assetId = 18679403848
-        local Players = game:GetService("Players")
-        local player = Players.LocalPlayer
-
-        local function teleportPlayer(pos)
-            local character = player.Character
-            if character and character:FindFirstChild("HumanoidRootPart") then
-                character.HumanoidRootPart.CFrame = CFrame.new(pos)
-            end
-        end
-
-        local function loadHouseWithOffset(pos, verticalOffset)
-            local success, models = pcall(function()
-                return game:GetObjects("rbxassetid://" .. tostring(assetId))
-            end)
-
-            if not (success and models and #models > 0) then
-                warn("Falha ao carregar asset ID:", assetId)
-                return
-            end
-
-            local house = models[1]
-
-            if not house.PrimaryPart then
-                local primary = house:FindFirstChildWhichIsA("BasePart")
-                if primary then
-                    house.PrimaryPart = primary
-                else
-                    warn("Modelo sem BasePart para definir PrimaryPart.")
-                end
-            end
-
-            if house.PrimaryPart then
-                local originalCFrame = house.PrimaryPart.CFrame
-                local offsetCFrame = originalCFrame * CFrame.new(0, -verticalOffset, 0)
-                local delta = offsetCFrame.Position - originalCFrame.Position
-
-                for _, part in ipairs(house:GetDescendants()) do
-                    if part:IsA("BasePart") then
-                        part.CFrame = part.CFrame + delta
-                    end
-                end
-            end
-
-            house.Parent = workspace
-            house:SetPrimaryPartCFrame(CFrame.new(pos))
-
-            print("Casa carregada com deslocamento vertical de " .. verticalOffset .. " studs.")
-        end
-
-        teleportPlayer(targetPosition)
-        loadHouseWithOffset(targetPosition, 42)
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/Speed-2/main/Main.txt"))()
     end
 })
 
--- Botão: Casa Premium 2 (prédio do rico)
+-- Linux Cmds
 Tab1:AddButton({
-    Name = "[🌟] Casa Premium 2 (prédio do rico)",
+    Name = "Linux Cmds",
+    Description = "Comandos Linux personalizados",
     Callback = function()
-        -- prédio do Rico
-        local targetPosition = Vector3.new(1031, 3, 1028)
-        local assetId = 18679346450
-        local Players = game:GetService("Players")
-        local player = Players.LocalPlayer
-
-        local function teleportPlayer(pos)
-            local character = player.Character
-            if character and character:FindFirstChild("HumanoidRootPart") then
-                character.HumanoidRootPart.CFrame = CFrame.new(pos)
-            end
-        end
-
-        local function loadHouseWithOffset(pos, verticalOffset)
-            local success, models = pcall(function()
-                return game:GetObjects("rbxassetid://" .. tostring(assetId))
-            end)
-
-            if not (success and models and #models > 0) then
-                warn("Falha ao carregar asset ID:", assetId)
-                return
-            end
-
-            local house = models[1]
-
-            if not house.PrimaryPart then
-                local primary = house:FindFirstChildWhichIsA("BasePart")
-                if primary then
-                    house.PrimaryPart = primary
-                else
-                    warn("Modelo sem BasePart para definir PrimaryPart.")
-                end
-            end
-
-            if house.PrimaryPart then
-                local originalCFrame = house.PrimaryPart.CFrame
-                local offsetCFrame = originalCFrame * CFrame.new(0, -verticalOffset, 0)
-                local delta = offsetCFrame.Position - originalCFrame.Position
-
-                for _, part in ipairs(house:GetDescendants()) do
-                    if part:IsA("BasePart") then
-                        part.CFrame = part.CFrame + delta
-                    end
-                end
-            end
-
-            house.Parent = workspace
-            house:SetPrimaryPartCFrame(CFrame.new(pos))
-
-            print("Casa carregada com deslocamento vertical de " .. verticalOffset .. " studs.")
-        end
-
-        teleportPlayer(targetPosition)
-        loadHouseWithOffset(targetPosition, 42)
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/angel-commands/main/Main.txt"))()
     end
 })
 
--- Botão: Spawn Carro Exclusivo
+-- CopyAvatar
 Tab1:AddButton({
-    Name = "[🚗] Spawn Carro Exclusivo",
+    Name = "CopyAvatar",
+    Description = "Use ;copyavatar e o nick do player para copiar avatar",
     Callback = function()
-        -- Exploit Level 7 - Inserir Model RBXAssetId
-        local model = game:GetObjects("rbxassetid://8714153713")[1]
-        model.Parent = workspace
-        model:MoveTo(game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:GetPivot().Position + Vector3.new(0,5,0) or Vector3.zero)
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/copyavatar/refs/heads/main/Main.txt"))()
     end
 })
 
+-- Invisível
+Tab1:AddButton({
+    Name = "Invisivel",
+    Description = "Ficar completamente invisível",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-Avatar-invisible-45072"))()
+    end
+})
 
-local autoTab = Window:MakeTab({ Title = "Autofarm", Icon = "rbxassetid://10734983868" })
+-- Glue (Cola)
+Tab1:AddButton({
+    Name = "Glue",
+    Description = "Sistema de cola para grudar em players",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/gluegui/main/Main.txt"))()
+    end
+})
 
+-- Modo Gigante
+Tab1:AddButton({
+    Name = "Modo Gigante",
+    Description = "Transformar avatar em gigante",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-FE-BIG-AVATAR-43381"))()
+    end
+})
 
-autoTab:AddSection({ "Autofarm" })
-autoTab:AddParagraph({"Não há mais eventos pra autofarm."})
+-- Nameless Admin
+Tab1:AddButton({
+    Name = "Nameless Admin",
+    Description = "Sistema completo de comandos administrativos",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/ltseverydayyou/Nameless-Admin/main/Source.lua"))()
+    end
+})
 
-local shadersTab = Window:MakeTab({ Title = "Shaders (client-sided)", Icon = "rbxassetid://10747382750" })
+-- Linux Hub
+Tab1:AddButton({
+    Name = "Linux Hub",
+    Description = "Hub principal para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/linuxv2/refs/heads/main/Main.txt"))()
+    end
+})
 
-shadersTab:AddSection({ "Shaders" })
-shadersTab:AddParagraph({"Não tem como remover a não ser que reentre."})
-shadersTab:AddButton({"Aplicar Shaders 1", function()
-    -- Aviso: script otimizado, ativação automática sem interface gráfica.
+-- Shnmax Hub
+Tab1:AddButton({
+    Name = "Shnmax Hub",
+    Description = "Hub atualizado para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-SHNMAX-UPDATE-FIX-NO-KEYLESS-48289"))()
+    end
+})
 
-local workspace = game:GetService("Workspace")
-local Lighting = game:GetService("Lighting")
-local RunService = game:GetService("RunService")
-local Debris = game:GetService("Debris")
-local TweenService = game:GetService("TweenService")
-local SoundService = game:GetService("SoundService")
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local model = workspace:FindFirstChild("Model")
+-- FHub
+Tab1:AddButton({
+    Name = "FHub",
+    Description = "Hub funcional para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/OpenSourceEngine/Script/refs/heads/main/Brookhaven.lua"))()
+    end
+})
 
--- Som de ativação
-local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://131644923"
-sound.Volume = 1
-sound.Parent = SoundService
-sound:Play()
+-- Furia Hub
+Tab1:AddButton({
+    Name = "Furia Hub",
+    Description = "Hub Furia para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-FURIA-HUB-47441"))()
+    end
+})
 
--- Aplicar materiais ao mapa
-if model then
-	local function setMat(obj)
-		for _, c in pairs(obj:GetChildren()) do
-			if c:IsA("BasePart") then
-				c.Material = Enum.Material.Basalt
-			elseif c:IsA("Model") or c:IsA("Folder") then
-				setMat(c)
-			end
-		end
-	end
-	if model:FindFirstChild("001_SnowStreet") then
-		setMat(model["001_SnowStreet"])
-	end
-	if model:FindFirstChild("Street") then
-		for _, o in pairs(model.Street:GetDescendants()) do
-			if o:IsA("BasePart") then
-				o.Material = Enum.Material.Basalt
-			end
-		end
-	end
-	for _, o in pairs(model:GetChildren()) do
-		if o:IsA("BasePart") and (o.Name == "Sidewalk" or o.Name == "Wedge") and o.Material == Enum.Material.SmoothPlastic then
-			o.Material = Enum.Material.Cobblestone
-		end
-	end
-	model.ChildAdded:Connect(function(obj)
-		if obj:IsA("BasePart") and (obj.Name == "Sidewalk" or obj.Name == "Wedge") and obj.Material == Enum.Material.SmoothPlastic then
-			obj.Material = Enum.Material.Cobblestone
-		end
-	end)
-end
+-- Gumball Hub
+Tab1:AddButton({
+    Name = "Gumball Hub",
+    Description = "Hub Gumball para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/JaozinScripts/Gumball-Hub/refs/heads/main/GumballHubRetorn2.1.1.1.lua"))()
+    end
+})
 
-local soundPart = Instance.new("Part")
-soundPart.Size = Vector3.new(1,1,1)
-soundPart.Transparency = 1
-soundPart.Anchored = true
-soundPart.CanCollide = false
-soundPart.Parent = workspace
-local character = player.Character or player.CharacterAdded:Wait()
-local hrp = character:WaitForChild("HumanoidRootPart")
+-- Sander X
+Tab1:AddButton({
+    Name = "Sander X",
+    Description = "Hub Sander X para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-Sander-XY-35845"))()
+    end
+})
 
-local birdSound = Instance.new("Sound")
-birdSound.Name = "BirdsSound"
-birdSound.SoundId = "rbxassetid://1237969272"
-birdSound.Looped = true
-birdSound.Volume = 0.05
-birdSound.Parent = soundPart
+-- Chaos Hub
+Tab1:AddButton({
+    Name = "Chaos Hub",
+    Description = "Hub de funcionalidades avançadas",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Venom-devX/ChaosHub/main/loader.lua"))()
+    end
+})
 
-local wolfSound = Instance.new("Sound")
-wolfSound.SoundId = "rbxassetid://6654360741"
-wolfSound.Volume = 0.05
-wolfSound.Looped = false
-wolfSound.Parent = workspace
+-- Rael Hub
+Tab1:AddButton({
+    Name = "Rael Hub",
+    Description = "Hub Rael para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Laelmano24/Rael-Hub/main/main.txt"))()
+    end
+})
 
-RunService.Heartbeat:Connect(function()
-	if hrp and hrp.Parent then
-		soundPart.Position = hrp.Position + Vector3.new(0,10,0)
-	end
-end)
+-- Shadow Hub
+Tab1:AddButton({
+    Name = "Shadow Hub",
+    Description = "Hub Shadow para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/realgengar/scripts/refs/heads/main/Gui%20Version.Lua"))()
+    end
+})
 
-local function isNight()
-	local t = Lighting.ClockTime
-	return (t >= 18 or t <= 6)
-end
+-- IceHub
+Tab1:AddButton({
+    Name = "IceHub (Precisa de Key)",
+    Description = "Hub IceHub com sistema de key",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-Orbit-x-IceHub-Loads-of-features-31605"))()
+    end
+})
 
-task.spawn(function()
-	while true do
-		if isNight() then
-			if birdSound.IsPlaying then birdSound:Stop() end
-			if wolfSound.IsPlaying then wolfSound:Stop() end
-			wolfSound:Play()
-		else
-			if wolfSound.IsPlaying then wolfSound:Stop() end
-			if not birdSound.IsPlaying then birdSound:Play() end
-		end
-		wait(20)
-	end
-end)
+-- Speed Wave
+Tab1:AddButton({
+    Name = "Speed Wave",
+    Description = "Sistema de velocidade para veículos",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/vheiclespeed/main/Main.txt"))()
+    end
+})
 
-local fountainPart = Instance.new("Part")
-fountainPart.Anchored = true
-fountainPart.CanCollide = false
-fountainPart.Transparency = 1
-fountainPart.Size = Vector3.new(1,1,1)
-fountainPart.Position = Vector3.new(-27,19,15)
-fountainPart.Parent = workspace
+-- Duplicator Carros
+Tab1:AddButton({
+    Name = "Duplicator Carros",
+    Description = "Duplicador de carros no Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/kigredns/Flame-Object/refs/heads/main/script.lua"))()
+    end
+})
 
-local attachment = Instance.new("Attachment")
-attachment.Position = Vector3.new(-27,19,15)
-attachment.Parent = fountainPart
+-- Coquette Hub
+Tab1:AddButton({
+    Name = "Coquette Hub",
+    Description = "Hub Coquette para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-Coquette-Hub-41921"))()
+    end
+})
 
-local fountainSound = Instance.new("Sound")
-fountainSound.Name = "FountainSound"
-fountainSound.SoundId = "rbxassetid://4766793559"
-fountainSound.Looped = true
-fountainSound.Volume = 0.03
-fountainSound.EmitterSize = 10
-fountainSound.RollOffMode = Enum.RollOffMode.Linear
-fountainSound.MaxDistance = 100
-fountainSound.Parent = attachment
-fountainSound:Play()
+-- Yin Hub
+Tab1:AddButton({
+    Name = "Yin Hub (executa Ayla Hub)",
+    Description = "Hub Yin/Ayla para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-Yin-Hub-21835"))()
+    end
+})
 
-local customSound = Instance.new("Sound")
-customSound.Name = "MyCustomSound"
-customSound.SoundId = "rbxassetid://9048659736"
-customSound.Volume = 0.01
-customSound.Looped = true
-customSound.PlayOnRemove = false
-customSound.Parent = workspace
-customSound:Play()
+-- SP Hub
+Tab1:AddButton({
+    Name = "SP Hub",
+    Description = "Hub SP para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-SP-Hub-New-Uptade-1o3v-33364"))()
+    end
+})
 
-local active = false
-local stars = {}
-local shootingStarsFolder = Instance.new("Folder",workspace)
-shootingStarsFolder.Name = "ShootingStars"
-local STAR_COUNT = 300
-local SHOOTING_STAR_CHANCE = 0.3
-local SHOOTING_STAR_MAX = 12
-local shootingStarCooldown = 0.1
+-- Brutus Hub
+Tab1:AddButton({
+    Name = "Brutus Hub",
+    Description = "Hub Brutus para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-BRUTUS-HUB-UPDATE-NO-KEY-45004"))()
+    end
+})
 
-local spaceSound = Instance.new("Sound",workspace)
-spaceSound.SoundId = "rbxassetid://1843520836"
-spaceSound.Volume = 0.3
-spaceSound.Looped = true
-spaceSound.Name = "SpaceAmbience"
+-- Nytherune Hub
+Tab1:AddButton({
+    Name = "Nytherune Hub",
+    Description = "Hub Nytherune para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/wx-sources/spacecomm/refs/heads/main/nytheruneplus"))()
+    end
+})
 
-local function createStar()
-	local star = Instance.new("Part")
-	local size = math.random(1,3)*0.5
-	star.Size = Vector3.new(size,size,size)
-	star.Position = Vector3.new(math.random(-1000,1000),math.random(300,700),math.random(-1000,1000))
-	star.Anchored = true
-	star.CanCollide = false
-	star.Material = Enum.Material.Neon
-	local colors = {Color3.fromRGB(255,255,255),Color3.fromRGB(255,255,180),Color3.fromRGB(180,200,255)}
-	star.Color = colors[math.random(1,#colors)]
-	star.Name = "Star"
-	star.Parent = workspace
-	local light = Instance.new("PointLight",star)
-	light.Brightness = 2 + math.random()*1.5
-	light.Range = 12
-	spawn(function()
-		while star.Parent and active do
-			star.Transparency = 0.2 + math.sin(tick()*math.random(2,5))*0.2
-			RunService.Heartbeat:Wait()
-		end
-		if star.Parent then star:Destroy() end
-	end)
-	table.insert(stars,star)
-end
+-- Demon Hub
+Tab1:AddButton({
+    Name = "Demon Hub",
+    Description = "Hub Demon (só abas em português)",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-DemoV-46268"))()
+    end
+})
 
-local function createShootingStar()
-	if not active then return end
-	local startPos = Vector3.new(math.random(-1000,1000),math.random(350,600),math.random(-1000,1000))
-	local dir = Vector3.new(math.random(-1,1),math.random(-0.1,0.1),math.random(-1,1)).Unit
-	local speed = math.random(350,550)
-	local isFire = math.random() <= SHOOTING_STAR_CHANCE
-	local color = isFire and Color3.fromRGB(255,50,50) or Color3.fromRGB(255,255,220)
-	local trailColor = isFire and ColorSequence.new(Color3.fromRGB(255,120,0),Color3.fromRGB(255,230,50)) or ColorSequence.new(Color3.fromRGB(255,255,255),Color3.fromRGB(255,255,180))
-	local star = Instance.new("Part")
-	star.Size = Vector3.new(0.5,0.5,3)
-	star.Position = startPos
-	star.Anchored = true
-	star.CanCollide = false
-	star.Material = Enum.Material.Neon
-	star.Color = color
-	star.Name = "ShootingStar"
-	star.Parent = shootingStarsFolder
-	local att0 = Instance.new("Attachment",star)
-	local att1 = Instance.new("Attachment",star)
-	att1.Position = Vector3.new(0,0,-3)
-	local trail = Instance.new("Trail",star)
-	trail.Attachment0 = att0
-	trail.Attachment1 = att1
-	trail.Lifetime = 0.35
-	trail.Color = trailColor
-	trail.LightEmission = 1
-	trail.WidthScale = NumberSequence.new({NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(1,0)})
-	local light = Instance.new("PointLight",star)
-	light.Brightness = isFire and 12 or 7
-	light.Range = 35
-	light.Color = color
-	if isFire then
-		local fire = Instance.new("Fire",star)
-		fire.Heat = 15
-		fire.Size = 3.5
-		fire.Color = Color3.fromRGB(255,110,0)
-		fire.SecondaryColor = Color3.fromRGB(255,210,0)
-	end
-	local lifetime = math.random(1,1.5)
-	local timePassed = 0
-	local moveConn
-	moveConn = RunService.Heartbeat:Connect(function(dt)
-		if not active then moveConn:Disconnect() if star.Parent then star:Destroy() end return end
-		timePassed += dt
-		if timePassed >= lifetime then moveConn:Disconnect() if star.Parent then star:Destroy() end return end
-		local curve = math.sin(timePassed*20)*0.5
-		star.Position += (dir+Vector3.new(0,curve,0)).Unit*speed*dt
-	end)
-	Debris:AddItem(star,4)
-end
+-- Jeon Hub
+Tab1:AddButton({
+    Name = "Jeon Hub",
+    Description = "Hub Jeon para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-Jeon-26588"))()
+    end
+})
 
-local function updateSky()
-	local hour = Lighting.ClockTime
-	local shouldBeActive = hour >= 18 or hour < 6
-	if shouldBeActive and not active then
-		active = true
-		Lighting.FogColor = Color3.fromRGB(10,10,30)
-		Lighting.FogEnd = 5000
-		Lighting.Brightness = 2
-		for _,s in ipairs(stars) do if s and s.Parent then s:Destroy() end end
-		stars = {}
-		for _,p in ipairs(shootingStarsFolder:GetChildren()) do p:Destroy() end
-		for i=1,STAR_COUNT do createStar() end
-		spaceSound:Play()
-	elseif not shouldBeActive and active then
-		active = false
-		for _,s in ipairs(stars) do if s and s.Parent then s:Destroy() end end
-		stars = {}
-		for _,p in ipairs(shootingStarsFolder:GetChildren()) do p:Destroy() end
-		spaceSound:Stop()
-		Lighting.FogColor = Color3.fromRGB(192,192,192)
-		Lighting.FogEnd = 100000
-		Lighting.Brightness = 2
-	end
-end
+-- UwU Hub
+Tab1:AddButton({
+    Name = "UwU Hub",
+    Description = "Hub UwU para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Execute666j/TESTE/refs/heads/main/zinac%20luraph.txt"))()
+    end
+})
 
-task.spawn(function()
-	while true do
-		if active then
-			for i=1,SHOOTING_STAR_MAX do
-				createShootingStar()
-				task.wait(shootingStarCooldown)
-			end
-		else
-			task.wait(1)
-		end
-	end
-end)
+-- Stelarium Hub v2
+Tab1:AddButton({
+    Name = "Stelarium Hub v2",
+    Description = "Hub Stelarium V2 para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-STELARIUM-HUB-v2-48149"))()
+    end
+})
 
-task.spawn(function()
-	while true do
-		updateSky()
-		task.wait(1)
-	end
-end)
+-- Drip Hub
+Tab1:AddButton({
+    Name = "Drip Hub",
+    Description = "Hub Drip Client para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-Drip-Client-45229"))()
+    end
+})
 
-local rainFolder = Instance.new("Folder",workspace)
-rainFolder.Name = "FakeRain"
-local isRaining = false
+-- Cartola Hub
+Tab1:AddButton({
+    Name = "Cartola Hub",
+    Description = "Hub Cartola para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-Cartola-Hub-47454"))()
+    end
+})
 
-local birds = Instance.new("Sound",SoundService)
-birds.SoundId = "rbxassetid://9111139882"
-birds.Volume = 0.2
-birds.Looped = true
-birds:Play()
-
-local rainSound = Instance.new("Sound",SoundService)
-rainSound.SoundId = "rbxassetid://9118823106"
-rainSound.Volume = 0.3
-rainSound.Looped = true
-rainSound:Play()
-
-local thunder = Instance.new("Sound",SoundService)
-thunder.SoundId = "rbxassetid://9120018695"
-thunder.Volume = 0.4
-
-local function updateBirdSound()
-	birds.Volume = isRaining and 0 or 0.2
-end
-
-local function spawnRain()
-	isRaining = true
-	updateBirdSound()
-	for i=1,120 do
-		local drop = Instance.new("Part")
-		drop.Size = Vector3.new(0.1,2,0.1)
-		drop.Anchored = true
-		drop.CanCollide = false
-		drop.Material = Enum.Material.Glass
-		drop.Transparency = 0.5
-		drop.Color = Color3.fromRGB(160,160,255)
-		drop.Position = Vector3.new(math.random(-150,150),100,math.random(-150,150))
-		drop.Parent = rainFolder
-		local tween = TweenService:Create(drop,TweenInfo.new(1),{Position=drop.Position-Vector3.new(0,60,0)})
-		tween:Play()
-		Debris:AddItem(drop,1.5)
-	end
-	wait(1.5)
-	isRaining = false
-	updateBirdSound()
-end
-
-local function lightningStrike()
-	local flash = Instance.new("Part")
-	flash.Size = Vector3.new(1,1000,1)
-	flash.Anchored = true
-	flash.CanCollide = false
-	flash.Transparency = 0.4
-	flash.Material = Enum.Material.Neon
-	flash.Color = Color3.new(1,1,1)
-	flash.Position = Vector3.new(math.random(-100,100),500,math.random(-100,100))
-	flash.Parent = workspace
-	Lighting.Brightness = Lighting.Brightness + 1.5
-	thunder:Play()
-	wait(0.1)
-	Lighting.Brightness = Lighting.Brightness - 1.5
-	flash:Destroy()
-end
-
-for _,part in pairs(workspace:GetDescendants()) do
-	if part:IsA("BasePart") and part.Material == Enum.Material.SmoothPlastic then
-		part.Reflectance = 0.25
-	end
-end
-
-task.spawn(function()
-	while true do
-		spawnRain()
-		if math.random() < 0.2 then lightningStrike() end
-		wait(1)
-	end
-end)
-
--- Iluminação e ambiente geral
-Lighting.Brightness = 2
-Lighting.GlobalShadows = true
-Lighting.OutdoorAmbient = Color3.fromRGB(70, 70, 70)
-Lighting.FogColor = Color3.fromRGB(120, 130, 140)
-Lighting.FogStart = 80
-Lighting.FogEnd = 600
-Lighting.EnvironmentSpecularScale = 1
-Lighting.EnvironmentDiffuseScale = 0.5
-
-local sky = Instance.new("Sky")
-sky.SkyboxBk = "rbxassetid://159454299"
-sky.SkyboxDn = "rbxassetid://159454296"
-sky.SkyboxFt = "rbxassetid://159454293"
-sky.SkyboxLf = "rbxassetid://159454286"
-sky.SkyboxRt = "rbxassetid://159454300"
-sky.SkyboxUp = "rbxassetid://159454304"
-sky.Parent = Lighting
-
-local color = Instance.new("ColorCorrectionEffect", Lighting)
-color.Brightness = 0.03
-color.Contrast = 0.15
-color.Saturation = 0.05
-color.TintColor = Color3.fromRGB(255, 240, 220)
-
-local bloom = Instance.new("BloomEffect", Lighting)
-bloom.Intensity = 0.8
-bloom.Size = 56
-bloom.Threshold = 0.9
-
-local sunRays = Instance.new("SunRaysEffect", Lighting)
-sunRays.Intensity = 0.05
-sunRays.Spread = 0.8
-
-local blur = Instance.new("BlurEffect", Lighting)
-blur.Size = 0
-end})
+-- RH Hub
+Tab1:AddButton({
+    Name = "RH Hub",
+    Description = "Hub RH para Brookhaven",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-RH-Hub-48490"))()
+    end
+})
 
 local TrollTab = Window:MakeTab({ Title = "Scripts Trolls", Icon = "rbxassetid://13364900349" })
 
