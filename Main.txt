@@ -11225,77 +11225,7 @@ UniversalTab:AddButton({
 
 local MiscTab = Window:MakeTab({ Title = "Protection", Icon = "rbxassetid://6031074219" })
 
--- ====================================
--- ANTI SIT
--- ====================================
-MiscTab:AddSection({ "Anti Sit" })
-local antiSitEnabled = false
-local connections = {}
-local function setupAntiSit(character)
-    if not antiSitEnabled then return end
-    
-    local humanoid = character:WaitForChild("Humanoid")
-    
-    -- Habilita/desabilita o estado de sentar
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, not antiSitEnabled)
-    
-    -- Conexão para quando o personagem tentar sentar
-    local sitConnection = humanoid.StateChanged:Connect(function(_, newState)
-        if antiSitEnabled and newState == Enum.HumanoidStateType.Seated then
-            humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
-        end
-    end)
-    
-    table.insert(connections, sitConnection)
-end
-local function cleanupConnections()
-    for _, connection in ipairs(connections) do
-        connection:Disconnect()
-    end
-    connections = {}
-end
-local function resetSittingState(character)
-    if character then
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
-        end
-    end
-end
-MiscTab:AddToggle({
-    Name = "Anti Sit",
-    Description = "Não Deixa seu personagem Sentar",
-    Default = false,
-    Callback = function(Value)
-        antiSitEnabled = Value
-        local player = game.Players.LocalPlayer
-        
-        cleanupConnections()
-        
-        if Value then
-            -- Conexão para quando o personagem é recarregado
-            local charAddedConn = player.CharacterAdded:Connect(function(character)
-                setupAntiSit(character)
-            end)
-            table.insert(connections, charAddedConn)
-            
-            -- Aplicar ao personagem atual
-            if player.Character then
-                setupAntiSit(player.Character)
-            end
-        else
-            -- Restaurar habilidade de sentar
-            if player.Character then
-                resetSittingState(player.Character)
-            end
-        end
-    end
-})
-
--- ====================================
--- ANTI FLING
--- ====================================
-MiscTab:AddSection({
+ProtectionTab:AddSection({
     Name = "Anti Fling"
 })
 
@@ -11318,126 +11248,7 @@ local function cleanupAntiFlingConnections()
     antiFlingConnections = {}
 end
 
--- Função para remover veículo
-local function removeVehicle(vehicle)
-    if not vehicle or not vehicle.Parent or not antiFlingEnabled then 
-        return 
-    end
-    
-    pcall(function()
-        local Players = game:GetService("Players")
-        
-        -- Ejetar players
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Character and player.Character:FindFirstChild("Humanoid") then
-                player.Character.Humanoid.Sit = false
-                player.Character.Humanoid.PlatformStand = false
-            end
-        end
-        
-        -- Desabilitar scripts e colisões
-        for _, obj in pairs(vehicle:GetDescendants()) do
-            if obj:IsA("Script") or obj:IsA("LocalScript") then
-                obj.Disabled = true
-            elseif obj:IsA("BasePart") then
-                obj.CanCollide = false
-                obj.Anchored = true
-            elseif obj:IsA("Weld") or obj:IsA("WeldConstraint") or obj:IsA("Motor6D") then
-                obj:Destroy()
-            end
-        end
-        
-        -- Remover Body se existir
-        local body = vehicle:FindFirstChild("Body")
-        if body then
-            body:Destroy()
-        end
-        
-        -- Destruir veículo após delay
-        task.spawn(function()
-            task.wait(0.5)
-            if vehicle and vehicle.Parent and antiFlingEnabled then
-                vehicle:Destroy()
-            end
-        end)
-    end)
-end
-
--- Função para limpar workspace
-local function cleanWorkspace()
-    if not antiFlingEnabled then return end
-    
-    pcall(function()
-        local workspace = game:GetService("Workspace")
-        
-        -- Limpar veículos existentes
-        local vehicles = workspace:FindFirstChild("Vehicles")
-        if vehicles then
-            for _, vehicle in pairs(vehicles:GetChildren()) do
-                removeVehicle(vehicle)
-            end
-        end
-        
-        -- Limpar objetos específicos do workspace
-        local workspaceCom = workspace:FindFirstChild("WorkspaceCom")
-        if workspaceCom then
-            local objectsToRemove = {
-                "001_Airport",
-                "001_HeliStorage",
-                "001_HeliCloneButton", 
-                "001_CanoeStorage",
-                "001_CanoeCloneButton"
-            }
-            
-            for _, objName in pairs(objectsToRemove) do
-                local obj = workspaceCom:FindFirstChild(objName)
-                if obj then
-                    obj:Destroy()
-                end
-            end
-        end
-        
-        -- Remover HeliSpawnPad do Model
-        local model = workspace:FindFirstChild("Model")
-        if model then
-            local heliSpawnPad = model:FindFirstChild("HeliSpawnPad")
-            if heliSpawnPad then
-                heliSpawnPad:Destroy()
-            end
-        end
-    end)
-end
-
--- Função para setup do player no Anti-Fling
-local function setupPlayerAntiFling(player)
-    if not antiFlingEnabled or not player then return end
-    
-    local function setupCharacter(character)
-        if not antiFlingEnabled then return end
-        
-        task.wait(1)
-        for _, part in pairs(character:GetChildren()) do
-            if part:IsA("BasePart") then
-                part.CanCollide = false
-            end
-        end
-    end
-    
-    -- Setup character atual
-    if player.Character then
-        setupCharacter(player.Character)
-    end
-    
-    -- Setup para quando character é recarregado
-    local charConn = player.CharacterAdded:Connect(function(character)
-        if antiFlingEnabled then
-            setupCharacter(character)
-        end
-    end)
-    table.insert(antiFlingConnections, charConn)
-end
-
-MiscTab:AddToggle({
+ProtectionTab:AddToggle({
     Name = "Anti Fling Tudo",
     Description = "Anti fling para barco, carro, navio, boat, canoe",
     Default = false,
@@ -11453,15 +11264,130 @@ MiscTab:AddToggle({
         if Value then
             print("Anti-Fling Ativado!")
             
+            -- Função para remover veículo
+            local function removeVehicle(vehicle)
+                if not vehicle or not vehicle.Parent or not antiFlingEnabled then 
+                    return 
+                end
+                
+                pcall(function()
+                    -- Ejetar players
+                    for _, player in pairs(Players:GetPlayers()) do
+                        if player.Character and player.Character:FindFirstChild("Humanoid") then
+                            player.Character.Humanoid.Sit = false
+                            player.Character.Humanoid.PlatformStand = false
+                        end
+                    end
+                    
+                    -- Desabilitar scripts e colisões
+                    for _, obj in pairs(vehicle:GetDescendants()) do
+                        if obj:IsA("Script") or obj:IsA("LocalScript") then
+                            obj.Disabled = true
+                        elseif obj:IsA("BasePart") then
+                            obj.CanCollide = false
+                            obj.Anchored = true
+                        elseif obj:IsA("Weld") or obj:IsA("WeldConstraint") or obj:IsA("Motor6D") then
+                            obj:Destroy()
+                        end
+                    end
+                    
+                    -- Remover Body se existir
+                    local body = vehicle:FindFirstChild("Body")
+                    if body then
+                        body:Destroy()
+                    end
+                    
+                    -- Destruir veículo após delay
+                    task.spawn(function()
+                        task.wait(0.5)
+                        if vehicle and vehicle.Parent and antiFlingEnabled then
+                            vehicle:Destroy()
+                        end
+                    end)
+                end)
+            end
+            
+            -- Função para limpar workspace
+            local function cleanWorkspace()
+                if not antiFlingEnabled then return end
+                
+                pcall(function()
+                    -- Limpar veículos existentes
+                    local vehicles = workspace:FindFirstChild("Vehicles")
+                    if vehicles then
+                        for _, vehicle in pairs(vehicles:GetChildren()) do
+                            removeVehicle(vehicle)
+                        end
+                    end
+                    
+                    -- Limpar objetos específicos do workspace
+                    local workspaceCom = workspace:FindFirstChild("WorkspaceCom")
+                    if workspaceCom then
+                        local objectsToRemove = {
+                            "001_Airport",
+                            "001_HeliStorage",
+                            "001_HeliCloneButton", 
+                            "001_CanoeStorage",
+                            "001_CanoeCloneButton"
+                        }
+                        
+                        for _, objName in pairs(objectsToRemove) do
+                            local obj = workspaceCom:FindFirstChild(objName)
+                            if obj then
+                                obj:Destroy()
+                            end
+                        end
+                    end
+                    
+                    -- Remover HeliSpawnPad do Model
+                    local model = workspace:FindFirstChild("Model")
+                    if model then
+                        local heliSpawnPad = model:FindFirstChild("HeliSpawnPad")
+                        if heliSpawnPad then
+                            heliSpawnPad:Destroy()
+                        end
+                    end
+                end)
+            end
+            
+            -- Função para setup do player
+            local function setupPlayer(player)
+                if not antiFlingEnabled or not player then return end
+                
+                local function setupCharacter(character)
+                    if not antiFlingEnabled then return end
+                    
+                    task.wait(1)
+                    for _, part in pairs(character:GetChildren()) do
+                        if part:IsA("BasePart") then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+                
+                -- Setup character atual
+                if player.Character then
+                    setupCharacter(player.Character)
+                end
+                
+                -- Setup para quando character é recarregado
+                local charConn = player.CharacterAdded:Connect(function(character)
+                    if antiFlingEnabled then
+                        setupCharacter(character)
+                    end
+                end)
+                table.insert(antiFlingConnections, charConn)
+            end
+            
             -- Setup para todos os players atuais
             for _, player in pairs(Players:GetPlayers()) do
-                setupPlayerAntiFling(player)
+                setupPlayer(player)
             end
             
             -- Setup para novos players
             local playerAddedConn = Players.PlayerAdded:Connect(function(player)
                 if antiFlingEnabled then
-                    setupPlayerAntiFling(player)
+                    setupPlayer(player)
                 end
             end)
             table.insert(antiFlingConnections, playerAddedConn)
@@ -11547,6 +11473,75 @@ MiscTab:AddToggle({
                         part.CanCollide = true
                     end
                 end
+            end
+        end
+    end
+})
+
+ProtectionTab:AddSection({ "Anti Sit" })
+
+local antiSitEnabled = false
+local antiSitConnections = {}
+
+local function setupAntiSit(character)
+    if not antiSitEnabled then return end
+    
+    local humanoid = character:WaitForChild("Humanoid")
+    
+    -- Habilita/desabilita o estado de sentar
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, not antiSitEnabled)
+    
+    -- Conexão para quando o personagem tentar sentar
+    local sitConnection = humanoid.StateChanged:Connect(function(_, newState)
+        if antiSitEnabled and newState == Enum.HumanoidStateType.Seated then
+            humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+        end
+    end)
+    
+    table.insert(antiSitConnections, sitConnection)
+end
+
+local function cleanupAntiSitConnections()
+    for _, connection in ipairs(antiSitConnections) do
+        connection:Disconnect()
+    end
+    antiSitConnections = {}
+end
+
+local function resetSittingState(character)
+    if character then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+        end
+    end
+end
+
+ProtectionTab:AddToggle({
+    Name = "Anti Sit",
+    Description = "Não Deixa seu personagem Sentar",
+    Default = false,
+    Callback = function(Value)
+        antiSitEnabled = Value
+        local player = game.Players.LocalPlayer
+        
+        cleanupAntiSitConnections()
+        
+        if Value then
+            -- Conexão para quando o personagem é recarregado
+            local charAddedConn = player.CharacterAdded:Connect(function(character)
+                setupAntiSit(character)
+            end)
+            table.insert(antiSitConnections, charAddedConn)
+            
+            -- Aplicar ao personagem atual
+            if player.Character then
+                setupAntiSit(player.Character)
+            end
+        else
+            -- Restaurar habilidade de sentar
+            if player.Character then
+                resetSittingState(player.Character)
             end
         end
     end
