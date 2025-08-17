@@ -11226,6 +11226,7 @@ UniversalTab:AddButton({
 local MiscTab = Window:MakeTab({ Title = "Protection", Icon = "rbxassetid://6031074219" })
 
 MiscTab:AddSection({ "Anti Sit" })
+
 local antiSitEnabled = false
 local connections = {}
 
