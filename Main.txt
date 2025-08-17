@@ -11228,7 +11228,7 @@ local MiscTab = Window:MakeTab({ Title = "Protection", Icon = "rbxassetid://6031
 MiscTab:AddSection({ "Anti Sit" })
 
 local antiSitEnabled = false
-local connections = {}
+local antiSitConnections = {}
 
 local function setupAntiSit(character)
     if not antiSitEnabled then return end
@@ -11245,14 +11245,14 @@ local function setupAntiSit(character)
         end
     end)
     
-    table.insert(connections, sitConnection)
+    table.insert(antiSitConnections, sitConnection)
 end
 
-local function cleanupConnections()
-    for _, connection in ipairs(connections) do
+local function cleanupAntiSitConnections()
+    for _, connection in ipairs(antiSitConnections) do
         connection:Disconnect()
     end
-    connections = {}
+    antiSitConnections = {}
 end
 
 local function resetSittingState(character)
@@ -11272,14 +11272,14 @@ MiscTab:AddToggle({
         antiSitEnabled = Value
         local player = game.Players.LocalPlayer
         
-        cleanupConnections()
+        cleanupAntiSitConnections()
         
         if Value then
             -- Conexão para quando o personagem é recarregado
             local charAddedConn = player.CharacterAdded:Connect(function(character)
                 setupAntiSit(character)
             end)
-            table.insert(connections, charAddedConn)
+            table.insert(antiSitConnections, charAddedConn)
             
             -- Aplicar ao personagem atual
             if player.Character then
@@ -11297,7 +11297,8 @@ MiscTab:AddToggle({
 MiscTab:AddSection({ "Anti Fling" })
 
 local antiFlingEnabled = false
-local connections = {}
+local antiFlingConnections = {}
+local antiFlingLoops = {}
 
 -- Função para remover todas as partes especificadas de um veículo
 local function removeVehicleParts(vehicle)
@@ -11360,6 +11361,8 @@ end
 
 -- Função para remover partes específicas do aeroporto, helicópteros e canoas
 local function removeAirportHeliAndCanoeParts()
+    if not antiFlingEnabled then return end
+    
     local workspaceCom = workspace:FindFirstChild("WorkspaceCom")
     if workspaceCom then
         -- Remover partes do aeroporto
@@ -11411,6 +11414,8 @@ end
 
 -- Função para remover todos os veículos
 local function removeAllBoats()
+    if not antiFlingEnabled then return end
+    
     local vehicles = workspace:FindFirstChild("Vehicles")
     if not vehicles then return end
     
@@ -11448,7 +11453,7 @@ end
 
 -- Função para desabilitar colisão do humanoid com boats
 local function disableHumanoidBoatCollision(character)
-    if not character then return end
+    if not character or not antiFlingEnabled then return end
     
     -- Desabilita colisão com boats para todas as partes do personagem
     for _, part in pairs(character:GetChildren()) do
@@ -11502,10 +11507,10 @@ local function setupAntiFling(character)
         end)
     end)
     
-    table.insert(connections, vehicleAddedConnection)
+    table.insert(antiFlingConnections, vehicleAddedConnection)
     
     -- Loop de limpeza periódica
-    spawn(function()
+    local periodicLoop = spawn(function()
         while antiFlingEnabled do
             wait(2)
             
@@ -11525,6 +11530,8 @@ local function setupAntiFling(character)
             removeAllBoats()
         end
     end)
+    
+    table.insert(antiFlingLoops, periodicLoop)
     
     -- Monitoramento constante
     local heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
@@ -11559,14 +11566,26 @@ local function setupAntiFling(character)
         end
     end)
     
-    table.insert(connections, heartbeatConnection)
+    table.insert(antiFlingConnections, heartbeatConnection)
 end
 
-local function cleanupConnections()
-    for _, connection in ipairs(connections) do
-        connection:Disconnect()
+local function cleanupAntiFlingConnections()
+    for _, connection in ipairs(antiFlingConnections) do
+        if connection and typeof(connection) == "RBXScriptConnection" then
+            connection:Disconnect()
+        end
     end
-    connections = {}
+    antiFlingConnections = {}
+    
+    -- Parar loops spawn
+    for _, loop in ipairs(antiFlingLoops) do
+        if loop then
+            pcall(function()
+                loop:Close()
+            end)
+        end
+    end
+    antiFlingLoops = {}
 end
 
 local function resetAntiFlingState(character)
@@ -11593,14 +11612,14 @@ MiscTab:AddToggle({
         antiFlingEnabled = Value
         local player = game.Players.LocalPlayer
         
-        cleanupConnections()
+        cleanupAntiFlingConnections()
         
         if Value then
             -- Conexão para quando o personagem é recarregado
             local charAddedConn = player.CharacterAdded:Connect(function(character)
                 setupAntiFling(character)
             end)
-            table.insert(connections, charAddedConn)
+            table.insert(antiFlingConnections, charAddedConn)
             
             -- Aplicar ao personagem atual
             if player.Character then
@@ -11614,9 +11633,6 @@ MiscTab:AddToggle({
         end
     end
 })
-
-
-
 
 
 
