@@ -3100,7 +3100,8 @@ local function createSoundDropdown(title, musicOptions, defaultOption)
     local totalSounds = 0
     
     for category, sounds in pairs(musicOptions) do
-        for _, music in ipairs(sounds) do
+        print("🎵 Processando categoria: " .. category)
+        for i, music in ipairs(sounds) do
             if music.name and music.name ~= "" and music.id and music.id ~= "" and music.id ~= "4354908569" then
                 local displayName = music.name .. " (ID: " .. music.id .. ")"
                 table.insert(musicNames, displayName)
@@ -3111,12 +3112,22 @@ local function createSoundDropdown(title, musicOptions, defaultOption)
     end
     
     print("🎵 Total de sons carregados para " .. title .. ": " .. totalSounds)
+    print("🎵 Primeiros 5 sons: ")
+    for i = 1, math.min(5, #musicNames) do
+        print("  " .. i .. ": " .. musicNames[i])
+    end
+    
+    if #musicNames == 0 then
+        print("❌ ERRO: Nenhum som foi carregado!")
+        return
+    end
     
     local selectedSoundID = nil
     local currentVolume = 1
     local currentPitch = 1
 
     local function playSound(soundId, volume, pitch)
+        print("🎵 Tentando tocar som ID: " .. soundId)
         fireServer("1Gu1nSound1s", {Workspace, soundId, volume})
         local globalSound = Instance.new("Sound")
         globalSound.Parent = Workspace
@@ -3135,14 +3146,16 @@ local function createSoundDropdown(title, musicOptions, defaultOption)
         Title = title,
         Desc = "Escolha um som para tocar no servidor (" .. totalSounds .. " sons disponíveis)",
         Multi = false,
-        Default = {},
+        Default = musicNames[1] or "Nenhum",
         Options = musicNames,
         Callback = function(selectedSound)
+            print("🎵 Dropdown callback chamado com: " .. tostring(selectedSound))
             if selectedSound and categoryMap[selectedSound] then
                 selectedSoundID = categoryMap[selectedSound].id
                 print("🔊 Som selecionado: " .. categoryMap[selectedSound].name .. " (ID: " .. selectedSoundID .. ")")
             else
                 selectedSoundID = nil
+                print("❌ Som não encontrado no mapa")
             end
         end
     })
