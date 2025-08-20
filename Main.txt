@@ -3023,6 +3023,211 @@ local FlashSection = FlashTab:Section({
     TextSize = 17,
 })
 
+-- Flash V2 (Vermelho)
+local flashV2Active = false
+FlashTab:Toggle({
+    Title = "Flash V2",
+    Description = "Modo flash com efeitos vermelhos",
+    Default = false,
+    Callback = function(state)
+        flashV2Active = state
+        
+        local Players = game:GetService("Players")
+        local Lighting = game:GetService("Lighting")
+        local TweenService = game:GetService("TweenService")
+        local RunService = game:GetService("RunService")
+        local Debris = game:GetService("Debris")
+        local Workspace = game:GetService("Workspace")
+
+        local player = Players.LocalPlayer
+        local camera = Workspace.CurrentCamera
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+        local humanoid = character:WaitForChild("Humanoid")
+
+        -- Configurações V2 (Vermelho)
+        local speedMultiplier = flashSpeed or 34
+        local electricTrails = {}
+
+        if state then
+            -- ATIVAR FLASH V2
+            
+            -- POST FX (Vermelho)
+            local blur = Instance.new("BlurEffect", Lighting)
+            blur.Size = 6
+            blur.Enabled = true
+            blur.Name = "FlashV2Blur"
+
+            local colorCorrection = Instance.new("ColorCorrectionEffect", Lighting)
+            colorCorrection.Enabled = true
+            colorCorrection.Contrast = 0.5
+            colorCorrection.Saturation = 0.6
+            colorCorrection.TintColor = Color3.fromRGB(255, 100, 100) -- Vermelho
+            colorCorrection.Name = "FlashV2ColorFX"
+
+            -- Sons
+            local rumble = Instance.new("Sound", humanoidRootPart)
+            rumble.SoundId = "rbxassetid://1837635124"
+            rumble.Looped = true
+            rumble.Volume = 0.8
+            rumble.Name = "FlashV2Rumble"
+            rumble:Play()
+
+            local zap = Instance.new("Sound", humanoidRootPart)
+            zap.SoundId = "rbxassetid://138218317"
+            zap.Volume = 0.6
+            zap.Name = "FlashV2Zap"
+
+            -- Partículas elétricas vermelhas
+            local lightningParticles = Instance.new("ParticleEmitter", humanoidRootPart)
+            lightningParticles.Texture = "rbxassetid://255449862"
+            lightningParticles.Lifetime = NumberRange.new(0.2, 0.5)
+            lightningParticles.Rate = 19
+            lightningParticles.Speed = NumberRange.new(10, 20)
+            lightningParticles.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0))
+            lightningParticles.Name = "FlashV2Lightning"
+            lightningParticles.Enabled = true
+
+            -- Função para criar rastro de velocidade vermelho
+            local function lightningTrail()
+                local a0 = Instance.new("Attachment", humanoidRootPart)
+                local a1 = Instance.new("Attachment", humanoidRootPart)
+                a0.Position = Vector3.new(0, 2, 0)
+                a1.Position = Vector3.new(0, -2, 0)
+
+                local trail = Instance.new("Trail", humanoidRootPart)  
+                trail.Attachment0 = a0  
+                trail.Attachment1 = a1  
+                trail.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0)) -- Vermelho
+                trail.Lifetime = 0.4  
+                trail.WidthScale = NumberSequence.new({  
+                    NumberSequenceKeypoint.new(0, 1.5),   
+                    NumberSequenceKeypoint.new(1, 0)  
+                })  
+                trail.Transparency = NumberSequence.new(0.1)  
+                trail.LightEmission = 1  
+
+                Debris:AddItem(trail, 1.2)  
+                Debris:AddItem(a0, 1.2)  
+                Debris:AddItem(a1, 1.2)
+            end
+
+            -- Criar rastros elétricos vermelhos no corpo
+            local function createElectricTrails()
+                local parts = {
+                    {part = character:FindFirstChild("Head"), offset = Vector3.new(0, 0.4, 0)},
+                    {part = character:FindFirstChild("Left Arm") or character:FindFirstChild("LeftUpperArm"), offset = Vector3.new(0, -0.5, 0)},
+                    {part = character:FindFirstChild("Right Arm") or character:FindFirstChild("RightUpperArm"), offset = Vector3.new(0, -0.5, 0)},
+                    {part = character:FindFirstChild("Left Leg") or character:FindFirstChild("LeftUpperLeg"), offset = Vector3.new(0, -0.5, 0)},
+                    {part = character:FindFirstChild("Right Leg") or character:FindFirstChild("RightUpperLeg"), offset = Vector3.new(0, -0.5, 0)},
+                    {part = humanoidRootPart, offset = Vector3.new(0.5, 1, 0)}
+                }
+                
+                for _, info in ipairs(parts) do  
+                    if info.part then  
+                        local att0 = Instance.new("Attachment", info.part)  
+                        local att1 = Instance.new("Attachment", info.part)  
+                        att0.Position = info.offset  
+                        att1.Position = info.offset + Vector3.new(0, -0.3, 0)  
+                        
+                        local trail = Instance.new("Trail", info.part)  
+                        trail.Attachment0 = att0  
+                        trail.Attachment1 = att1  
+                        trail.Color = ColorSequence.new(Color3.fromRGB(255, 100, 100)) -- Vermelho claro
+                        trail.Lifetime = 0.3  
+                        trail.Transparency = NumberSequence.new(0.2)  
+                        trail.WidthScale = NumberSequence.new(0.4)  
+                        trail.LightEmission = 1  
+                        
+                        table.insert(electricTrails, trail)  
+                        table.insert(electricTrails, att0)  
+                        table.insert(electricTrails, att1)  
+                    end  
+                end
+            end
+
+            createElectricTrails()
+
+            -- Sistema de movimento rápido V2
+            local speedConnection = RunService.RenderStepped:Connect(function()
+                if flashV2Active then
+                    local moveDirection = humanoid.MoveDirection
+                    if moveDirection.Magnitude > 0 then
+                        humanoidRootPart.CFrame = humanoidRootPart.CFrame + (moveDirection * (flashSpeed or 34))
+                        
+                        -- Criar rastros quando se movendo
+                        if math.random() < 0.3 then
+                            lightningTrail()
+                        end
+                        
+                        -- Som ocasional
+                        if zap and not zap.IsPlaying and math.random() < 0.1 then
+                            zap:Play()
+                        end
+                    end
+                end
+            end)
+
+            camera.FieldOfView = 100
+            
+            print("Flash V2 (Vermelho) ATIVADO!")
+        else
+            -- DESATIVAR FLASH V2
+            
+            camera.FieldOfView = 70
+
+            -- Remover efeitos visuais
+            if Lighting:FindFirstChild("FlashV2Blur") then
+                Lighting.FlashV2Blur:Destroy()
+            end
+            if Lighting:FindFirstChild("FlashV2ColorFX") then
+                Lighting.FlashV2ColorFX:Destroy()
+            end
+
+            -- Parar sons
+            if humanoidRootPart:FindFirstChild("FlashV2Rumble") then
+                humanoidRootPart.FlashV2Rumble:Stop()
+                humanoidRootPart.FlashV2Rumble:Destroy()
+            end
+            if humanoidRootPart:FindFirstChild("FlashV2Zap") then
+                humanoidRootPart.FlashV2Zap:Destroy()
+            end
+
+            -- Remover partículas
+            if humanoidRootPart:FindFirstChild("FlashV2Lightning") then
+                humanoidRootPart.FlashV2Lightning:Destroy()
+            end
+
+            -- Remover trails
+            for _, obj in pairs(electricTrails) do
+                if obj and obj.Parent then 
+                    obj:Destroy() 
+                end
+            end
+            electricTrails = {}
+
+            print("Flash V2 (Vermelho) DESATIVADO!")
+        end
+    end
+})
+
+-- Configurador de Velocidade
+local flashSpeed = 34
+FlashTab:TextBox({
+    Title = "Velocidade Flash",
+    Description = "Define a velocidade do Flash ativo (padrão: 34)",
+    PlaceholderText = "34",
+    Callback = function(value)
+        local speed = tonumber(value)
+        if speed and speed > 0 then
+            flashSpeed = speed
+            print("Velocidade Flash definida para: " .. speed)
+        else
+            print("Valor inválido! Use apenas números.")
+        end
+    end
+})
+
 -- Toggle Flash Mode
 local flashModeActive = false
 FlashTab:Toggle({
