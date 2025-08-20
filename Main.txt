@@ -3015,20 +3015,21 @@ MinecraftTab:Button({
 })
 
 -- ==============================
--- FLASH SCRIPTS
+-- FLASH SCRIPTS COMPLETOS
 -- ==============================
-
 local FlashSection = FlashTab:Section({
     Title = "Scripts do Flash",
     TextXAlignment = "Left",
     TextSize = 17,
 })
 
--- Toggle Flash Mode
+-- ==============================
+-- FLASH MODE ORIGINAL (AZUL)
+-- ==============================
 local flashModeActive = false
 FlashTab:Toggle({
-    Title = "Flash Mode",
-    Description = "Ativa modo super velocidade com efeitos visuais",
+    Title = "Flash Mode (Azul)",
+    Description = "Ativa modo super velocidade com efeitos visuais azuis",
     Default = false,
     Callback = function(state)
         flashModeActive = state
@@ -3208,7 +3209,7 @@ FlashTab:Toggle({
             createAllTrails()
             createElectricAura()
             
-            print("Flash Mode ATIVADO!")
+            print("Flash Mode AZUL ATIVADO!")
         else
             -- DESATIVAR
             character = player.Character
@@ -3253,7 +3254,1452 @@ FlashTab:Toggle({
                 player.PlayerGui.FlashScreen:Destroy()
             end
 
-            print("Flash Mode DESATIVADO!")
+            print("Flash Mode AZUL DESATIVADO!")
+        end
+    end
+})
+
+-- ==============================
+-- FLASH MODE V2 (VERMELHO)
+-- ==============================
+local flashV2Active = false
+FlashTab:Toggle({
+    Title = "Flash V2 (Vermelho)",
+    Description = "Flash mais intenso com efeitos vermelhos e velocidade extrema",
+    Default = false,
+    Callback = function(state)
+        flashV2Active = state
+        
+        local Players = game:GetService("Players")
+        local Lighting = game:GetService("Lighting")
+        local TweenService = game:GetService("TweenService")
+        local RunService = game:GetService("RunService")
+        local Workspace = game:GetService("Workspace")
+
+        local player = Players.LocalPlayer
+        local camera = Workspace.CurrentCamera
+
+        -- CONFIGURATION V2
+        local NORMAL_SPEED = 16
+        local BOOSTED_SPEED = 200
+        local NORMAL_JUMP_POWER = 50
+        local BOOSTED_JUMP_POWER = 150
+
+        -- STATE V2
+        local character, humanoid
+        local allTrailsV2 = {}
+        local auraEmittersV2 = {}
+
+        if state then
+            character = player.Character
+            if not character then return end
+            humanoid = character:FindFirstChild("Humanoid")
+            if not humanoid then return end
+
+            -- POST FX VERMELHO
+            local blur = Instance.new("BlurEffect", Lighting)
+            blur.Size = 10
+            blur.Enabled = true
+            blur.Name = "FlashBlurV2"
+
+            local colorCorrection = Instance.new("ColorCorrectionEffect", Lighting)
+            colorCorrection.Enabled = true
+            colorCorrection.Contrast = 0.7
+            colorCorrection.Saturation = 0.8
+            colorCorrection.TintColor = Color3.fromRGB(255, 50, 50)
+            colorCorrection.Name = "FlashColorFXV2"
+
+            -- SOUNDS V2
+            local soundActivate = Instance.new("Sound", Workspace)
+            soundActivate.SoundId = "rbxassetid://139909368044571"
+            soundActivate.Volume = 1.5
+            soundActivate:Play()
+
+            local soundLoop = Instance.new("Sound", Workspace)
+            soundLoop.SoundId = "rbxassetid://127963242920916"
+            soundLoop.Volume = 1.2
+            soundLoop.Looped = true
+            soundLoop.PlaybackSpeed = 0.2
+            soundLoop.Name = "FlashLoopSoundV2"
+            soundLoop:Play()
+
+            -- SPEED V2
+            humanoid.WalkSpeed = BOOSTED_SPEED
+            humanoid.JumpPower = BOOSTED_JUMP_POWER
+            camera.FieldOfView = 110
+
+            -- FLASH SCREEN VERMELHO
+            local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+            gui.IgnoreGuiInset = true
+            gui.ResetOnSpawn = false
+            gui.Name = "FlashScreenV2"
+
+            local frame = Instance.new("Frame", gui)
+            frame.Size = UDim2.new(1, 0, 1, 0)
+            frame.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+            frame.BackgroundTransparency = 1
+            frame.ZIndex = 999
+
+            TweenService:Create(frame, TweenInfo.new(0.03), {BackgroundTransparency = 0.1}):Play()
+            task.wait(0.03)
+            TweenService:Create(frame, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
+            task.delay(0.45, function()
+                if gui then gui:Destroy() end
+            end)
+
+            -- CAMERA SHAKE MAIS INTENSO
+            local start = tick()
+            local conn
+            conn = RunService.RenderStepped:Connect(function()
+                if not flashV2Active then conn:Disconnect() return end
+                if tick() - start > 0.6 then conn:Disconnect() return end
+                local offset = Vector3.new(
+                    (math.random() - 0.5) * 0.5,
+                    (math.random() - 0.5) * 0.5,
+                    0
+                )
+                camera.CFrame = camera.CFrame * CFrame.new(offset)
+            end)
+
+            -- TRAILS VERMELHOS
+            local function createTrailV2(part, offset0, offset1, width)
+                local a0 = Instance.new("Attachment", part)
+                local a1 = Instance.new("Attachment", part)
+                a0.Position = offset0
+                a1.Position = offset1
+
+                local trail = Instance.new("Trail", part)
+                trail.Attachment0 = a0
+                trail.Attachment1 = a1
+                trail.Lifetime = 0.4
+                trail.LightEmission = 1
+                trail.WidthScale = NumberSequence.new(width * 1.5)
+                trail.Color = ColorSequence.new(Color3.fromRGB(255, 0, 50), Color3.fromRGB(255, 100, 100))
+                trail.Transparency = NumberSequence.new{
+                    NumberSequenceKeypoint.new(0, 0.05),
+                    NumberSequenceKeypoint.new(1, 1)
+                }
+
+                table.insert(allTrailsV2, trail)
+            end
+
+            local function createAllTrailsV2()
+                local parts = {
+                    "HumanoidRootPart", "LeftHand", "RightHand", "LeftFoot", "RightFoot",
+                    "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Torso", "Head"
+                }
+
+                local offsetPairs = {
+                    {Vector3.new(0, 0.4, 0), Vector3.new(0, -0.4, 0)},
+                    {Vector3.new(0.15, 0.5, 0), Vector3.new(0.15, -0.5, 0)},
+                    {Vector3.new(-0.15, 0.5, 0), Vector3.new(-0.15, -0.5, 0)},
+                    {Vector3.new(0.2, 0.3, 0.15), Vector3.new(0.2, -0.3, 0.15)},
+                    {Vector3.new(-0.2, 0.3, 0.15), Vector3.new(-0.2, -0.3, 0.15)},
+                    {Vector3.new(0.15, 0, 0.2), Vector3.new(0.15, 0, -0.2)},
+                    {Vector3.new(-0.15, 0, 0.2), Vector3.new(-0.15, 0, -0.2)},
+                }
+
+                for _, name in ipairs(parts) do
+                    local part = character:FindFirstChild(name)
+                    if part then
+                        for i, offsets in ipairs(offsetPairs) do
+                            local width = 0.08 + (i * 0.025)
+                            createTrailV2(part, offsets[1], offsets[2], width)
+                        end
+                    end
+                end
+            end
+
+            -- AURA VERMELHA MAIS INTENSA
+            local function createAuraEmitterV2(part)
+                local attachment = Instance.new("Attachment", part)
+                local particle = Instance.new("ParticleEmitter", attachment)
+
+                particle.Texture = "rbxassetid://3442350629"
+                particle.Rate = 35
+                particle.Lifetime = NumberRange.new(0.3, 0.6)
+                particle.Speed = NumberRange.new(4, 8)
+                particle.VelocitySpread = 360
+                particle.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 1.5), NumberSequenceKeypoint.new(1, 0.6)})
+                particle.LightEmission = 1
+                particle.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.1), NumberSequenceKeypoint.new(1, 1)})
+                particle.Color = ColorSequence.new(Color3.fromRGB(255, 50, 50))
+                particle.ZOffset = 1
+
+                table.insert(auraEmittersV2, attachment)
+            end
+
+            local function createElectricAuraV2()
+                local parts = {
+                    "Head", "HumanoidRootPart", "LeftHand", "RightHand", 
+                    "LeftFoot", "RightFoot", "Left Arm", "Right Arm", "Left Leg", "Right Leg"
+                }
+                for _, name in ipairs(parts) do
+                    local part = character:FindFirstChild(name)
+                    if part then createAuraEmitterV2(part) end
+                end
+            end
+
+            createAllTrailsV2()
+            createElectricAuraV2()
+            
+            print("Flash Mode V2 VERMELHO ATIVADO!")
+        else
+            -- DESATIVAR V2
+            character = player.Character
+            if character then
+                humanoid = character:FindFirstChild("Humanoid")
+                if humanoid then
+                    humanoid.WalkSpeed = NORMAL_SPEED
+                    humanoid.JumpPower = NORMAL_JUMP_POWER
+                end
+            end
+            
+            camera.FieldOfView = 70
+
+            -- Remover efeitos V2
+            if Lighting:FindFirstChild("FlashBlurV2") then
+                Lighting.FlashBlurV2:Destroy()
+            end
+            if Lighting:FindFirstChild("FlashColorFXV2") then
+                Lighting.FlashColorFXV2:Destroy()
+            end
+
+            -- Parar sons V2
+            if Workspace:FindFirstChild("FlashLoopSoundV2") then
+                Workspace.FlashLoopSoundV2:Stop()
+                Workspace.FlashLoopSoundV2:Destroy()
+            end
+
+            -- Remover trails V2
+            for _, trail in ipairs(allTrailsV2) do
+                if trail and trail.Parent then trail:Destroy() end
+            end
+            table.clear(allTrailsV2)
+
+            -- Remover aura V2
+            for _, emitter in ipairs(auraEmittersV2) do
+                if emitter and emitter.Parent then emitter:Destroy() end
+            end
+            table.clear(auraEmittersV2)
+
+            -- Remover GUI V2
+            if player.PlayerGui:FindFirstChild("FlashScreenV2") then
+                player.PlayerGui.FlashScreenV2:Destroy()
+            end
+
+            print("Flash Mode V2 VERMELHO DESATIVADO!")
+        end
+    end
+})
+
+-- ==============================
+-- FLASH MODE V3 (DOURADO)
+-- ==============================
+local flashV3Active = false
+FlashTab:Toggle({
+    Title = "Flash V3 (Dourado)",
+    Description = "Flash supremo com efeitos dourados e poder máximo",
+    Default = false,
+    Callback = function(state)
+        flashV3Active = state
+        
+        local Players = game:GetService("Players")
+        local Lighting = game:GetService("Lighting")
+        local TweenService = game:GetService("TweenService")
+        local RunService = game:GetService("RunService")
+        local Workspace = game:GetService("Workspace")
+
+        local player = Players.LocalPlayer
+        local camera = Workspace.CurrentCamera
+
+        -- CONFIGURATION V3
+        local NORMAL_SPEED = 16
+        local BOOSTED_SPEED = 300
+        local NORMAL_JUMP_POWER = 50
+        local BOOSTED_JUMP_POWER = 200
+
+        -- STATE V3
+        local character, humanoid
+        local allTrailsV3 = {}
+        local auraEmittersV3 = {}
+
+        if state then
+            character = player.Character
+            if not character then return end
+            humanoid = character:FindFirstChild("Humanoid")
+            if not humanoid then return end
+
+            -- POST FX DOURADO
+            local blur = Instance.new("BlurEffect", Lighting)
+            blur.Size = 15
+            blur.Enabled = true
+            blur.Name = "FlashBlurV3"
+
+            local colorCorrection = Instance.new("ColorCorrectionEffect", Lighting)
+            colorCorrection.Enabled = true
+            colorCorrection.Contrast = 1
+            colorCorrection.Saturation = 1
+            colorCorrection.TintColor = Color3.fromRGB(255, 215, 0)
+            colorCorrection.Name = "FlashColorFXV3"
+
+            -- BLOOM EFFECT
+            local bloom = Instance.new("BloomEffect", Lighting)
+            bloom.Enabled = true
+            bloom.Intensity = 2
+            bloom.Size = 30
+            bloom.Threshold = 0.5
+            bloom.Name = "FlashBloomV3"
+
+            -- SOUNDS V3
+            local soundActivate = Instance.new("Sound", Workspace)
+            soundActivate.SoundId = "rbxassetid://139909368044571"
+            soundActivate.Volume = 2
+            soundActivate.PlaybackSpeed = 1.2
+            soundActivate:Play()
+
+            local soundLoop = Instance.new("Sound", Workspace)
+            soundLoop.SoundId = "rbxassetid://127963242920916"
+            soundLoop.Volume = 1.5
+            soundLoop.Looped = true
+            soundLoop.PlaybackSpeed = 0.3
+            soundLoop.Name = "FlashLoopSoundV3"
+            soundLoop:Play()
+
+            -- SPEED V3
+            humanoid.WalkSpeed = BOOSTED_SPEED
+            humanoid.JumpPower = BOOSTED_JUMP_POWER
+            camera.FieldOfView = 120
+
+            -- FLASH SCREEN DOURADO
+            local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+            gui.IgnoreGuiInset = true
+            gui.ResetOnSpawn = false
+            gui.Name = "FlashScreenV3"
+
+            local frame = Instance.new("Frame", gui)
+            frame.Size = UDim2.new(1, 0, 1, 0)
+            frame.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+            frame.BackgroundTransparency = 1
+            frame.ZIndex = 999
+
+            TweenService:Create(frame, TweenInfo.new(0.02), {BackgroundTransparency = 0.05}):Play()
+            task.wait(0.02)
+            TweenService:Create(frame, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+            task.delay(0.55, function()
+                if gui then gui:Destroy() end
+            end)
+
+            -- CAMERA SHAKE SUPREMO
+            local start = tick()
+            local conn
+            conn = RunService.RenderStepped:Connect(function()
+                if not flashV3Active then conn:Disconnect() return end
+                if tick() - start > 0.8 then conn:Disconnect() return end
+                local offset = Vector3.new(
+                    (math.random() - 0.5) * 0.7,
+                    (math.random() - 0.5) * 0.7,
+                    0
+                )
+                camera.CFrame = camera.CFrame * CFrame.new(offset)
+            end)
+
+            -- TRAILS DOURADOS SUPREMOS
+            local function createTrailV3(part, offset0, offset1, width)
+                local a0 = Instance.new("Attachment", part)
+                local a1 = Instance.new("Attachment", part)
+                a0.Position = offset0
+                a1.Position = offset1
+
+                local trail = Instance.new("Trail", part)
+                trail.Attachment0 = a0
+                trail.Attachment1 = a1
+                trail.Lifetime = 0.6
+                trail.LightEmission = 1
+                trail.WidthScale = NumberSequence.new(width * 2)
+                trail.Color = ColorSequence.new(Color3.fromRGB(255, 215, 0), Color3.fromRGB(255, 255, 150))
+                trail.Transparency = NumberSequence.new{
+                    NumberSequenceKeypoint.new(0, 0),
+                    NumberSequenceKeypoint.new(1, 1)
+                }
+
+                table.insert(allTrailsV3, trail)
+            end
+
+            local function createAllTrailsV3()
+                local parts = {
+                    "HumanoidRootPart", "LeftHand", "RightHand", "LeftFoot", "RightFoot",
+                    "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Torso", "Head"
+                }
+
+                local offsetPairs = {
+                    {Vector3.new(0, 0.5, 0), Vector3.new(0, -0.5, 0)},
+                    {Vector3.new(0.2, 0.6, 0), Vector3.new(0.2, -0.6, 0)},
+                    {Vector3.new(-0.2, 0.6, 0), Vector3.new(-0.2, -0.6, 0)},
+                    {Vector3.new(0.25, 0.4, 0.2), Vector3.new(0.25, -0.4, 0.2)},
+                    {Vector3.new(-0.25, 0.4, 0.2), Vector3.new(-0.25, -0.4, 0.2)},
+                    {Vector3.new(0.2, 0, 0.25), Vector3.new(0.2, 0, -0.25)},
+                    {Vector3.new(-0.2, 0, 0.25), Vector3.new(-0.2, 0, -0.25)},
+                }
+
+                for _, name in ipairs(parts) do
+                    local part = character:FindFirstChild(name)
+                    if part then
+                        for i, offsets in ipairs(offsetPairs) do
+                            local width = 0.1 + (i * 0.03)
+                            createTrailV3(part, offsets[1], offsets[2], width)
+                        end
+                    end
+                end
+            end
+
+            -- AURA DOURADA SUPREMA
+            local function createAuraEmitterV3(part)
+                local attachment = Instance.new("Attachment", part)
+                local particle = Instance.new("ParticleEmitter", attachment)
+
+                particle.Texture = "rbxassetid://3442350629"
+                particle.Rate = 50
+                particle.Lifetime = NumberRange.new(0.4, 0.8)
+                particle.Speed = NumberRange.new(5, 10)
+                particle.VelocitySpread = 360
+                particle.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 2), NumberSequenceKeypoint.new(1, 0.8)})
+                particle.LightEmission = 1
+                particle.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.05), NumberSequenceKeypoint.new(1, 1)})
+                particle.Color = ColorSequence.new(Color3.fromRGB(255, 215, 0))
+                particle.ZOffset = 1
+
+                table.insert(auraEmittersV3, attachment)
+            end
+
+            local function createElectricAuraV3()
+                local parts = {
+                    "Head", "HumanoidRootPart", "LeftHand", "RightHand", 
+                    "LeftFoot", "RightFoot", "Left Arm", "Right Arm", "Left Leg", "Right Leg"
+                }
+                for _, name in ipairs(parts) do
+                    local part = character:FindFirstChild(name)
+                    if part then createAuraEmitterV3(part) end
+                end
+            end
+
+            createAllTrailsV3()
+            createElectricAuraV3()
+            
+            print("Flash Mode V3 DOURADO ATIVADO!")
+        else
+            -- DESATIVAR V3
+            character = player.Character
+            if character then
+                humanoid = character:FindFirstChild("Humanoid")
+                if humanoid then
+                    humanoid.WalkSpeed = NORMAL_SPEED
+                    humanoid.JumpPower = NORMAL_JUMP_POWER
+                end
+            end
+            
+            camera.FieldOfView = 70
+
+            -- Remover efeitos V3
+            if Lighting:FindFirstChild("FlashBlurV3") then
+                Lighting.FlashBlurV3:Destroy()
+            end
+            if Lighting:FindFirstChild("FlashColorFXV3") then
+                Lighting.FlashColorFXV3:Destroy()
+            end
+            if Lighting:FindFirstChild("FlashBloomV3") then
+                Lighting.FlashBloomV3:Destroy()
+            end
+
+            -- Parar sons V3
+            if Workspace:FindFirstChild("FlashLoopSoundV3") then
+                Workspace.FlashLoopSoundV3:Stop()
+                Workspace.FlashLoopSoundV3:Destroy()
+            end
+
+            -- Remover trails V3
+            for _, trail in ipairs(allTrailsV3) do
+                if trail and trail.Parent then trail:Destroy() end
+            end
+            table.clear(allTrailsV3)
+
+            -- Remover aura V3
+            for _, emitter in ipairs(auraEmittersV3) do
+                if emitter and emitter.Parent then emitter:Destroy() end
+            end
+            table.clear(auraEmittersV3)
+
+            -- Remover GUI V3
+            if player.PlayerGui:FindFirstChild("FlashScreenV3") then
+                player.PlayerGui.FlashScreenV3:Destroy()
+            end
+
+            print("Flash Mode V3 DOURADO DESATIVADO!")
+        end
+    end
+})
+
+-- ==============================
+-- REVERSE FLASH (ROXO)
+-- ==============================
+local flashReverseActive = false
+FlashTab:Toggle({
+    Title = "Reverse Flash (Roxo)",
+    Description = "Flash reverso com efeitos roxos e velocidade negativa",
+    Default = false,
+    Callback = function(state)
+        flashReverseActive = state
+        
+        local Players = game:GetService("Players")
+        local Lighting = game:GetService("Lighting")
+        local TweenService = game:GetService("TweenService")
+        local RunService = game:GetService("RunService")
+        local Workspace = game:GetService("Workspace")
+
+        local player = Players.LocalPlayer
+        local camera = Workspace.CurrentCamera
+
+        -- CONFIGURATION REVERSE
+        local NORMAL_SPEED = 16
+        local BOOSTED_SPEED = 150
+        local NORMAL_JUMP_POWER = 50
+        local BOOSTED_JUMP_POWER = 120
+
+        -- STATE REVERSE
+        local character, humanoid
+        local allTrailsReverse = {}
+        local auraEmittersReverse = {}
+
+        if state then
+            character = player.Character
+            if not character then return end
+            humanoid = character:FindFirstChild("Humanoid")
+            if not humanoid then return end
+
+            -- POST FX ROXO ESCURO
+            local blur = Instance.new("BlurEffect", Lighting)
+            blur.Size = 8
+            blur.Enabled = true
+            blur.Name = "FlashBlurReverse"
+
+            local colorCorrection = Instance.new("ColorCorrectionEffect", Lighting)
+            colorCorrection.Enabled = true
+            colorCorrection.Contrast = 0.8
+            colorCorrection.Saturation = 0.4
+            colorCorrection.Brightness = -0.2
+            colorCorrection.TintColor = Color3.fromRGB(128, 0, 128)
+            colorCorrection.Name = "FlashColorFXReverse"
+
+            -- SOUNDS REVERSE
+            local soundActivate = Instance.new("Sound", Workspace)
+            soundActivate.SoundId = "rbxassetid://139909368044571"
+            soundActivate.Volume = 1.2
+            soundActivate.PlaybackSpeed = 0.8
+            soundActivate:Play()
+
+            local soundLoop = Instance.new("Sound", Workspace)
+            soundLoop.SoundId = "rbxassetid://127963242920916"
+            soundLoop.Volume = 1.1
+            soundLoop.Looped = true
+            soundLoop.PlaybackSpeed = 0.12
+            soundLoop.Name = "FlashLoopSoundReverse"
+            soundLoop:Play()
+
+            -- SPEED REVERSE
+            humanoid.WalkSpeed = BOOSTED_SPEED
+            humanoid.JumpPower = BOOSTED_JUMP_POWER
+            camera.FieldOfView = 95
+
+            -- FLASH SCREEN ROXO
+            local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+            gui.IgnoreGuiInset = true
+            gui.ResetOnSpawn = false
+            gui.Name = "FlashScreenReverse"
+
+            local frame = Instance.new("Frame", gui)
+            frame.Size = UDim2.new(1, 0, 1, 0)
+            frame.BackgroundColor3 = Color3.fromRGB(75, 0, 130)
+            frame.BackgroundTransparency = 1
+            frame.ZIndex = 999
+
+            TweenService:Create(frame, TweenInfo.new(0.08), {BackgroundTransparency = 0.3}):Play()
+            task.wait(0.08)
+            TweenService:Create(frame, TweenInfo.new(0.6), {BackgroundTransparency = 1}):Play()
+            task.delay(0.7, function()
+                if gui then gui:Destroy() end
+            end)
+
+            -- CAMERA SHAKE REVERSE
+            local start = tick()
+            local conn
+            conn = RunService.RenderStepped:Connect(function()
+                if not flashReverseActive then conn:Disconnect() return end
+                if tick() - start > 0.5 then conn:Disconnect() return end
+                local offset = Vector3.new(
+                    (math.random() - 0.5) * 0.4,
+                    (math.random() - 0.5) * 0.4,
+                    0
+                )
+                camera.CFrame = camera.CFrame * CFrame.new(offset)
+            end)
+
+            -- TRAILS ROXOS REVERSOS
+            local function createTrailReverse(part, offset0, offset1, width)
+                local a0 = Instance.new("Attachment", part)
+                local a1 = Instance.new("Attachment", part)
+                a0.Position = offset0
+                a1.Position = offset1
+
+                local trail = Instance.new("Trail", part)
+                trail.Attachment0 = a0
+                trail.Attachment1 = a1
+                trail.Lifetime = 0.5
+                trail.LightEmission = 0.8
+                trail.WidthScale = NumberSequence.new(width * 1.3)
+                trail.Color = ColorSequence.new(Color3.fromRGB(128, 0, 128), Color3.fromRGB(75, 0, 130))
+                trail.Transparency = NumberSequence.new{
+                    NumberSequenceKeypoint.new(0, 0.2),
+                    NumberSequenceKeypoint.new(1, 1)
+                }
+
+                table.insert(allTrailsReverse, trail)
+            end
+
+            local function createAllTrailsReverse()
+                local parts = {
+                    "HumanoidRootPart", "LeftHand", "RightHand", "LeftFoot", "RightFoot",
+                    "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Torso", "Head"
+                }
+
+                local offsetPairs = {
+                    {Vector3.new(0, 0.35, 0), Vector3.new(0, -0.35, 0)},
+                    {Vector3.new(0.12, 0.45, 0), Vector3.new(0.12, -0.45, 0)},
+                    {Vector3.new(-0.12, 0.45, 0), Vector3.new(-0.12, -0.45, 0)},
+                    {Vector3.new(0.18, 0.25, 0.12), Vector3.new(0.18, -0.25, 0.12)},
+                    {Vector3.new(-0.18, 0.25, 0.12), Vector3.new(-0.18, -0.25, 0.12)},
+                    {Vector3.new(0.12, 0, 0.18), Vector3.new(0.12, 0, -0.18)},
+                    {Vector3.new(-0.12, 0, 0.18), Vector3.new(-0.12, 0, -0.18)},
+                }
+
+                for _, name in ipairs(parts) do
+                    local part = character:FindFirstChild(name)
+                    if part then
+                        for i, offsets in ipairs(offsetPairs) do
+                            local width = 0.06 + (i * 0.022)
+                            createTrailReverse(part, offsets[1], offsets[2], width)
+                        end
+                    end
+                end
+            end
+
+            -- AURA ROXA REVERSE
+            local function createAuraEmitterReverse(part)
+                local attachment = Instance.new("Attachment", part)
+                local particle = Instance.new("ParticleEmitter", attachment)
+
+                particle.Texture = "rbxassetid://3442350629"
+                particle.Rate = 25
+                particle.Lifetime = NumberRange.new(0.35, 0.5)
+                particle.Speed = NumberRange.new(2, 5)
+                particle.VelocitySpread = 360
+                particle.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 1.4), NumberSequenceKeypoint.new(1, 0.5)})
+                particle.LightEmission = 0.8
+                particle.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.2), NumberSequenceKeypoint.new(1, 1)})
+                particle.Color = ColorSequence.new(Color3.fromRGB(128, 0, 128))
+                particle.ZOffset = 1
+
+                table.insert(auraEmittersReverse, attachment)
+            end
+
+            local function createElectricAuraReverse()
+                local parts = {
+                    "Head", "HumanoidRootPart", "LeftHand", "RightHand", 
+                    "LeftFoot", "RightFoot", "Left Arm", "Right Arm", "Left Leg", "Right Leg"
+                }
+                for _, name in ipairs(parts) do
+                    local part = character:FindFirstChild(name)
+                    if part then createAuraEmitterReverse(part) end
+                end
+            end
+
+            createAllTrailsReverse()
+            createElectricAuraReverse()
+            
+            print("Reverse Flash ROXO ATIVADO!")
+        else
+            -- DESATIVAR REVERSE
+            character = player.Character
+            if character then
+                humanoid = character:FindFirstChild("Humanoid")
+                if humanoid then
+                    humanoid.WalkSpeed = NORMAL_SPEED
+                    humanoid.JumpPower = NORMAL_JUMP_POWER
+                end
+            end
+            
+            camera.FieldOfView = 70
+
+            -- Remover efeitos REVERSE
+            if Lighting:FindFirstChild("FlashBlurReverse") then
+                Lighting.FlashBlurReverse:Destroy()
+            end
+            if Lighting:FindFirstChild("FlashColorFXReverse") then
+                Lighting.FlashColorFXReverse:Destroy()
+            end
+
+            -- Parar sons REVERSE
+            if Workspace:FindFirstChild("FlashLoopSoundReverse") then
+                Workspace.FlashLoopSoundReverse:Stop()
+                Workspace.FlashLoopSoundReverse:Destroy()
+            end
+
+            -- Remover trails REVERSE
+            for _, trail in ipairs(allTrailsReverse) do
+                if trail and trail.Parent then trail:Destroy() end
+            end
+            table.clear(allTrailsReverse)
+
+            -- Remover aura REVERSE
+            for _, emitter in ipairs(auraEmittersReverse) do
+                if emitter and emitter.Parent then emitter:Destroy() end
+            end
+            table.clear(auraEmittersReverse)
+
+            -- Remover GUI REVERSE
+            if player.PlayerGui:FindFirstChild("FlashScreenReverse") then
+                player.PlayerGui.FlashScreenReverse:Destroy()
+            end
+
+            print("Reverse Flash ROXO DESATIVADO!")
+        end
+    end
+})
+
+-- ==============================
+-- GODSPEED FLASH (BRANCO)
+-- ==============================
+local flashGodspeedActive = false
+FlashTab:Toggle({
+    Title = "Godspeed Flash (Branco)",
+    Description = "Flash divino com efeitos brancos celestiais",
+    Default = false,
+    Callback = function(state)
+        flashGodspeedActive = state
+        
+        local Players = game:GetService("Players")
+        local Lighting = game:GetService("Lighting")
+        local TweenService = game:GetService("TweenService")
+        local RunService = game:GetService("RunService")
+        local Workspace = game:GetService("Workspace")
+
+        local player = Players.LocalPlayer
+        local camera = Workspace.CurrentCamera
+
+        -- CONFIGURATION GODSPEED
+        local NORMAL_SPEED = 16
+        local BOOSTED_SPEED = 250
+        local NORMAL_JUMP_POWER = 50
+        local BOOSTED_JUMP_POWER = 180
+
+        -- STATE GODSPEED
+        local character, humanoid
+        local allTrailsGodspeed = {}
+        local auraEmittersGodspeed = {}
+
+        if state then
+            character = player.Character
+            if not character then return end
+            humanoid = character:FindFirstChild("Humanoid")
+            if not humanoid then return end
+
+            -- POST FX BRANCO CELESTIAL
+            local blur = Instance.new("BlurEffect", Lighting)
+            blur.Size = 12
+            blur.Enabled = true
+            blur.Name = "FlashBlurGodspeed"
+
+            local colorCorrection = Instance.new("ColorCorrectionEffect", Lighting)
+            colorCorrection.Enabled = true
+            colorCorrection.Contrast = 0.9
+            colorCorrection.Saturation = 0.3
+            colorCorrection.Brightness = 0.3
+            colorCorrection.TintColor = Color3.fromRGB(255, 255, 255)
+            colorCorrection.Name = "FlashColorFXGodspeed"
+
+            -- SUNRAYS EFFECT
+            local sunrays = Instance.new("SunRaysEffect", Lighting)
+            sunrays.Enabled = true
+            sunrays.Intensity = 0.5
+            sunrays.Spread = 1
+            sunrays.Name = "FlashSunraysGodspeed"
+
+            -- SOUNDS GODSPEED
+            local soundActivate = Instance.new("Sound", Workspace)
+            soundActivate.SoundId = "rbxassetid://139909368044571"
+            soundActivate.Volume = 1.8
+            soundActivate.PlaybackSpeed = 1.5
+            soundActivate:Play()
+
+            local soundLoop = Instance.new("Sound", Workspace)
+            soundLoop.SoundId = "rbxassetid://127963242920916"
+            soundLoop.Volume = 1.3
+            soundLoop.Looped = true
+            soundLoop.PlaybackSpeed = 0.25
+            soundLoop.Name = "FlashLoopSoundGodspeed"
+            soundLoop:Play()
+
+            -- SPEED GODSPEED
+            humanoid.WalkSpeed = BOOSTED_SPEED
+            humanoid.JumpPower = BOOSTED_JUMP_POWER
+            camera.FieldOfView = 115
+
+            -- FLASH SCREEN BRANCO
+            local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+            gui.IgnoreGuiInset = true
+            gui.ResetOnSpawn = false
+            gui.Name = "FlashScreenGodspeed"
+
+            local frame = Instance.new("Frame", gui)
+            frame.Size = UDim2.new(1, 0, 1, 0)
+            frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            frame.BackgroundTransparency = 1
+            frame.ZIndex = 999
+
+            TweenService:Create(frame, TweenInfo.new(0.04), {BackgroundTransparency = 0.1}):Play()
+            task.wait(0.04)
+            TweenService:Create(frame, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+            task.delay(0.6, function()
+                if gui then gui:Destroy() end
+            end)
+
+            -- CAMERA SHAKE CELESTIAL
+            local start = tick()
+            local conn
+            conn = RunService.RenderStepped:Connect(function()
+                if not flashGodspeedActive then conn:Disconnect() return end
+                if tick() - start > 0.7 then conn:Disconnect() return end
+                local offset = Vector3.new(
+                    (math.random() - 0.5) * 0.6,
+                    (math.random() - 0.5) * 0.6,
+                    0
+                )
+                camera.CFrame = camera.CFrame * CFrame.new(offset)
+            end)
+
+            -- TRAILS BRANCOS CELESTIAIS
+            local function createTrailGodspeed(part, offset0, offset1, width)
+                local a0 = Instance.new("Attachment", part)
+                local a1 = Instance.new("Attachment", part)
+                a0.Position = offset0
+                a1.Position = offset1
+
+                local trail = Instance.new("Trail", part)
+                trail.Attachment0 = a0
+                trail.Attachment1 = a1
+                trail.Lifetime = 0.7
+                trail.LightEmission = 1
+                trail.WidthScale = NumberSequence.new(width * 1.8)
+                trail.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(200, 200, 255))
+                trail.Transparency = NumberSequence.new{
+                    NumberSequenceKeypoint.new(0, 0),
+                    NumberSequenceKeypoint.new(1, 1)
+                }
+
+                table.insert(allTrailsGodspeed, trail)
+            end
+
+            local function createAllTrailsGodspeed()
+                local parts = {
+                    "HumanoidRootPart", "LeftHand", "RightHand", "LeftFoot", "RightFoot",
+                    "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Torso", "Head"
+                }
+
+                local offsetPairs = {
+                    {Vector3.new(0, 0.6, 0), Vector3.new(0, -0.6, 0)},
+                    {Vector3.new(0.25, 0.7, 0), Vector3.new(0.25, -0.7, 0)},
+                    {Vector3.new(-0.25, 0.7, 0), Vector3.new(-0.25, -0.7, 0)},
+                    {Vector3.new(0.3, 0.5, 0.25), Vector3.new(0.3, -0.5, 0.25)},
+                    {Vector3.new(-0.3, 0.5, 0.25), Vector3.new(-0.3, -0.5, 0.25)},
+                    {Vector3.new(0.25, 0, 0.3), Vector3.new(0.25, 0, -0.3)},
+                    {Vector3.new(-0.25, 0, 0.3), Vector3.new(-0.25, 0, -0.3)},
+                }
+
+                for _, name in ipairs(parts) do
+                    local part = character:FindFirstChild(name)
+                    if part then
+                        for i, offsets in ipairs(offsetPairs) do
+                            local width = 0.12 + (i * 0.035)
+                            createTrailGodspeed(part, offsets[1], offsets[2], width)
+                        end
+                    end
+                end
+            end
+
+            -- AURA BRANCA CELESTIAL
+            local function createAuraEmitterGodspeed(part)
+                local attachment = Instance.new("Attachment", part)
+                local particle = Instance.new("ParticleEmitter", attachment)
+
+                particle.Texture = "rbxassetid://3442350629"
+                particle.Rate = 40
+                particle.Lifetime = NumberRange.new(0.5, 0.9)
+                particle.Speed = NumberRange.new(6, 12)
+                particle.VelocitySpread = 360
+                particle.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 2.2), NumberSequenceKeypoint.new(1, 1)})
+                particle.LightEmission = 1
+                particle.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(1, 1)})
+                particle.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255))
+                particle.ZOffset = 1
+
+                table.insert(auraEmittersGodspeed, attachment)
+            end
+
+            local function createElectricAuraGodspeed()
+                local parts = {
+                    "Head", "HumanoidRootPart", "LeftHand", "RightHand", 
+                    "LeftFoot", "RightFoot", "Left Arm", "Right Arm", "Left Leg", "Right Leg"
+                }
+                for _, name in ipairs(parts) do
+                    local part = character:FindFirstChild(name)
+                    if part then createAuraEmitterGodspeed(part) end
+                end
+            end
+
+            createAllTrailsGodspeed()
+            createElectricAuraGodspeed()
+            
+            print("Godspeed Flash BRANCO ATIVADO!")
+        else
+            -- DESATIVAR GODSPEED
+            character = player.Character
+            if character then
+                humanoid = character:FindFirstChild("Humanoid")
+                if humanoid then
+                    humanoid.WalkSpeed = NORMAL_SPEED
+                    humanoid.JumpPower = NORMAL_JUMP_POWER
+                end
+            end
+            
+            camera.FieldOfView = 70
+
+            -- Remover efeitos GODSPEED
+            if Lighting:FindFirstChild("FlashBlurGodspeed") then
+                Lighting.FlashBlurGodspeed:Destroy()
+            end
+            if Lighting:FindFirstChild("FlashColorFXGodspeed") then
+                Lighting.FlashColorFXGodspeed:Destroy()
+            end
+            if Lighting:FindFirstChild("FlashSunraysGodspeed") then
+                Lighting.FlashSunraysGodspeed:Destroy()
+            end
+
+            -- Parar sons GODSPEED
+            if Workspace:FindFirstChild("FlashLoopSoundGodspeed") then
+                Workspace.FlashLoopSoundGodspeed:Stop()
+                Workspace.FlashLoopSoundGodspeed:Destroy()
+            end
+
+            -- Remover trails GODSPEED
+            for _, trail in ipairs(allTrailsGodspeed) do
+                if trail and trail.Parent then trail:Destroy() end
+            end
+            table.clear(allTrailsGodspeed)
+
+            -- Remover aura GODSPEED
+            for _, emitter in ipairs(auraEmittersGodspeed) do
+                if emitter and emitter.Parent then emitter:Destroy() end
+            end
+            table.clear(auraEmittersGodspeed)
+
+            -- Remover GUI GODSPEED
+            if player.PlayerGui:FindFirstChild("FlashScreenGodspeed") then
+                player.PlayerGui.FlashScreenGodspeed:Destroy()
+            end
+
+            print("Godspeed Flash BRANCO DESATIVADO!")
+        end
+    end
+})
+
+-- ==============================
+-- FLASH NEGRO (PRETO/CINZA)
+-- ==============================
+local flashNegroActive = false
+FlashTab:Toggle({
+    Title = "Flash Negro (Preto)",
+    Description = "Flash sombrio com efeitos escuros e stealth",
+    Default = false,
+    Callback = function(state)
+        flashNegroActive = state
+        
+        local Players = game:GetService("Players")
+        local Lighting = game:GetService("Lighting")
+        local TweenService = game:GetService("TweenService")
+        local RunService = game:GetService("RunService")
+        local Workspace = game:GetService("Workspace")
+
+        local player = Players.LocalPlayer
+        local camera = Workspace.CurrentCamera
+
+        -- CONFIGURATION NEGRO
+        local NORMAL_SPEED = 16
+        local BOOSTED_SPEED = 180
+        local NORMAL_JUMP_POWER = 50
+        local BOOSTED_JUMP_POWER = 140
+
+        -- STATE NEGRO
+        local character, humanoid
+        local allTrailsNegro = {}
+        local auraEmittersNegro = {}
+
+        if state then
+            character = player.Character
+            if not character then return end
+            humanoid = character:FindFirstChild("Humanoid")
+            if not humanoid then return end
+
+            -- POST FX ESCURO
+            local blur = Instance.new("BlurEffect", Lighting)
+            blur.Size = 9
+            blur.Enabled = true
+            blur.Name = "FlashBlurNegro"
+
+            local colorCorrection = Instance.new("ColorCorrectionEffect", Lighting)
+            colorCorrection.Enabled = true
+            colorCorrection.Contrast = 1.2
+            colorCorrection.Saturation = 0.2
+            colorCorrection.Brightness = -0.4
+            colorCorrection.TintColor = Color3.fromRGB(30, 30, 30)
+            colorCorrection.Name = "FlashColorFXNegro"
+
+            -- SOUNDS NEGRO
+            local soundActivate = Instance.new("Sound", Workspace)
+            soundActivate.SoundId = "rbxassetid://139909368044571"
+            soundActivate.Volume = 1.3
+            soundActivate.PlaybackSpeed = 0.7
+            soundActivate:Play()
+
+            local soundLoop = Instance.new("Sound", Workspace)
+            soundLoop.SoundId = "rbxassetid://127963242920916"
+            soundLoop.Volume = 1
+            soundLoop.Looped = true
+            soundLoop.PlaybackSpeed = 0.18
+            soundLoop.Name = "FlashLoopSoundNegro"
+            soundLoop:Play()
+
+            -- SPEED NEGRO
+            humanoid.WalkSpeed = BOOSTED_SPEED
+            humanoid.JumpPower = BOOSTED_JUMP_POWER
+            camera.FieldOfView = 105
+
+            -- FLASH SCREEN PRETO
+            local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+            gui.IgnoreGuiInset = true
+            gui.ResetOnSpawn = false
+            gui.Name = "FlashScreenNegro"
+
+            local frame = Instance.new("Frame", gui)
+            frame.Size = UDim2.new(1, 0, 1, 0)
+            frame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+            frame.BackgroundTransparency = 1
+            frame.ZIndex = 999
+
+            TweenService:Create(frame, TweenInfo.new(0.06), {BackgroundTransparency = 0.4}):Play()
+            task.wait(0.06)
+            TweenService:Create(frame, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
+            task.delay(0.5, function()
+                if gui then gui:Destroy() end
+            end)
+
+            -- CAMERA SHAKE SOMBRIO
+            local start = tick()
+            local conn
+            conn = RunService.RenderStepped:Connect(function()
+                if not flashNegroActive then conn:Disconnect() return end
+                if tick() - start > 0.6 then conn:Disconnect() return end
+                local offset = Vector3.new(
+                    (math.random() - 0.5) * 0.45,
+                    (math.random() - 0.5) * 0.45,
+                    0
+                )
+                camera.CFrame = camera.CFrame * CFrame.new(offset)
+            end)
+
+            -- TRAILS NEGROS/CINZAS
+            local function createTrailNegro(part, offset0, offset1, width)
+                local a0 = Instance.new("Attachment", part)
+                local a1 = Instance.new("Attachment", part)
+                a0.Position = offset0
+                a1.Position = offset1
+
+                local trail = Instance.new("Trail", part)
+                trail.Attachment0 = a0
+                trail.Attachment1 = a1
+                trail.Lifetime = 0.55
+                trail.LightEmission = 0.6
+                trail.WidthScale = NumberSequence.new(width * 1.4)
+                trail.Color = ColorSequence.new(Color3.fromRGB(50, 50, 50), Color3.fromRGB(100, 100, 100))
+                trail.Transparency = NumberSequence.new{
+                    NumberSequenceKeypoint.new(0, 0.15),
+                    NumberSequenceKeypoint.new(1, 1)
+                }
+
+                table.insert(allTrailsNegro, trail)
+            end
+
+            local function createAllTrailsNegro()
+                local parts = {
+                    "HumanoidRootPart", "LeftHand", "RightHand", "LeftFoot", "RightFoot",
+                    "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Torso", "Head"
+                }
+
+                local offsetPairs = {
+                    {Vector3.new(0, 0.38, 0), Vector3.new(0, -0.38, 0)},
+                    {Vector3.new(0.14, 0.48, 0), Vector3.new(0.14, -0.48, 0)},
+                    {Vector3.new(-0.14, 0.48, 0), Vector3.new(-0.14, -0.48, 0)},
+                    {Vector3.new(0.19, 0.28, 0.14), Vector3.new(0.19, -0.28, 0.14)},
+                    {Vector3.new(-0.19, 0.28, 0.14), Vector3.new(-0.19, -0.28, 0.14)},
+                    {Vector3.new(0.14, 0, 0.19), Vector3.new(0.14, 0, -0.19)},
+                    {Vector3.new(-0.14, 0, 0.19), Vector3.new(-0.14, 0, -0.19)},
+                }
+
+                for _, name in ipairs(parts) do
+                    local part = character:FindFirstChild(name)
+                    if part then
+                        for i, offsets in ipairs(offsetPairs) do
+                            local width = 0.07 + (i * 0.024)
+                            createTrailNegro(part, offsets[1], offsets[2], width)
+                        end
+                    end
+                end
+            end
+
+            -- AURA NEGRA/CINZA
+            local function createAuraEmitterNegro(part)
+                local attachment = Instance.new("Attachment", part)
+                local particle = Instance.new("ParticleEmitter", attachment)
+
+                particle.Texture = "rbxassetid://3442350629"
+                particle.Rate = 30
+                particle.Lifetime = NumberRange.new(0.4, 0.7)
+                particle.Speed = NumberRange.new(3, 7)
+                particle.VelocitySpread = 360
+                particle.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 1.6), NumberSequenceKeypoint.new(1, 0.7)})
+                particle.LightEmission = 0.6
+                particle.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.3), NumberSequenceKeypoint.new(1, 1)})
+                particle.Color = ColorSequence.new(Color3.fromRGB(70, 70, 70))
+                particle.ZOffset = 1
+
+                table.insert(auraEmittersNegro, attachment)
+            end
+
+            local function createElectricAuraNegro()
+                local parts = {
+                    "Head", "HumanoidRootPart", "LeftHand", "RightHand", 
+                    "LeftFoot", "RightFoot", "Left Arm", "Right Arm", "Left Leg", "Right Leg"
+                }
+                for _, name in ipairs(parts) do
+                    local part = character:FindFirstChild(name)
+                    if part then createAuraEmitterNegro(part) end
+                end
+            end
+
+            createAllTrailsNegro()
+            createElectricAuraNegro()
+            
+            print("Flash Negro PRETO ATIVADO!")
+        else
+            -- DESATIVAR NEGRO
+            character = player.Character
+            if character then
+                humanoid = character:FindFirstChild("Humanoid")
+                if humanoid then
+                    humanoid.WalkSpeed = NORMAL_SPEED
+                    humanoid.JumpPower = NORMAL_JUMP_POWER
+                end
+            end
+            
+            camera.FieldOfView = 70
+
+            -- Remover efeitos NEGRO
+            if Lighting:FindFirstChild("FlashBlurNegro") then
+                Lighting.FlashBlurNegro:Destroy()
+            end
+            if Lighting:FindFirstChild("FlashColorFXNegro") then
+                Lighting.FlashColorFXNegro:Destroy()
+            end
+
+            -- Parar sons NEGRO
+            if Workspace:FindFirstChild("FlashLoopSoundNegro") then
+                Workspace.FlashLoopSoundNegro:Stop()
+                Workspace.FlashLoopSoundNegro:Destroy()
+            end
+
+            -- Remover trails NEGRO
+            for _, trail in ipairs(allTrailsNegro) do
+                if trail and trail.Parent then trail:Destroy() end
+            end
+            table.clear(allTrailsNegro)
+
+            -- Remover aura NEGRO
+            for _, emitter in ipairs(auraEmittersNegro) do
+                if emitter and emitter.Parent then emitter:Destroy() end
+            end
+            table.clear(auraEmittersNegro)
+
+            -- Remover GUI NEGRO
+            if player.PlayerGui:FindFirstChild("FlashScreenNegro") then
+                player.PlayerGui.FlashScreenNegro:Destroy()
+            end
+
+            print("Flash Negro PRETO DESATIVADO!")
+        end
+    end
+})
+
+-- ==============================
+-- ZOOM FLASH (VERDE NEON)
+-- ==============================
+local flashZoomActive = false
+FlashTab:Toggle({
+    Title = "Zoom Flash (Verde)",
+    Description = "Flash com velocidade extrema e efeitos verdes neon",
+    Default = false,
+    Callback = function(state)
+        flashZoomActive = state
+        
+        local Players = game:GetService("Players")
+        local Lighting = game:GetService("Lighting")
+        local TweenService = game:GetService("TweenService")
+        local RunService = game:GetService("RunService")
+        local Workspace = game:GetService("Workspace")
+
+        local player = Players.LocalPlayer
+        local camera = Workspace.CurrentCamera
+
+        -- CONFIGURATION ZOOM
+        local NORMAL_SPEED = 16
+        local BOOSTED_SPEED = 400  -- Velocidade extrema
+        local NORMAL_JUMP_POWER = 50
+        local BOOSTED_JUMP_POWER = 250
+
+        -- STATE ZOOM
+        local character, humanoid
+        local allTrailsZoom = {}
+        local auraEmittersZoom = {}
+
+        if state then
+            character = player.Character
+            if not character then return end
+            humanoid = character:FindFirstChild("Humanoid")
+            if not humanoid then return end
+
+            -- POST FX VERDE NEON
+            local blur = Instance.new("BlurEffect", Lighting)
+            blur.Size = 20  -- Blur máximo
+            blur.Enabled = true
+            blur.Name = "FlashBlurZoom"
+
+            local colorCorrection = Instance.new("ColorCorrectionEffect", Lighting)
+            colorCorrection.Enabled = true
+            colorCorrection.Contrast = 1.1
+            colorCorrection.Saturation = 1.2
+            colorCorrection.Brightness = 0.1
+            colorCorrection.TintColor = Color3.fromRGB(0, 255, 100)  -- Verde neon
+            colorCorrection.Name = "FlashColorFXZoom"
+
+            -- BLOOM EFFECT VERDE
+            local bloom = Instance.new("BloomEffect", Lighting)
+            bloom.Enabled = true
+            bloom.Intensity = 3
+            bloom.Size = 40
+            bloom.Threshold = 0.3
+            bloom.Name = "FlashBloomZoom"
+
+            -- SOUNDS ZOOM
+            local soundActivate = Instance.new("Sound", Workspace)
+            soundActivate.SoundId = "rbxassetid://139909368044571"
+            soundActivate.Volume = 2.2
+            soundActivate.PlaybackSpeed = 1.8  -- Super agudo
+            soundActivate:Play()
+
+            local soundLoop = Instance.new("Sound", Workspace)
+            soundLoop.SoundId = "rbxassetid://127963242920916"
+            soundLoop.Volume = 1.6
+            soundLoop.Looped = true
+            soundLoop.PlaybackSpeed = 0.4
+            soundLoop.Name = "FlashLoopSoundZoom"
+            soundLoop:Play()
+
+            -- SPEED ZOOM
+            humanoid.WalkSpeed = BOOSTED_SPEED
+            humanoid.JumpPower = BOOSTED_JUMP_POWER
+            camera.FieldOfView = 140  -- FOV extremo
+
+            -- FLASH SCREEN VERDE
+            local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+            gui.IgnoreGuiInset = true
+            gui.ResetOnSpawn = false
+            gui.Name = "FlashScreenZoom"
+
+            local frame = Instance.new("Frame", gui)
+            frame.Size = UDim2.new(1, 0, 1, 0)
+            frame.BackgroundColor3 = Color3.fromRGB(0, 255, 100)  -- Verde neon
+            frame.BackgroundTransparency = 1
+            frame.ZIndex = 999
+
+            TweenService:Create(frame, TweenInfo.new(0.01), {BackgroundTransparency = 0.03}):Play()
+            task.wait(0.01)
+            TweenService:Create(frame, TweenInfo.new(0.6), {BackgroundTransparency = 1}):Play()
+            task.delay(0.65, function()
+                if gui then gui:Destroy() end
+            end)
+
+            -- CAMERA SHAKE EXTREMO
+            local start = tick()
+            local conn
+            conn = RunService.RenderStepped:Connect(function()
+                if not flashZoomActive then conn:Disconnect() return end
+                if tick() - start > 1 then conn:Disconnect() return end
+                local offset = Vector3.new(
+                    (math.random() - 0.5) * 0.9,  -- Shake extremo
+                    (math.random() - 0.5) * 0.9,
+                    0
+                )
+                camera.CFrame = camera.CFrame * CFrame.new(offset)
+            end)
+
+            -- TRAILS VERDES EXTREMOS
+            local function createTrailZoom(part, offset0, offset1, width)
+                local a0 = Instance.new("Attachment", part)
+                local a1 = Instance.new("Attachment", part)
+                a0.Position = offset0
+                a1.Position = offset1
+
+                local trail = Instance.new("Trail", part)
+                trail.Attachment0 = a0
+                trail.Attachment1 = a1
+                trail.Lifetime = 0.8  -- Dura muito
+                trail.LightEmission = 1
+                trail.WidthScale = NumberSequence.new(width * 2.5)  -- Muito largo
+                trail.Color = ColorSequence.new(Color3.fromRGB(0, 255, 100), Color3.fromRGB(50, 255, 150))
+                trail.Transparency = NumberSequence.new{
+                    NumberSequenceKeypoint.new(0, 0),
+                    NumberSequenceKeypoint.new(1, 1)
+                }
+
+                table.insert(allTrailsZoom, trail)
+            end
+
+            local function createAllTrailsZoom()
+                local parts = {
+                    "HumanoidRootPart", "LeftHand", "RightHand", "LeftFoot", "RightFoot",
+                    "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Torso", "Head"
+                }
+
+                local offsetPairs = {
+                    {Vector3.new(0, 0.7, 0), Vector3.new(0, -0.7, 0)},
+                    {Vector3.new(0.3, 0.8, 0), Vector3.new(0.3, -0.8, 0)},
+                    {Vector3.new(-0.3, 0.8, 0), Vector3.new(-0.3, -0.8, 0)},
+                    {Vector3.new(0.35, 0.6, 0.3), Vector3.new(0.35, -0.6, 0.3)},
+                    {Vector3.new(-0.35, 0.6, 0.3), Vector3.new(-0.35, -0.6, 0.3)},
+                    {Vector3.new(0.3, 0, 0.35), Vector3.new(0.3, 0, -0.35)},
+                    {Vector3.new(-0.3, 0, 0.35), Vector3.new(-0.3, 0, -0.35)},
+                }
+
+                for _, name in ipairs(parts) do
+                    local part = character:FindFirstChild(name)
+                    if part then
+                        for i, offsets in ipairs(offsetPairs) do
+                            local width = 0.15 + (i * 0.04)  -- Trails enormes
+                            createTrailZoom(part, offsets[1], offsets[2], width)
+                        end
+                    end
+                end
+            end
+
+            -- AURA VERDE EXTREMA
+            local function createAuraEmitterZoom(part)
+                local attachment = Instance.new("Attachment", part)
+                local particle = Instance.new("ParticleEmitter", attachment)
+
+                particle.Texture = "rbxassetid://3442350629"
+                particle.Rate = 60  -- Muitas partículas
+                particle.Lifetime = NumberRange.new(0.6, 1)
+                particle.Speed = NumberRange.new(8, 15)
+                particle.VelocitySpread = 360
+                particle.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 2.5), NumberSequenceKeypoint.new(1, 1.2)})
+                particle.LightEmission = 1
+                particle.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(1, 1)})
+                particle.Color = ColorSequence.new(Color3.fromRGB(0, 255, 100))
+                particle.ZOffset = 1
+
+                table.insert(auraEmittersZoom, attachment)
+            end
+
+            local function createElectricAuraZoom()
+                local parts = {
+                    "Head", "HumanoidRootPart", "LeftHand", "RightHand", 
+                    "LeftFoot", "RightFoot", "Left Arm", "Right Arm", "Left Leg", "Right Leg"
+                }
+                for _, name in ipairs(parts) do
+                    local part = character:FindFirstChild(name)
+                    if part then createAuraEmitterZoom(part) end
+                end
+            end
+
+            createAllTrailsZoom()
+            createElectricAuraZoom()
+            
+            print("Zoom Flash VERDE ATIVADO!")
+        else
+            -- DESATIVAR ZOOM
+            character = player.Character
+            if character then
+                humanoid = character:FindFirstChild("Humanoid")
+                if humanoid then
+                    humanoid.WalkSpeed = NORMAL_SPEED
+                    humanoid.JumpPower = NORMAL_JUMP_POWER
+                end
+            end
+            
+            camera.FieldOfView = 70
+
+            -- Remover efeitos ZOOM
+            if Lighting:FindFirstChild("FlashBlurZoom") then
+                Lighting.FlashBlurZoom:Destroy()
+            end
+            if Lighting:FindFirstChild("FlashColorFXZoom") then
+                Lighting.FlashColorFXZoom:Destroy()
+            end
+            if Lighting:FindFirstChild("FlashBloomZoom") then
+                Lighting.FlashBloomZoom:Destroy()
+            end
+
+            -- Parar sons ZOOM
+            if Workspace:FindFirstChild("FlashLoopSoundZoom") then
+                Workspace.FlashLoopSoundZoom:Stop()
+                Workspace.FlashLoopSoundZoom:Destroy()
+            end
+
+            -- Remover trails ZOOM
+            for _, trail in ipairs(allTrailsZoom) do
+                if trail and trail.Parent then trail:Destroy() end
+            end
+            table.clear(allTrailsZoom)
+
+            -- Remover aura ZOOM
+            for _, emitter in ipairs(auraEmittersZoom) do
+                if emitter and emitter.Parent then emitter:Destroy() end
+            end
+            table.clear(auraEmittersZoom)
+
+            -- Remover GUI ZOOM
+            if player.PlayerGui:FindFirstChild("FlashScreenZoom") then
+                player.PlayerGui.FlashScreenZoom:Destroy()
+            end
+
+            print("Zoom Flash VERDE DESATIVADO!")
         end
     end
 })
