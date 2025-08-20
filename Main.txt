@@ -11314,7 +11314,13 @@ MiscTab:AddButton({
     end
 })
 
--- Linux hub Success Message
+-- Linuxhub Info Final
+
+AdvancedTab:AddParagraph({"Linuxhub Hub v3.2.0", "Script completo compactado com todas as funcionalidades originais mantidas."})
+
+AdvancedTab:AddParagraph({"Créditos:", "Linux hub Developers - Brookhaven Ultimate Script"})
+
+-- Knox Success Message
 
 spawn(function()
 
@@ -11322,9 +11328,15 @@ spawn(function()
 
     if TCS.ChatVersion == Enum.ChatVersion.TextChatService then
 
-        TCS.TextChannels.RBXGeneral:SendAsync("🐧 Linux hub carregado com sucesso 🐧")
+        TCS.TextChannels.RBXGeneral:SendAsync("🐧Linux hub carregado 100%🐧")
 
     end
+
+end)
+
+print("🐧Linux hub carregado 100%🐧")
+
+print("Linux hub Developers - All features active!")
 
 end)
 
