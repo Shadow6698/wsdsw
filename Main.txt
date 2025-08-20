@@ -1884,7 +1884,7 @@ ScriptsNovosTab:Button({
     Desc = "Bypass do filtro de chat",
     Locked = false,
     Callback = function()
-        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-byterpass-CHAT-BYPASSER-47366"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/snigglaberry/BYTERPASS/refs/heads/main/byterpass"))()
     end
 })
 
