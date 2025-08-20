@@ -11314,11 +11314,7 @@ MiscTab:AddButton({
     end
 })
 
--- Linux hub Info Final
-
-AdvancedTab:AddParagraph({"Linux hub v3.2.0", "Linux hub e o script mais pica de todos."})
-
--- Knox Success Message
+-- Linux hub Success Message
 
 spawn(function()
 
@@ -11334,4 +11330,3 @@ end)
 
 print("🐧 Linux hub carregado com sucesso 🐧")
 
-print("Linux hub foda pra cacete")
