@@ -3228,11 +3228,20 @@ FlashTab:TextBox({
     end
 })
 
--- Toggle Flash Mode
+-- ==============================
+-- FLASH SCRIPTS
+-- ==============================
+local FlashSection = FlashTab:Section({
+    Title = "Scripts do Flash",
+    TextXAlignment = "Left",
+    TextSize = 17,
+})
+
+-- Toggle Flash Mode V1 (Azul)
 local flashModeActive = false
 FlashTab:Toggle({
-    Title = "Flash Mode",
-    Description = "Ativa modo super velocidade com efeitos visuais",
+    Title = "Flash V1 (Azul)",
+    Description = "Ativa modo super velocidade com efeitos visuais azuis",
     Default = false,
     Callback = function(state)
         flashModeActive = state
@@ -3412,7 +3421,7 @@ FlashTab:Toggle({
             createAllTrails()
             createElectricAura()
             
-            print("Flash Mode ATIVADO!")
+            print("Flash V1 (Azul) ATIVADO!")
         else
             -- DESATIVAR
             character = player.Character
@@ -3457,9 +3466,420 @@ FlashTab:Toggle({
                 player.PlayerGui.FlashScreen:Destroy()
             end
 
-            print("Flash Mode DESATIVADO!")
+            print("Flash V1 (Azul) DESATIVADO!")
         end
     end
 })
+
+-- Flash V2 (Vermelho)
+local flashV2Active = false
+FlashTab:Toggle({
+    Title = "Flash V2 (Vermelho)",
+    Description = "Modo flash com efeitos vermelhos",
+    Default = false,
+    Callback = function(state)
+        flashV2Active = state
+        
+        local Players = game:GetService("Players")
+        local Lighting = game:GetService("Lighting")
+        local TweenService = game:GetService("TweenService")
+        local RunService = game:GetService("RunService")
+        local Debris = game:GetService("Debris")
+        local Workspace = game:GetService("Workspace")
+
+        local player = Players.LocalPlayer
+        local camera = Workspace.CurrentCamera
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+        local humanoid = character:WaitForChild("Humanoid")
+
+        -- Configurações V2 (Vermelho)
+        local speedMultiplier = flashSpeed or 34
+        local electricTrails = {}
+
+        if state then
+            -- ATIVAR FLASH V2
+            
+            -- POST FX (Vermelho)
+            local blur = Instance.new("BlurEffect", Lighting)
+            blur.Size = 6
+            blur.Enabled = true
+            blur.Name = "FlashV2Blur"
+
+            local colorCorrection = Instance.new("ColorCorrectionEffect", Lighting)
+            colorCorrection.Enabled = true
+            colorCorrection.Contrast = 0.5
+            colorCorrection.Saturation = 0.6
+            colorCorrection.TintColor = Color3.fromRGB(255, 100, 100) -- Vermelho
+            colorCorrection.Name = "FlashV2ColorFX"
+
+            -- Sons
+            local rumble = Instance.new("Sound", humanoidRootPart)
+            rumble.SoundId = "rbxassetid://1837635124"
+            rumble.Looped = true
+            rumble.Volume = 0.8
+            rumble.Name = "FlashV2Rumble"
+            rumble:Play()
+
+            local zap = Instance.new("Sound", humanoidRootPart)
+            zap.SoundId = "rbxassetid://138218317"
+            zap.Volume = 0.6
+            zap.Name = "FlashV2Zap"
+
+            -- Partículas elétricas vermelhas
+            local lightningParticles = Instance.new("ParticleEmitter", humanoidRootPart)
+            lightningParticles.Texture = "rbxassetid://255449862"
+            lightningParticles.Lifetime = NumberRange.new(0.2, 0.5)
+            lightningParticles.Rate = 19
+            lightningParticles.Speed = NumberRange.new(10, 20)
+            lightningParticles.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0))
+            lightningParticles.Name = "FlashV2Lightning"
+            lightningParticles.Enabled = true
+
+            -- Função para criar rastro de velocidade vermelho
+            local function lightningTrail()
+                local a0 = Instance.new("Attachment", humanoidRootPart)
+                local a1 = Instance.new("Attachment", humanoidRootPart)
+                a0.Position = Vector3.new(0, 2, 0)
+                a1.Position = Vector3.new(0, -2, 0)
+
+                local trail = Instance.new("Trail", humanoidRootPart)  
+                trail.Attachment0 = a0  
+                trail.Attachment1 = a1  
+                trail.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0)) -- Vermelho
+                trail.Lifetime = 0.4  
+                trail.WidthScale = NumberSequence.new({  
+                    NumberSequenceKeypoint.new(0, 1.5),   
+                    NumberSequenceKeypoint.new(1, 0)  
+                })  
+                trail.Transparency = NumberSequence.new(0.1)  
+                trail.LightEmission = 1  
+
+                Debris:AddItem(trail, 1.2)  
+                Debris:AddItem(a0, 1.2)  
+                Debris:AddItem(a1, 1.2)
+            end
+
+            -- Criar rastros elétricos vermelhos no corpo
+            local function createElectricTrails()
+                local parts = {
+                    {part = character:FindFirstChild("Head"), offset = Vector3.new(0, 0.4, 0)},
+                    {part = character:FindFirstChild("Left Arm") or character:FindFirstChild("LeftUpperArm"), offset = Vector3.new(0, -0.5, 0)},
+                    {part = character:FindFirstChild("Right Arm") or character:FindFirstChild("RightUpperArm"), offset = Vector3.new(0, -0.5, 0)},
+                    {part = character:FindFirstChild("Left Leg") or character:FindFirstChild("LeftUpperLeg"), offset = Vector3.new(0, -0.5, 0)},
+                    {part = character:FindFirstChild("Right Leg") or character:FindFirstChild("RightUpperLeg"), offset = Vector3.new(0, -0.5, 0)},
+                    {part = humanoidRootPart, offset = Vector3.new(0.5, 1, 0)}
+                }
+                
+                for _, info in ipairs(parts) do  
+                    if info.part then  
+                        local att0 = Instance.new("Attachment", info.part)  
+                        local att1 = Instance.new("Attachment", info.part)  
+                        att0.Position = info.offset  
+                        att1.Position = info.offset + Vector3.new(0, -0.3, 0)  
+                        
+                        local trail = Instance.new("Trail", info.part)  
+                        trail.Attachment0 = att0  
+                        trail.Attachment1 = att1  
+                        trail.Color = ColorSequence.new(Color3.fromRGB(255, 100, 100)) -- Vermelho claro
+                        trail.Lifetime = 0.3  
+                        trail.Transparency = NumberSequence.new(0.2)  
+                        trail.WidthScale = NumberSequence.new(0.4)  
+                        trail.LightEmission = 1  
+                        
+                        table.insert(electricTrails, trail)  
+                        table.insert(electricTrails, att0)  
+                        table.insert(electricTrails, att1)  
+                    end  
+                end
+            end
+
+            createElectricTrails()
+
+            -- Sistema de movimento rápido V2
+            local speedConnection = RunService.RenderStepped:Connect(function()
+                if flashV2Active then
+                    local moveDirection = humanoid.MoveDirection
+                    if moveDirection.Magnitude > 0 then
+                        humanoidRootPart.CFrame = humanoidRootPart.CFrame + (moveDirection * (flashSpeed or 34))
+                        
+                        -- Criar rastros quando se movendo
+                        if math.random() < 0.3 then
+                            lightningTrail()
+                        end
+                        
+                        -- Som ocasional
+                        if zap and not zap.IsPlaying and math.random() < 0.1 then
+                            zap:Play()
+                        end
+                    end
+                end
+            end)
+
+            camera.FieldOfView = 100
+            
+            print("Flash V2 (Vermelho) ATIVADO!")
+        else
+            -- DESATIVAR FLASH V2
+            
+            camera.FieldOfView = 70
+
+            -- Remover efeitos visuais
+            if Lighting:FindFirstChild("FlashV2Blur") then
+                Lighting.FlashV2Blur:Destroy()
+            end
+            if Lighting:FindFirstChild("FlashV2ColorFX") then
+                Lighting.FlashV2ColorFX:Destroy()
+            end
+
+            -- Parar sons
+            if humanoidRootPart:FindFirstChild("FlashV2Rumble") then
+                humanoidRootPart.FlashV2Rumble:Stop()
+                humanoidRootPart.FlashV2Rumble:Destroy()
+            end
+            if humanoidRootPart:FindFirstChild("FlashV2Zap") then
+                humanoidRootPart.FlashV2Zap:Destroy()
+            end
+
+            -- Remover partículas
+            if humanoidRootPart:FindFirstChild("FlashV2Lightning") then
+                humanoidRootPart.FlashV2Lightning:Destroy()
+            end
+
+            -- Remover trails
+            for _, obj in pairs(electricTrails) do
+                if obj and obj.Parent then 
+                    obj:Destroy() 
+                end
+            end
+            electricTrails = {}
+
+            print("Flash V2 (Vermelho) DESATIVADO!")
+        end
+    end
+})
+
+-- Configurador de Velocidade para V2
+local flashSpeed = 34
+FlashTab:TextBox({
+    Title = "Velocidade Flash V2",
+    Description = "Define a velocidade do Flash V2 (padrão: 34)",
+    PlaceholderText = "34",
+    Callback = function(value)
+        local speed = tonumber(value)
+        if speed and speed > 0 then
+            flashSpeed = speed
+            print("Velocidade Flash V2 definida para: " .. speed)
+        else
+            print("Valor inválido! Use apenas números.")
+        end
+    end
+})
+
+-- Flash V3 (Dourado com velocidade customizável)
+local flashV3Active = false
+local customSpeed = 50 -- Velocidade padrão
+
+-- TextBox para definir velocidade customizada V3
+FlashTab:TextBox({
+    Title = "Velocidade Flash V3",
+    Description = "Define a velocidade personalizada do Flash V3 (padrão: 50)",
+    PlaceholderText = "50",
+    Callback = function(value)
+        local speed = tonumber(value)
+        if speed and speed > 0 and speed <= 1000 then
+            customSpeed = speed
+            print("Velocidade Flash V3 definida para: " .. speed)
+        else
+            print("Valor inválido! Use números entre 1 e 1000.")
+        end
+    end
+})
+
+-- Toggle Flash V3
+FlashTab:Toggle({
+    Title = "Flash V3 (Dourado)",
+    Description = "Modo flash com velocidade customizável e efeitos dourados",
+    Default = false,
+    Callback = function(state)
+        flashV3Active = state
+        
+        local Players = game:GetService("Players")
+        local Lighting = game:GetService("Lighting")
+        local TweenService = game:GetService("TweenService")
+        local RunService = game:GetService("RunService")
+        local Debris = game:GetService("Debris")
+        local Workspace = game:GetService("Workspace")
+
+        local player = Players.LocalPlayer
+        local camera = Workspace.CurrentCamera
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+        local humanoid = character:WaitForChild("Humanoid")
+
+        -- Configurações V3 (Verde/Dourado)
+        local electricTrails = {}
+        local speedConnection
+
+        if state then
+            -- ATIVAR FLASH V3
+            
+            -- POST FX (Verde/Dourado)
+            local blur = Instance.new("BlurEffect", Lighting)
+            blur.Size = 8
+            blur.Enabled = true
+            blur.Name = "FlashV3Blur"
+
+            local colorCorrection = Instance.new("ColorCorrectionEffect", Lighting)
+            colorCorrection.Enabled = true
+            colorCorrection.Contrast = 0.7
+            colorCorrection.Saturation = 0.8
+            colorCorrection.TintColor = Color3.fromRGB(255, 215, 0) -- Dourado
+            colorCorrection.Name = "FlashV3ColorFX"
+
+            local bloom = Instance.new("BloomEffect", Lighting)
+            bloom.Intensity = 1.5
+            bloom.Size = 15
+            bloom.Threshold = 0.8
+            bloom.Name = "FlashV3Bloom"
+
+            -- Sons V3
+            local chargeUp = Instance.new("Sound", humanoidRootPart)
+            chargeUp.SoundId = "rbxassetid://565207203"
+            chargeUp.Volume = 0.7
+            chargeUp.Name = "FlashV3ChargeUp"
+            chargeUp:Play()
+
+            local speedLoop = Instance.new("Sound", humanoidRootPart)
+            speedLoop.SoundId = "rbxassetid://131961136"
+            speedLoop.Looped = true
+            speedLoop.Volume = 0.5
+            speedLoop.PlaybackSpeed = 1.2
+            speedLoop.Name = "FlashV3SpeedLoop"
+            speedLoop:Play()
+
+            -- Flash Screen Dourado
+            local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+            gui.IgnoreGuiInset = true
+            gui.ResetOnSpawn = false
+            gui.Name = "FlashV3Screen"
+
+            local frame = Instance.new("Frame", gui)
+            frame.Size = UDim2.new(1, 0, 1, 0)
+            frame.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+            frame.BackgroundTransparency = 1
+            frame.ZIndex = 999
+
+            TweenService:Create(frame, TweenInfo.new(0.1), {BackgroundTransparency = 0.3}):Play()
+            task.wait(0.1)
+            TweenService:Create(frame, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
+            task.delay(0.5, function()
+                if gui then gui:Destroy() end
+            end)
+
+            -- Partículas douradas mais intensas
+            local energyParticles = Instance.new("ParticleEmitter", humanoidRootPart)
+            energyParticles.Texture = "rbxassetid://241650934"
+            energyParticles.Lifetime = NumberRange.new(0.3, 0.7)
+            energyParticles.Rate = 25
+            energyParticles.Speed = NumberRange.new(8, 15)
+            energyParticles.Color = ColorSequence.new(Color3.fromRGB(255, 215, 0), Color3.fromRGB(50, 205, 50))
+            energyParticles.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.8), NumberSequenceKeypoint.new(1, 1.5)})
+            energyParticles.VelocitySpread = 360
+            energyParticles.Name = "FlashV3Energy"
+            energyParticles.Enabled = true
+            energyParticles.LightEmission = 1
+
+            -- Função para criar rastro de velocidade dourado
+            local function energyTrail()
+                local a0 = Instance.new("Attachment", humanoidRootPart)
+                local a1 = Instance.new("Attachment", humanoidRootPart)
+                a0.Position = Vector3.new(0, 2.5, 0)
+                a1.Position = Vector3.new(0, -2.5, 0)
+
+                local trail = Instance.new("Trail", humanoidRootPart)  
+                trail.Attachment0 = a0  
+                trail.Attachment1 = a1  
+                trail.Color = ColorSequence.new(Color3.fromRGB(255, 215, 0), Color3.fromRGB(50, 205, 50)) -- Dourado para verde
+                trail.Lifetime = 0.5  
+                trail.WidthScale = NumberSequence.new({  
+                    NumberSequenceKeypoint.new(0, 2),   
+                    NumberSequenceKeypoint.new(1, 0.2)  
+                })  
+                trail.Transparency = NumberSequence.new({
+                    NumberSequenceKeypoint.new(0, 0.1),
+                    NumberSequenceKeypoint.new(1, 1)
+                })
+                trail.LightEmission = 1  
+                trail.FaceCamera = true
+
+                Debris:AddItem(trail, 1.5)  
+                Debris:AddItem(a0, 1.5)  
+                Debris:AddItem(a1, 1.5)
+            end
+
+            -- Criar rastros elétricos dourados no corpo
+            local function createElectricTrails()
+                local parts = {
+                    {part = character:FindFirstChild("Head"), offset = Vector3.new(0, 0.5, 0)},
+                    {part = character:FindFirstChild("Left Arm") or character:FindFirstChild("LeftUpperArm"), offset = Vector3.new(-0.3, 0, 0)},
+                    {part = character:FindFirstChild("Right Arm") or character:FindFirstChild("RightUpperArm"), offset = Vector3.new(0.3, 0, 0)},
+                    {part = character:FindFirstChild("Left Leg") or character:FindFirstChild("LeftUpperLeg"), offset = Vector3.new(-0.2, -0.8, 0)},
+                    {part = character:FindFirstChild("Right Leg") or character:FindFirstChild("RightUpperLeg"), offset = Vector3.new(0.2, -0.8, 0)},
+                    {part = humanoidRootPart, offset = Vector3.new(0.8, 1.2, 0)},
+                    {part = humanoidRootPart, offset = Vector3.new(-0.8, 1.2, 0)}
+                }
+                
+                for _, info in ipairs(parts) do  
+                    if info.part then  
+                        local att0 = Instance.new("Attachment", info.part)  
+                        local att1 = Instance.new("Attachment", info.part)  
+                        att0.Position = info.offset  
+                        att1.Position = info.offset + Vector3.new(0, -0.5, 0)  
+                        
+                        local trail = Instance.new("Trail", info.part)  
+                        trail.Attachment0 = att0  
+                        trail.Attachment1 = att1  
+                        trail.Color = ColorSequence.new(Color3.fromRGB(255, 215, 0), Color3.fromRGB(50, 205, 50)) -- Dourado para verde
+                        trail.Lifetime = 0.4  
+                        trail.Transparency = NumberSequence.new({
+                            NumberSequenceKeypoint.new(0, 0.1),
+                            NumberSequenceKeypoint.new(1, 1)
+                        })
+                        trail.WidthScale = NumberSequence.new(0.6)  
+                        trail.LightEmission = 1  
+                        trail.FaceCamera = true
+                        
+                        table.insert(electricTrails, trail)  
+                        table.insert(electricTrails, att0)  
+                        table.insert(electricTrails, att1)  
+                    end  
+                end
+            end
+
+            createElectricTrails()
+
+            -- Aura dourada ao redor do personagem
+            local function createGoldenAura()
+                local parts = {
+                    "Head", "HumanoidRootPart", "LeftHand", "RightHand", 
+                    "LeftFoot", "RightFoot", "Left Arm", "Right Arm", "Left Leg", "Right Leg"
+                }
+                
+                for _, partName in ipairs(parts) do
+                    local part = character:FindFirstChild(partName)
+                    if part then
+                        local attachment = Instance.new("Attachment", part)
+                        local particle = Instance.new("ParticleEmitter", attachment)
+
+                        particle.Texture = "rbxassetid://241650934"
+                        particle.Rate = 15
+                        particle.Lifetime = NumberRange.new(0.4, 0.8)
+                        particle.Speed = NumberRange.new(2, 5)
+                        particle.VelocitySpread = 180
+                        particle.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.5), NumberSequenceKeypoint.new(1, 1.2)})
+                        particle.LightEmission = 1
+                        particle.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.2), NumberSequenceKeypoint.new(1, 1)})
+                        particle.Color = Color
 
 print("🐧 Linux Hub V3 WindUI carregado com sucesso! - Criado por Nightmare")
