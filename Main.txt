@@ -2899,49 +2899,6 @@ ImunesTab:Button({
     end
 })
 
- local getNil = function(name, class)
-    for _, v in next, getnilinstances() do
-        if v.ClassName == class and v.Name == name then
-            return v
-        end
-    end
-end
-
--- Toggle Anti-Bug
-AntiBugTab:Toggle({
-    Title = "Anti-Bug",
-    Description = "Remove exploits detectados",
-    Default = false,
-    Callback = function(state)
-        if state then
-            _G.AntiBugActive = true
-            spawn(function()
-                while _G.AntiBugActive do
-                    wait(0.5)
-                    
-                    -- Remove water part
-                    local water = getNil("water", "Part")
-                    if water then
-                        water:Destroy()
-                    end
-                    
-                    -- Remove RainEmitter
-                    if workspace.Camera.__RainEmitter then
-                        workspace.Camera.__RainEmitter:Destroy()
-                    end
-                    
-                    -- Remove RainStraight
-                    if workspace.Camera.__RainEmitter and workspace.Camera.__RainEmitter.RainStraight then
-                        workspace.Camera.__RainEmitter.RainStraight:Destroy()
-                    end
-                end
-            end)
-        else
-            _G.AntiBugActive = false
-        end
-    end
-})
-
 -- ==============================
 -- PLAYERS
 -- ==============================
@@ -3049,6 +3006,25 @@ MinecraftTab:Button({
     Locked = false,
     Callback = function()
         loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Minecraft-Tools-31506"))()
+    end
+})
+
+-- ============================== 
+-- FREE ADMIN SCRIPTS 
+-- ============================== 
+
+local FreeAdminSection = FreeAdminTab:Section({
+    Title = "Scripts de Free Admin",
+    TextXAlignment = "Left",
+    TextSize = 17,
+})
+
+FreeAdminTab:Button({
+    Title = "Gaze Admin",
+    Desc = "Ferramenta de administração gratuita",
+    Locked = false,
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/FREE-ADMIN-Gaze-Admin-Abuser-V2-38651"))()
     end
 })
 
