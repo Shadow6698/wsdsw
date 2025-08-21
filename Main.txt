@@ -231,6 +231,11 @@ local MinecraftTab = Window:Tab({
     Icon = "pickaxe",
     Locked = false,
 })
+local FreeAdminTab = Window:Tab({
+    Title = "Free Admin",
+    Icon = "crown",
+    Locked = false,
+})
 local DesastresTab = Window:Tab({
     Title = "Desastres",
     Icon = "tornado",
