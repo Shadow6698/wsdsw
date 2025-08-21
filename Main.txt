@@ -2881,54 +2881,6 @@ local ImunesSection = ImunesTab:Section({
     TextSize = 17,
 })
 
--- Toggle Anti Bug (Wind UI)
-ImunesTab:Toggle("Anti Bug", "Proteção contra bugs de água e chuva", false, function(value)
-    getgenv().antiBug = value
-    if value then
-        TeleportCarro:MostrarNotificacao("Anti Bug ativado!")
-        
-        -- Função para obter objetos nil
-        local getNil = function(name, class)
-            for _, v in next, getnilinstances() do
-                if v.ClassName == class and v.Name == name then
-                    return v
-                end
-            end
-        end
-        
-        -- Desativa os bugs
-        task.spawn(function()
-            while getgenv().antiBug do
-                pcall(function()
-                    -- Remove water part
-                    local waterPart = getNil("water", "Part")
-                    if waterPart then
-                        waterPart:Destroy()
-                    end
-                    
-                    -- Remove RainStraight
-                    local rainStraight = workspace.Camera:FindFirstChild("__RainEmitter")
-                    if rainStraight then
-                        local rainStraightChild = rainStraight:FindFirstChild("RainStraight")
-                        if rainStraightChild then
-                            rainStraightChild:Destroy()
-                        end
-                    end
-                    
-                    -- Remove __RainEmitter
-                    local rainEmitter = workspace.Camera:FindFirstChild("__RainEmitter")
-                    if rainEmitter then
-                        rainEmitter:Destroy()
-                    end
-                end)
-                task.wait(0.1)
-            end
-        end)
-    else
-        TeleportCarro:MostrarNotificacao("Anti Bug desativado!")
-    end
-end)
-
 ImunesTab:Button({
     Title = "Anti Coquette Hub",
     Desc = "Proteção contra Coquette Hub",
@@ -2944,6 +2896,49 @@ ImunesTab:Button({
     Locked = false,
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/removeplayers/main/Main.txt"))()
+    end
+})
+
+ local getNil = function(name, class)
+    for _, v in next, getnilinstances() do
+        if v.ClassName == class and v.Name == name then
+            return v
+        end
+    end
+end
+
+-- Toggle Anti-Bug
+AntiBugTab:Toggle({
+    Title = "Anti-Bug",
+    Description = "Remove exploits detectados",
+    Default = false,
+    Callback = function(state)
+        if state then
+            _G.AntiBugActive = true
+            spawn(function()
+                while _G.AntiBugActive do
+                    wait(0.5)
+                    
+                    -- Remove water part
+                    local water = getNil("water", "Part")
+                    if water then
+                        water:Destroy()
+                    end
+                    
+                    -- Remove RainEmitter
+                    if workspace.Camera.__RainEmitter then
+                        workspace.Camera.__RainEmitter:Destroy()
+                    end
+                    
+                    -- Remove RainStraight
+                    if workspace.Camera.__RainEmitter and workspace.Camera.__RainEmitter.RainStraight then
+                        workspace.Camera.__RainEmitter.RainStraight:Destroy()
+                    end
+                end
+            end)
+        else
+            _G.AntiBugActive = false
+        end
     end
 })
 
