@@ -2954,7 +2954,7 @@ ImunesTab:Toggle({
 })
 ImunesTab:Toggle({
     Title = "Anti Canoe Fling",
-    Description = "Remove canoas de outros players automaticamente (reaparecem ao desativar)",
+    Description = "Remove canoas de outros players automaticamente e restaura quando desativado",
     Default = false,
     Callback = function(state)
         antiCanoeActive = state
@@ -2974,7 +2974,8 @@ ImunesTab:Toggle({
                             for _, canoe in ipairs(storage:GetChildren()) do
                                 local dono = canoe:FindFirstChild("Owner")
                                 if dono and dono.Value ~= LocalPlayer or not dono then
-                                    table.insert(removedCanoes, canoe:Clone()) -- guarda clone
+                                    -- Guarda clone antes de destruir
+                                    table.insert(removedCanoes, canoe:Clone())
                                     canoe:Destroy()
                                 end
                             end
@@ -2985,7 +2986,7 @@ ImunesTab:Toggle({
             end)
         else
             TeleportCarro:MostrarNotificacao("Anti Canoe Fling desativado!")
-            -- Reaparecer Canoes removidos
+            -- Restaurar Canoes removidos
             local workspaceCom = Workspace:FindFirstChild("WorkspaceCom")
             if workspaceCom and workspaceCom:FindFirstChild("001_CanoeStorage") then
                 local storage = workspaceCom["001_CanoeStorage"]
