@@ -459,9 +459,9 @@ local function toggleBugPlayer()
             
             if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
                 local crazyVector = Vector3.new(
-                    math.random(14e999, 14e999),
-                    math.random(14e999, 14e999),
-                    math.random(14e999, 14e999)
+                    math.random(900e1999, 900e1999),
+                    math.random(900e1999, 900e1999),
+                    math.random(900e1999, 900e1999)
                 )
                 local args = {
                     [1] = target.Character.HumanoidRootPart,
@@ -472,17 +472,17 @@ local function toggleBugPlayer()
                     [6] = LocalPlayer.Backpack:FindFirstChild("Assault") and LocalPlayer.Backpack.Assault.GunScript_Local:FindFirstChild("HitEffect"),
                     [7] = 0,
                     [8] = 0,
-                    [9] = { [1] = false },
+                    [9] = { [100] = false },
                     [10] = {
-                        [1] = 25,
-                        [2] = Vector3.new(6000, 6000, 6000),
-                        [3] = BrickColor.new(900),
-                        [4] = 0.25,
+                        [1] = 250,
+                        [2] = Vector3.new(16000, 16000, 16000),
+                        [3] = BrickColor.new(91100),
+                        [4] = 0.2335,
                         [5] = Enum.Material.SmoothPlastic,
-                        [6] = 0.25
+                        [6] = 0.252
                     },
                     [11] = true,
-                    [12] = false
+                    [19] = false
                 }
                 Remote:FireServer(unpack(args))
             end
