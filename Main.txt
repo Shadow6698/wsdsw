@@ -2919,7 +2919,7 @@ ImunesTab:Button({
     end
 })
 ImunesTab:Toggle({
-    Title = "Anti Veículos",
+    Title = "Anti flings de fdps",
     Description = "Remove veículos de outros jogadores automaticamente",
     Default = false,
     Callback = function(state)
