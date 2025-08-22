@@ -3027,42 +3027,29 @@ ImunesTab:Toggle({
 })
 ImunesTab:Toggle({
     Title = "Anti Fling Helicópteros",
-    Description = "Remove helicópteros de outros jogadores automaticamente e restaura quando desativado",
+    Description = "Remove helicópteros de outros jogadores automaticamente",
     Default = false,
     Callback = function(state)
         antiHeliActive = state
+        local heliFolder = workspace.WorkspaceCom["001_HeliStorage"].PoliceStationHeli
+
         if state then
             TeleportCarro:MostrarNotificacao("Anti Fling Helicópteros ativado!")
             task.spawn(function()
                 while antiHeliActive and LocalPlayer.Character do
-                    for _, folder in ipairs({
-                        workspace.WorkspaceCom:FindFirstChild("001_HeliCloneButton"),
-                        workspace.WorkspaceCom:FindFirstChild("001_HeliStorage"),
-                        workspace.WorkspaceCom:FindFirstChild("001_HeliStorage") and workspace.WorkspaceCom["001_HeliStorage"]:FindFirstChild("PoliceStationHeli"),
-                        workspace.Model:FindFirstChild("HeliSpawnPad")
-                    }) do
-                        if folder then
-                            for _, heli in ipairs(folder:GetChildren()) do
-                                if heli.Name ~= LocalPlayer.Name then
-                                    table.insert(removedHelis, heli:Clone()) -- guarda clone antes de destruir
-                                    heli:Destroy()
-                                end
+                    if heliFolder then
+                        for _, heli in ipairs(heliFolder:GetChildren()) do
+                            if heli.Name ~= LocalPlayer.Name then
+                                heli:Destroy()
                             end
                         end
                     end
-                    task.wait(0.03)
+                    task.wait(0.03) -- bem rápido
                 end
             end)
+
         else
             TeleportCarro:MostrarNotificacao("Anti Fling Helicópteros desativado!")
-            -- Restaurar heli removidos
-            for _, heliClone in ipairs(removedHelis) do
-                if heliClone.Parent == nil then
-                    local parentFolder = heliClone:FindFirstAncestorWhichIsA("Folder") or workspace
-                    heliClone.Parent = parentFolder
-                end
-            end
-            removedHelis = {} -- limpa tabela
         end
     end
 })
