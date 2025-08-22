@@ -2884,22 +2884,19 @@ ToolsTab:Button({
 -- ==============================
 -- IMUNES
 -- ==============================
-
 local ImunesSection = ImunesTab:Section({
     Title = "Proteções e Imunidades",
     TextXAlignment = "Left",
     TextSize = 17,
 })
-
 ImunesTab:Button({
-    Title = "Anti Coquette Hub",
-    Desc = "Proteção contra Coquette Hub",
+    Title = "AntiBug",
+    Desc = "Devs: cahh,Night",
     Locked = false,
     Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/antcoquettehub/main/Main.txt"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/antbug/refs/heads/main/Main.txt"))()
     end
 })
-
 ImunesTab:Button({
     Title = "Anti Chaos Hub",
     Desc = "Proteção contra Chaos Hub",
