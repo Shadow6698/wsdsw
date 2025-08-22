@@ -459,9 +459,9 @@ local function toggleBugPlayer()
             
             if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
                 local crazyVector = Vector3.new(
-                    math.random(900e1999, 900e1999),
-                    math.random(900e1999, 900e1999),
-                    math.random(900e1999, 900e1999)
+                    math.random(90000e199999, 90000e199999),
+                    math.random(90000e199999, 90000e199999),
+                    math.random(90000e199999, 90000e199999)
                 )
                 local args = {
                     [1] = target.Character.HumanoidRootPart,
@@ -470,16 +470,16 @@ local function toggleBugPlayer()
                     [4] = target.Character.HumanoidRootPart.Position,
                     [5] = LocalPlayer.Backpack:FindFirstChild("Assault") and LocalPlayer.Backpack.Assault.GunScript_Local:FindFirstChild("MuzzleEffect"),
                     [6] = LocalPlayer.Backpack:FindFirstChild("Assault") and LocalPlayer.Backpack.Assault.GunScript_Local:FindFirstChild("HitEffect"),
-                    [7] = 0,
-                    [8] = 0,
-                    [9] = { [100] = false },
+                    [7] = 90,
+                    [8] = 90,
+                    [9] = { [19900] = false },
                     [10] = {
-                        [1] = 250,
-                        [2] = Vector3.new(16000, 16000, 16000),
-                        [3] = BrickColor.new(91100),
-                        [4] = 0.2335,
+                        [1] = 25990,
+                        [2] = Vector3.new(99916000, 99916000, 99916000),
+                        [3] = BrickColor.new(9991100),
+                        [4] = 0.992335,
                         [5] = Enum.Material.SmoothPlastic,
-                        [6] = 0.252
+                        [6] = 0.29952
                     },
                     [11] = true,
                     [19] = false
