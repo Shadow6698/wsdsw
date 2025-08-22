@@ -2902,7 +2902,6 @@ ImunesTab:Button({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/antbug/refs/heads/main/Main.txt"))()
     end
 })
-
 ImunesTab:Button({
     Title = "Anti Chaos Hub",
     Desc = "Proteção contra Chaos Hub",
@@ -2919,7 +2918,6 @@ ImunesTab:Button({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/antsom/refs/heads/main/Main.txt"))()
     end
 })
-
 ImunesTab:Toggle({
     Title = "Anti flings de fdps",
     Description = "Remove veículos de outros jogadores automaticamente",
@@ -2954,7 +2952,6 @@ ImunesTab:Toggle({
         end
     end
 })
-
 ImunesTab:Toggle({
     Title = "Anti Canoe Fling",
     Description = "Remove canoas de outros players automaticamente (reaparecem ao desativar)",
@@ -3000,7 +2997,6 @@ ImunesTab:Toggle({
         end
     end
 })
-
 ImunesTab:Toggle({
     Title = "Anti Fling Jets",
     Description = "Remove jets de outros jogadores automaticamente",
@@ -3037,7 +3033,6 @@ ImunesTab:Toggle({
         end
     end
 })
-
 ImunesTab:Toggle({
     Title = "Anti Fling Helicópteros",
     Description = "Remove helicópteros de outros jogadores automaticamente",
@@ -3071,7 +3066,6 @@ ImunesTab:Toggle({
         end
     end
 })
-
 ImunesTab:Toggle({
     Title = "Anti Fling Ball",
     Description = "Remove SoccerBalls automaticamente",
