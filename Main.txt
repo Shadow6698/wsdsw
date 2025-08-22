@@ -3092,6 +3092,38 @@ ImunesTab:Toggle({
         end
     end
 })
+ImunesTab:Toggle({
+    Title = "Anti Sit",
+    Description = "Não deixa seu personagem sentar",
+    Default = false,
+    Callback = function(state)
+        antiSitActive = state
+
+        if state then
+            TeleportCarro:MostrarNotificacao("Anti Sit ativado!")
+            task.spawn(function()
+                while antiSitActive and LocalPlayer.Character do
+                    local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then
+                        humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+                        if humanoid:GetState() == Enum.HumanoidStateType.Seated then
+                            humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+                        end
+                    end
+                    task.wait(0.05) -- loop rápido
+                end
+            end)
+
+        else
+            TeleportCarro:MostrarNotificacao("Anti Sit desativado!")
+            -- Restaurar habilidade de sentar
+            local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+            end
+        end
+    end
+})
 
 -- ==============================
 -- PLAYERS
