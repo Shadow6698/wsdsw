@@ -3092,8 +3092,7 @@ ImunesTab:Toggle({
         end
     end
 })
--- Anti Sit Section
-MiscTab:AddSection({ "Anti Sit" })
+ImunesTab:AddSection({ "Anti Sit" })
 local antiSitEnabled = false
 local connections = {}
 
@@ -3102,10 +3101,10 @@ local function setupAntiSit(character)
     
     local humanoid = character:WaitForChild("Humanoid")
     
-    -- Habilita/desabilita o estado de sentar
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, not antiSitEnabled)
+    -- Impede o estado de sentar
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
     
-    -- Conexão para quando o personagem tentar sentar
+    -- Conexão para bloquear sentar
     local sitConnection = humanoid.StateChanged:Connect(function(_, newState)
         if antiSitEnabled and newState == Enum.HumanoidStateType.Seated then
             humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
@@ -3131,9 +3130,9 @@ local function resetSittingState(character)
     end
 end
 
-ImunesTab:AddToggle({
+MiscTab:AddToggle({
     Name = "Anti Sit",
-    Description = "Não Deixa seu personagem Sentar",
+    Description = "Não deixa seu personagem sentar",
     Default = false,
     Callback = function(Value)
         antiSitEnabled = Value
@@ -3142,18 +3141,18 @@ ImunesTab:AddToggle({
         cleanupConnections()
         
         if Value then
-            -- Conexão para quando o personagem é recarregado
+            -- Conectar quando o personagem for recarregado
             local charAddedConn = player.CharacterAdded:Connect(function(character)
                 setupAntiSit(character)
             end)
             table.insert(connections, charAddedConn)
             
-            -- Aplicar ao personagem atual
+            -- Aplicar no personagem atual
             if player.Character then
                 setupAntiSit(player.Character)
             end
         else
-            -- Restaurar habilidade de sentar
+            -- Restaurar a habilidade de sentar
             if player.Character then
                 resetSittingState(player.Character)
             end
