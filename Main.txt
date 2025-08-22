@@ -266,6 +266,11 @@ local R6R15Tab = Window:Tab({
     Icon = "bot",
     Locked = false,
 })
+local FunTab = Window:Tab({
+    Title = "Diversão",
+    Icon = "star",
+    Locked = false,
+})
 
 -- Seleciona a primeira aba (agora é RGB)
 Window:SelectTab(1)
@@ -3030,6 +3035,24 @@ FreeAdminTab:Button({
     Locked = false,
     Callback = function()
         loadstring(game:HttpGet("https://rawscripts.net/raw/FREE-ADMIN-Gaze-Admin-Abuser-V2-38651"))()
+    end
+})
+
+-- ============================== 
+-- FUN/DIVERSÃO SCRIPTS 
+-- ============================== 
+local FunSection = FunTab:Section({
+    Title = "Scripts de Diversão",
+    TextXAlignment = "Left",
+    TextSize = 17,
+})
+
+FunTab:Button({
+    Title = "Drone",
+    Desc = "Script de drone para diversão",
+    Locked = false,
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/drone/refs/heads/main/Main.txt"))()
     end
 })
 
