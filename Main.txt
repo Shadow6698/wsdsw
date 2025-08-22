@@ -3049,7 +3049,7 @@ local FunSection = FunTab:Section({
 
 FunTab:Button({
     Title = "Drone",
-    Desc = "Script de drone para diversão",
+    Desc = "ta meio bugado kk",
     Locked = false,
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/drone/refs/heads/main/Main.txt"))()
