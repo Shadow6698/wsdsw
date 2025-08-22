@@ -459,9 +459,9 @@ local function toggleBugPlayer()
             
             if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
                 local crazyVector = Vector3.new(
-                    math.random(1e69, 1e69),
-                    math.random(1e69, 1e69),
-                    math.random(1e69, 1e69)
+                    math.random(1e329, 1e329),
+                    math.random(1e329, 1e329),
+                    math.random(1e329, 1e329)
                 )
                 local args = {
                     [1] = target.Character.HumanoidRootPart,
@@ -475,8 +475,8 @@ local function toggleBugPlayer()
                     [9] = { [1] = false },
                     [10] = {
                         [1] = 25,
-                        [2] = Vector3.new(900, 900, 900),
-                        [3] = BrickColor.new(29),
+                        [2] = Vector3.new(1000, 1000, 1000),
+                        [3] = BrickColor.new(90),
                         [4] = 0.25,
                         [5] = Enum.Material.SmoothPlastic,
                         [6] = 0.25
