@@ -2201,7 +2201,7 @@ BrookhavenTab:Button({
     Desc = "Hub Cartola",
     Locked = false,
     Callback = function()
-        loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/024662d77ba14c23"))()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-Cartola-Hub-47454"))()
     end
 })
 
