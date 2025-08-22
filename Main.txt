@@ -2997,6 +2997,75 @@ ImunesTab:Toggle({
         end
     end
 })
+ImunesTab:Toggle({
+    Title = "Anti Fling Jets",
+    Description = "Remove jets de outros jogadores automaticamente",
+    Default = false,
+    Callback = function(state)
+        antiJetsActive = state
+        local jetFolder = workspace.WorkspaceCom["001_Airport"].AirportHanger["001_JetStorage"].JetAirport
+
+        if state then
+            TeleportCarro:MostrarNotificacao("Anti Fling Jets ativado!")
+
+            task.spawn(function()
+                while antiJetsActive do
+                    for _, jet in ipairs(jetFolder:GetChildren()) do
+                        if jet.Name ~= game.Players.LocalPlayer.Name then
+                            jet:Destroy()
+                        end
+                    end
+                    task.wait(0.1) -- intervalo do loop
+                end
+            end)
+
+        else
+            TeleportCarro:MostrarNotificacao("Anti Fling Jets desativado!")
+            -- O loop vai parar sozinho pois antiJetsActive virou false
+        end
+    end
+})
+ImunesTab:Toggle({
+    Title = "Anti Fling Helicópteros",
+    Description = "Remove helicópteros de outros jogadores automaticamente e restaura quando desativado",
+    Default = false,
+    Callback = function(state)
+        antiHeliActive = state
+        if state then
+            TeleportCarro:MostrarNotificacao("Anti Fling Helicópteros ativado!")
+            task.spawn(function()
+                while antiHeliActive and LocalPlayer.Character do
+                    for _, folder in ipairs({
+                        workspace.WorkspaceCom:FindFirstChild("001_HeliCloneButton"),
+                        workspace.WorkspaceCom:FindFirstChild("001_HeliStorage"),
+                        workspace.WorkspaceCom:FindFirstChild("001_HeliStorage") and workspace.WorkspaceCom["001_HeliStorage"]:FindFirstChild("PoliceStationHeli"),
+                        workspace.Model:FindFirstChild("HeliSpawnPad")
+                    }) do
+                        if folder then
+                            for _, heli in ipairs(folder:GetChildren()) do
+                                if heli.Name ~= LocalPlayer.Name then
+                                    table.insert(removedHelis, heli:Clone()) -- guarda clone antes de destruir
+                                    heli:Destroy()
+                                end
+                            end
+                        end
+                    end
+                    task.wait(0.03)
+                end
+            end)
+        else
+            TeleportCarro:MostrarNotificacao("Anti Fling Helicópteros desativado!")
+            -- Restaurar heli removidos
+            for _, heliClone in ipairs(removedHelis) do
+                if heliClone.Parent == nil then
+                    local parentFolder = heliClone:FindFirstAncestorWhichIsA("Folder") or workspace
+                    heliClone.Parent = parentFolder
+                end
+            end
+            removedHelis = {} -- limpa tabela
+        end
+    end
+})
 
 -- ==============================
 -- PLAYERS
