@@ -2918,6 +2918,40 @@ ImunesTab:Button({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/antsom/refs/heads/main/Main.txt"))()
     end
 })
+ImunesTab:Toggle({
+    Title = "Anti Veículos",
+    Description = "Remove veículos de outros jogadores automaticamente",
+    Default = false,
+    Callback = function(state)
+        antiVeiculosActive = state
+        if state then
+            TeleportCarro:MostrarNotificacao("Anti Veículos ativado!")
+            task.spawn(function()
+                while antiVeiculosActive and LocalPlayer.Character do
+                    if Workspace:FindFirstChild("Vehicles") then
+                        for _, vehicle in ipairs(Workspace.Vehicles:GetChildren()) do
+                            local isMeuVeiculo = false
+                            for _, seat in ipairs(vehicle:GetDescendants()) do
+                                if (seat:IsA("VehicleSeat") or seat:IsA("Seat")) and seat.Occupant then
+                                    if seat.Occupant.Parent == LocalPlayer.Character then
+                                        isMeuVeiculo = true
+                                        break
+                                    end
+                                end
+                            end
+                            if not isMeuVeiculo then
+                                vehicle:Destroy()
+                            end
+                        end
+                    end
+                    task.wait(0.03)
+                end
+            end)
+        else
+            TeleportCarro:MostrarNotificacao("Anti Veículos desativado!")
+        end
+    end
+})
 
 -- ==============================
 -- PLAYERS
