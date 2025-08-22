@@ -3045,14 +3045,11 @@ FreeAdminTab:Button({
 -- ============================== 
 local FunSection = FunTab:Section({
     Title = "Scripts de Diversão",
-    TextXAlignment = "Left",
-    TextSize = 17,
 })
 
 FunTab:Button({
     Title = "Drone",
-    Desc = "ta meio bugado kk",
-    Locked = false,
+    Description = "ta meio bugado kk",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/drone/refs/heads/main/Main.txt"))()
     end
@@ -3061,12 +3058,6 @@ FunTab:Button({
 -- ============================== 
 -- TELEPORTES/TELEPORTS SCRIPTS 
 -- ============================== 
-local TeleportTab = Window:Tab({
-    Title = "Teleporte",
-    Icon = "zap",
-    TextXAlignment = "Left",
-    TextSize = 17,
-})
 
 local locations = {
     ["Salão de Beleza"] = Vector3.new(-76, 4, -123),
@@ -3121,10 +3112,9 @@ end
 
 -- Criar botões para cada localização
 for locationName, position in pairs(locations) do
-    FunTab:Button({
+    TeleportTab:Button({
         Title = locationName,
-        Desc = "Teleportar para " .. locationName,
-        Locked = false,
+        Description = "Teleportar para " .. locationName,
         Callback = function()
             teleportTo(position)
         end
