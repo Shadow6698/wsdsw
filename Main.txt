@@ -3053,6 +3053,32 @@ ImunesTab:Toggle({
         end
     end
 })
+ImunesTab:Toggle({
+    Title = "Anti Fling Ball",
+    Description = "Remove SoccerBalls automaticamente",
+    Default = false,
+    Callback = function(state)
+        antiBallActive = state
+        local ballFolder = workspace.WorkspaceCom:FindFirstChild("001_SoccerBalls")
+
+        if state then
+            TeleportCarro:MostrarNotificacao("Anti Fling Ball ativado!")
+            task.spawn(function()
+                while antiBallActive do
+                    if ballFolder then
+                        for _, ball in ipairs(ballFolder:GetChildren()) do
+                            ball:Destroy()
+                        end
+                    end
+                    task.wait(0.03) -- frequência do loop
+                end
+            end)
+        else
+            TeleportCarro:MostrarNotificacao("Anti Fling Ball desativado!")
+            -- O loop para sozinho porque antiBallActive virou false
+        end
+    end
+})
 
 -- ==============================
 -- PLAYERS
