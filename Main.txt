@@ -3061,8 +3061,9 @@ FunTab:Button({
 -- ============================== 
 -- TELEPORTES/TELEPORTS SCRIPTS 
 -- ============================== 
-local TeleportSection = FunTab:Section({
-    Title = "Teleportes",
+local TeleportTab = Window:Tab({
+    Title = "Teleporte",
+    Icon = "zap",
     TextXAlignment = "Left",
     TextSize = 17,
 })
