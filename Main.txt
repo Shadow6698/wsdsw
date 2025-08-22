@@ -3131,7 +3131,7 @@ local function resetSittingState(character)
     end
 end
 
-MiscTab:AddToggle({
+ImunesTab:AddToggle({
     Name = "Anti Sit",
     Description = "Não Deixa seu personagem Sentar",
     Default = false,
