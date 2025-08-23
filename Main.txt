@@ -3321,33 +3321,33 @@ FunTab:Toggle({
 })
 FunTab:Toggle({
     Title = "Ativar Fogo",
-    Description = "Liga/Desliga o efeito de fogo do BurgerBarn no personagem",
+    Description = "Teleporta para cima do Fire do BurgerBarn e volta após 5 segundos",
     Default = false,
     Callback = function(state)
         local player = game.Players.LocalPlayer
         local char = player.Character or player.CharacterAdded:Wait()
         local hrp = char:WaitForChild("HumanoidRootPart")
-        local burgerBarn = workspace.WorkspaceCom:FindFirstChild("001_BurgerBarn")
-        local fireHolder = burgerBarn and burgerBarn:FindFirstChild("Fire")
 
         if state then
-            if fireHolder and fireHolder:FindFirstChild("Fire") then
-                local fire = fireHolder.Fire
-                fire.Parent = hrp
-                fire.Name = "HumanoidFire"
-                TeleportCarro:MostrarNotificacao("🔥 Fogo ativado!")
+            local originalCFrame = hrp.CFrame
+            local firePart = workspace.WorkspaceCom["001_BurgerBarn"]:FindFirstChild("Fire")
+
+            if firePart and firePart:IsA("BasePart") then
+                -- Teleporta para cima do Fire (5 studs acima)
+                hrp.CFrame = firePart.CFrame + Vector3.new(0,5,0)
+                TeleportCarro:MostrarNotificacao("🔥 Teleportado para o Fire!")
+
+                -- Volta após 5 segundos
+                task.spawn(function()
+                    task.wait(5)
+                    hrp.CFrame = originalCFrame
+                    TeleportCarro:MostrarNotificacao("❌ De volta à posição original!")
+                    -- Desativa a toggle automaticamente após o retorno
+                    FunTab:UpdateToggle("Ativar Fogo", false)
+                end)
             else
-                warn("🔥 Fire não encontrado em workspace.WorkspaceCom['001_BurgerBarn'].Fire")
-            end
-        else
-            local existing = hrp:FindFirstChild("HumanoidFire")
-            if existing then
-                -- Move o fogo de volta para o lugar original no BurgerBarn
-                existing.Parent = fireHolder
-                existing.Name = "Fire"
-                TeleportCarro:MostrarNotificacao("❌ Fogo desativado!")
-            else
-                TeleportCarro:MostrarNotificacao("⚠️ Nenhum fogo para desativar!")
+                warn("Não foi possível encontrar a Part do Fire em WorkspaceCom['001_BurgerBarn']")
+                FunTab:UpdateToggle("Ativar Fogo", false)
             end
         end
     end
