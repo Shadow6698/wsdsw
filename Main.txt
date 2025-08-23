@@ -276,11 +276,6 @@ local TeleportTab = Window:Tab({
     Icon = "zap",
     Locked = false,
 })
-local CloneTab = Window:Tab({
-    Title = "Itens Clone/FE Desenho",
-    Icon = "package",
-    Locked = false,
-})
 
 -- Seleciona a primeira aba (agora é RGB)
 Window:SelectTab(1)
@@ -3377,56 +3372,5 @@ for locationName, position in pairs(locations) do
         end
     })
 end
-
--- ==============================
--- ITENS CLONE/FE DESENHO – Duplicar Bolas
--- ==============================
-CloneTab:Toggle({
-    Title = "Duplicar Bolas",
-    Description = "Duplica Basketballs automaticamente",
-    Default = false,
-    Callback = function(state)
-        local duplicateBallsActive = state
-        local Players = game:GetService("Players")
-        local player = Players.LocalPlayer
-        local char = player.Character or player.CharacterAdded:Wait()
-        local hrp = char:WaitForChild("HumanoidRootPart")
-        local basketball = workspace.WorkspaceCom:FindFirstChild("001_GiveTools") 
-            and workspace.WorkspaceCom["001_GiveTools"]:FindFirstChild("Basketball")
-        if not basketball then
-            warn("Basketball não encontrada!")
-            return
-        end
-        if state then
-            TeleportCarro:MostrarNotificacao("Duplicar Bolas ativado!")
-            -- Loop contínuo que verifica o estado a cada iteração
-            local connection
-            connection = task.spawn(function()
-                while duplicateBallsActive do
-                    if not char.Parent then break end -- garante que o personagem exista
-                    if not hrp.Parent then break end
-                    -- Teleporta próximo da bola
-                    hrp.CFrame = basketball.CFrame + Vector3.new(0,5,0)
-                    -- Detecta interação
-                    local clickDetector = basketball:FindFirstChildOfClass("ClickDetector")
-                    local prompt = basketball:FindFirstChildOfClass("ProximityPrompt")
-                    if clickDetector then
-                        fireclickdetector(clickDetector)
-                    elseif prompt then
-                        fireproximityprompt(prompt)
-                    else
-                        firetouchinterest(hrp, basketball, 0)
-                        task.wait()
-                        firetouchinterest(hrp, basketball, 1)
-                    end
-                    task.wait(0.2)
-                    -- Sai do loop se toggle foi desativada
-                    if not duplicateBallsActive then break end
-                end
-            end)
-        else
-            TeleportCarro:MostrarNotificacao("Duplicar Bolas desativado!")
-            duplicateBallsActive = false -- garante que o loop pare
-        end
 
 print("🐧 Linux Hub V3 WindUI carregado com sucesso! - Criado por Nightmare")
