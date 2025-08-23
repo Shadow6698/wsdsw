@@ -3391,43 +3391,49 @@ DuplicarToolsTab:Toggle({
         local char = player.Character or player.CharacterAdded:Wait()
         local hrp = char:WaitForChild("HumanoidRootPart")
 
+        -- Função para contar ferramentas
+        local function getToolCount()
+            local count = #player.Backpack:GetChildren()
+            for _, v in ipairs(char:GetChildren()) do
+                if v:IsA("Tool") then
+                    count += 1
+                end
+            end
+            return count
+        end
+
         if state then
             TeleportCarro:MostrarNotificacao("Duplicar Tools ativado!")
 
-            -- Loop dentro do spawn
             task.spawn(function()
                 while state do
-                    -- Atualiza referência da bola
                     local basketballFolder = workspace.WorkspaceCom:FindFirstChild("001_GiveTools")
                     local basketball = basketballFolder and basketballFolder:FindFirstChild("Basketball")
-                    if not basketball or not char.Parent then
-                        task.wait(0.5)
-                        continue
+                    if basketball and char.Parent then
+                        -- Teleportar para a Basketball
+                        hrp.CFrame = basketball.CFrame + Vector3.new(0,5,0)
+
+                        -- Detectar interação
+                        local clickDetector = basketball:FindFirstChildOfClass("ClickDetector")
+                        local prompt = basketball:FindFirstChildOfClass("ProximityPrompt")
+
+                        if clickDetector then
+                            fireclickdetector(clickDetector)
+                        elseif prompt then
+                            fireproximityprompt(prompt)
+                        else
+                            firetouchinterest(hrp, basketball, 0)
+                            task.wait()
+                            firetouchinterest(hrp, basketball, 1)
+                        end
                     end
 
-                    -- Teleporta próximo da bola
-                    hrp.CFrame = basketball.CFrame + Vector3.new(0,5,0)
-
-                    -- Detecta interação
-                    local clickDetector = basketball:FindFirstChildOfClass("ClickDetector")
-                    local prompt = basketball:FindFirstChildOfClass("ProximityPrompt")
-
-                    if clickDetector then
-                        fireclickdetector(clickDetector)
-                    elseif prompt then
-                        fireproximityprompt(prompt)
-                    else
-                        firetouchinterest(hrp, basketball, 0)
-                        task.wait()
-                        firetouchinterest(hrp, basketball, 1)
-                    end
-
-                    task.wait(0.1) -- curto para pegar várias vezes
+                    task.wait(0.1) -- intervalo curto para pegar várias bolas
                 end
             end)
         else
             TeleportCarro:MostrarNotificacao("Duplicar Tools desativado!")
-            state = false -- termina o loop imediatamente
+            state = false -- para imediatamente o loop
         end
     end
 })
