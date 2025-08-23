@@ -3321,7 +3321,7 @@ FunTab:Toggle({
 })
 FunTab:Toggle({
     Title = "Ativar Fogo",
-    Description = "Teleporta para cima do Fire do BurgerBarn e volta após 5 segundos",
+    Description = "pra funcionar tem que ta com o fogo da hamburgueria ligado",
     Default = false,
     Callback = function(state)
         local player = game.Players.LocalPlayer
