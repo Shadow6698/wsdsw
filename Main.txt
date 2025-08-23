@@ -3386,7 +3386,7 @@ DuplicarToolsTab:Toggle({
     Description = "Duplica Basketballs automaticamente",
     Default = false,
     Callback = function(state)
-        -- Variável local controlando o loop
+        -- Variável de controle do loop
         local running = state
 
         -- Notificação
@@ -3398,7 +3398,7 @@ DuplicarToolsTab:Toggle({
             return
         end
 
-        -- Tudo dentro do toggle
+        -- Loop dentro do toggle
         task.spawn(function()
             local Players = game:GetService("Players")
             local player = Players.LocalPlayer
@@ -3406,6 +3406,12 @@ DuplicarToolsTab:Toggle({
             local hrp = char:WaitForChild("HumanoidRootPart")
 
             while running do
+                -- Atualiza o estado do toggle a cada iteração
+                if not DuplicarToolsTab:GetToggleState("Duplicar Tools") then
+                    running = false
+                    break
+                end
+
                 local basketballFolder = workspace.WorkspaceCom:FindFirstChild("001_GiveTools")
                 local basketball = basketballFolder and basketballFolder:FindFirstChild("Basketball")
                 if not basketball or not char.Parent then break end
@@ -3432,6 +3438,7 @@ DuplicarToolsTab:Toggle({
         end)
     end
 })
+
 
 
 print("🐧 Linux Hub V3 WindUI carregado com sucesso! - Criado por Nightmare")
