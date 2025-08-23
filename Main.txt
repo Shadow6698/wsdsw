@@ -276,11 +276,6 @@ local TeleportTab = Window:Tab({
     Icon = "zap",
     Locked = false,
 })
-local DuplicarToolsTab = Window:Tab({
-    Title = "Duplicar Tools",
-    Icon = "copy",
-    Locked = false,
-})
 
 -- Seleciona a primeira aba (agora é RGB)
 Window:SelectTab(1)
@@ -3390,68 +3385,5 @@ for locationName, position in pairs(locations) do
         end
     })
 end
-
--- ==============================
--- Duplicar Tools
--- ==============================
-DuplicarToolsTab:Toggle({
-    Title = "Duplicar Tools",
-    Description = "Duplica Basketballs automaticamente",
-    Default = false,
-    Callback = function(state)
-        -- Variável de controle do loop
-        local running = state
-
-        -- Notificação
-        if state then
-            TeleportCarro:MostrarNotificacao("Duplicar Tools ativado!")
-        else
-            TeleportCarro:MostrarNotificacao("Duplicar Tools desativado!")
-            running = false
-            return
-        end
-
-        -- Loop dentro do toggle
-        task.spawn(function()
-            local Players = game:GetService("Players")
-            local player = Players.LocalPlayer
-            local char = player.Character or player.CharacterAdded:Wait()
-            local hrp = char:WaitForChild("HumanoidRootPart")
-
-            while running do
-                -- Atualiza o estado do toggle a cada iteração
-                if not DuplicarToolsTab:GetToggleState("Duplicar Tools") then
-                    running = false
-                    break
-                end
-
-                local basketballFolder = workspace.WorkspaceCom:FindFirstChild("001_GiveTools")
-                local basketball = basketballFolder and basketballFolder:FindFirstChild("Basketball")
-                if not basketball or not char.Parent then break end
-
-                -- Teleporta próximo da bola
-                hrp.CFrame = basketball.CFrame + Vector3.new(0,5,0)
-
-                -- Detecta interação
-                local clickDetector = basketball:FindFirstChildOfClass("ClickDetector")
-                local prompt = basketball:FindFirstChildOfClass("ProximityPrompt")
-
-                if clickDetector then
-                    fireclickdetector(clickDetector)
-                elseif prompt then
-                    fireproximityprompt(prompt)
-                else
-                    firetouchinterest(hrp, basketball, 0)
-                    task.wait()
-                    firetouchinterest(hrp, basketball, 1)
-                end
-
-                task.wait(0.2)
-            end
-        end)
-    end
-})
-
-
 
 print("🐧 Linux Hub V3 WindUI carregado com sucesso! - Criado por Nightmare")
