@@ -3321,7 +3321,7 @@ FunTab:Toggle({
 })
 FunTab:Toggle({
     Title = "Ativar Fogo",
-    Description = "Liga/Desliga o efeito de fogo do BurgerBarn no personagem",
+    Description = "Liga/Desliga o efeito de fogo da hamburgueria no personagem",
     Default = false,
     Callback = function(state)
         local player = game.Players.LocalPlayer
