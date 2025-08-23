@@ -3321,31 +3321,34 @@ FunTab:Toggle({
 })
 FunTab:Toggle({
     Title = "Ativar Fogo",
-    Description = "Liga/Desliga o efeito de fogo da hamburgueria no personagem",
+    Description = "Liga/Desliga o efeito de fogo do BurgerBarn no personagem",
     Default = false,
     Callback = function(state)
         local player = game.Players.LocalPlayer
         local char = player.Character or player.CharacterAdded:Wait()
         local hrp = char:WaitForChild("HumanoidRootPart")
+        local burgerBarn = workspace.WorkspaceCom:FindFirstChild("001_BurgerBarn")
+        local fireHolder = burgerBarn and burgerBarn:FindFirstChild("Fire")
 
         if state then
-            -- Ativar fogo
-            local fireSource = workspace.WorkspaceCom["001_BurgerBarn"]:FindFirstChild("Fire")
-            if fireSource and fireSource:FindFirstChild("Fire") then
-                local fireClone = fireSource.Fire:Clone()
-                fireClone.Parent = hrp
-                fireClone.Name = "HumanoidFire"
+            if fireHolder and fireHolder:FindFirstChild("Fire") then
+                local fire = fireHolder.Fire
+                fire.Parent = hrp
+                fire.Name = "HumanoidFire"
                 TeleportCarro:MostrarNotificacao("🔥 Fogo ativado!")
             else
-                warn("Fire não encontrado em workspace.WorkspaceCom['001_BurgerBarn'].Fire")
+                warn("🔥 Fire não encontrado em workspace.WorkspaceCom['001_BurgerBarn'].Fire")
             end
         else
-            -- Desativar fogo
             local existing = hrp:FindFirstChild("HumanoidFire")
             if existing then
-                existing:Destroy()
+                -- Move o fogo de volta para o lugar original no BurgerBarn
+                existing.Parent = fireHolder
+                existing.Name = "Fire"
+                TeleportCarro:MostrarNotificacao("❌ Fogo desativado!")
+            else
+                TeleportCarro:MostrarNotificacao("⚠️ Nenhum fogo para desativar!")
             end
-            TeleportCarro:MostrarNotificacao("❌ Fogo desativado!")
         end
     end
 })
