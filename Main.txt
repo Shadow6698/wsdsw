@@ -3386,30 +3386,32 @@ DuplicarToolsTab:Toggle({
     Description = "Duplica Basketballs automaticamente",
     Default = false,
     Callback = function(state)
-        local duplicateBallsActive = state
+        duplicateBallsActive = state
         local Players = game:GetService("Players")
         local player = Players.LocalPlayer
         local char = player.Character or player.CharacterAdded:Wait()
         local hrp = char:WaitForChild("HumanoidRootPart")
         local basketball = workspace.WorkspaceCom:FindFirstChild("001_GiveTools") 
             and workspace.WorkspaceCom["001_GiveTools"]:FindFirstChild("Basketball")
+
         if not basketball then
             warn("Basketball não encontrada!")
             return
         end
+
         if state then
             TeleportCarro:MostrarNotificacao("Duplicar Tools ativado!")
             -- Loop contínuo que verifica o estado a cada iteração
-            local connection
-            connection = task.spawn(function()
+            task.spawn(function()
                 while duplicateBallsActive do
-                    if not char.Parent then break end -- garante que o personagem exista
-                    if not hrp.Parent then break end
+                    if not char.Parent or not hrp.Parent then break end -- garante que o personagem exista
                     -- Teleporta próximo da bola
                     hrp.CFrame = basketball.CFrame + Vector3.new(0,5,0)
+
                     -- Detecta interação
                     local clickDetector = basketball:FindFirstChildOfClass("ClickDetector")
                     local prompt = basketball:FindFirstChildOfClass("ProximityPrompt")
+
                     if clickDetector then
                         fireclickdetector(clickDetector)
                     elseif prompt then
@@ -3419,14 +3421,13 @@ DuplicarToolsTab:Toggle({
                         task.wait()
                         firetouchinterest(hrp, basketball, 1)
                     end
+
                     task.wait(0.2)
-                    -- Sai do loop se toggle foi desativada
-                    if not duplicateBallsActive then break end
+                    if not duplicateBallsActive then break end -- garante que o loop pare imediatamente
                 end
             end)
         else
             TeleportCarro:MostrarNotificacao("Duplicar Tools desativado!")
-            duplicateBallsActive = false -- garante que o loop pare
         end
     end
 })
