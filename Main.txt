@@ -3379,16 +3379,8 @@ for locationName, position in pairs(locations) do
 end
 
 -- ==============================
--- ITENS CLONE/FE DESENHO
+-- ITENS CLONE/FE DESENHO – Duplicar Bolas
 -- ==============================
-
--- Criar aba para Itens Clone/FE Desenho
-local CloneTab = Window:Tab({
-    Title = "Itens Clone/FE Desenho",
-    Description = "Clonagem e desenhos FE",
-    Icon = "package"
-})
-
 CloneTab:Toggle({
     Title = "Duplicar Bolas",
     Description = "Duplica Basketballs automaticamente",
@@ -3407,12 +3399,14 @@ CloneTab:Toggle({
         end
         if state then
             TeleportCarro:MostrarNotificacao("Duplicar Bolas ativado!")
-            task.spawn(function()
-                while duplicateBallsActive and char.Parent do
+            -- Loop contínuo que verifica o estado a cada iteração
+            local connection
+            connection = task.spawn(function()
+                while duplicateBallsActive do
+                    if not char.Parent then break end -- garante que o personagem exista
+                    if not hrp.Parent then break end
                     -- Teleporta próximo da bola
-                    if hrp and basketball then
-                        hrp.CFrame = basketball.CFrame + Vector3.new(0,5,0)
-                    end
+                    hrp.CFrame = basketball.CFrame + Vector3.new(0,5,0)
                     -- Detecta interação
                     local clickDetector = basketball:FindFirstChildOfClass("ClickDetector")
                     local prompt = basketball:FindFirstChildOfClass("ProximityPrompt")
@@ -3426,13 +3420,13 @@ CloneTab:Toggle({
                         firetouchinterest(hrp, basketball, 1)
                     end
                     task.wait(0.2)
+                    -- Sai do loop se toggle foi desativada
+                    if not duplicateBallsActive then break end
                 end
             end)
         else
             TeleportCarro:MostrarNotificacao("Duplicar Bolas desativado!")
-            -- Loop para automaticamente parar
+            duplicateBallsActive = false -- garante que o loop pare
         end
-    end
-})
 
 print("🐧 Linux Hub V3 WindUI carregado com sucesso! - Criado por Nightmare")
