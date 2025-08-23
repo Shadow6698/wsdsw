@@ -3387,51 +3387,49 @@ DuplicarToolsTab:Toggle({
     Default = false,
     Callback = function(state)
         -- Variável local controlando o loop
-        local duplicateBallsActive = state
+        local running = state
 
-        -- Tudo dentro da toggle
-        local Players = game:GetService("Players")
-        local player = Players.LocalPlayer
-        local char = player.Character or player.CharacterAdded:Wait()
-        local hrp = char:WaitForChild("HumanoidRootPart")
-
-        task.spawn(function()
-            while duplicateBallsActive do
-                -- Atualiza referência da bola
-                local basketballFolder = workspace.WorkspaceCom:FindFirstChild("001_GiveTools")
-                local basketball = basketballFolder and basketballFolder:FindFirstChild("Basketball")
-                if basketball and char.Parent then
-                    -- Teleportar para a Basketball
-                    hrp.CFrame = basketball.CFrame + Vector3.new(0,5,0)
-
-                    -- Detectar interação
-                    local clickDetector = basketball:FindFirstChildOfClass("ClickDetector")
-                    local prompt = basketball:FindFirstChildOfClass("ProximityPrompt")
-
-                    if clickDetector then
-                        fireclickdetector(clickDetector)
-                    elseif prompt then
-                        fireproximityprompt(prompt)
-                    else
-                        firetouchinterest(hrp, basketball, 0)
-                        task.wait()
-                        firetouchinterest(hrp, basketball, 1)
-                    end
-                end
-                task.wait(0.1)
-
-                -- Verifica se o toggle foi desativado
-                if not state then
-                    break
-                end
-            end
-        end)
-
+        -- Notificação
         if state then
             TeleportCarro:MostrarNotificacao("Duplicar Tools ativado!")
         else
             TeleportCarro:MostrarNotificacao("Duplicar Tools desativado!")
+            running = false
+            return
         end
+
+        -- Tudo dentro do toggle
+        task.spawn(function()
+            local Players = game:GetService("Players")
+            local player = Players.LocalPlayer
+            local char = player.Character or player.CharacterAdded:Wait()
+            local hrp = char:WaitForChild("HumanoidRootPart")
+
+            while running do
+                local basketballFolder = workspace.WorkspaceCom:FindFirstChild("001_GiveTools")
+                local basketball = basketballFolder and basketballFolder:FindFirstChild("Basketball")
+                if not basketball or not char.Parent then break end
+
+                -- Teleporta próximo da bola
+                hrp.CFrame = basketball.CFrame + Vector3.new(0,5,0)
+
+                -- Detecta interação
+                local clickDetector = basketball:FindFirstChildOfClass("ClickDetector")
+                local prompt = basketball:FindFirstChildOfClass("ProximityPrompt")
+
+                if clickDetector then
+                    fireclickdetector(clickDetector)
+                elseif prompt then
+                    fireproximityprompt(prompt)
+                else
+                    firetouchinterest(hrp, basketball, 0)
+                    task.wait()
+                    firetouchinterest(hrp, basketball, 1)
+                end
+
+                task.wait(0.2)
+            end
+        end)
     end
 })
 
