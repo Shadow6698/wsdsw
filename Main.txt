@@ -3319,6 +3319,36 @@ FunTab:Toggle({
         end
     end
 })
+FunTab:Toggle({
+    Title = "Ativar Fogo",
+    Description = "Liga/Desliga o efeito de fogo do BurgerBarn no personagem",
+    Default = false,
+    Callback = function(state)
+        local player = game.Players.LocalPlayer
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:WaitForChild("HumanoidRootPart")
+
+        if state then
+            -- Ativar fogo
+            local fireSource = workspace.WorkspaceCom["001_BurgerBarn"]:FindFirstChild("Fire")
+            if fireSource and fireSource:FindFirstChild("Fire") then
+                local fireClone = fireSource.Fire:Clone()
+                fireClone.Parent = hrp
+                fireClone.Name = "HumanoidFire"
+                TeleportCarro:MostrarNotificacao("🔥 Fogo ativado!")
+            else
+                warn("Fire não encontrado em workspace.WorkspaceCom['001_BurgerBarn'].Fire")
+            end
+        else
+            -- Desativar fogo
+            local existing = hrp:FindFirstChild("HumanoidFire")
+            if existing then
+                existing:Destroy()
+            end
+            TeleportCarro:MostrarNotificacao("❌ Fogo desativado!")
+        end
+    end
+})
 
 -- ============================== 
 -- TELEPORTES/TELEPORTS SCRIPTS 
