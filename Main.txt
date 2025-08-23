@@ -3273,6 +3273,23 @@ FunTab:Button({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/drone/refs/heads/main/Main.txt"))()
     end
 })
+
+FunTab:Button({
+    Title = "Duplicar Itens",
+    Description = "Multiplica suas ferramentas/itens",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/multiplicartools/refs/heads/main/Main.txt"))()
+    end
+})
+
+FunTab:Button({
+    Title = "Pintar com Itens",
+    Description = "Desenhe usando suas ferramentas",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Affexter/Programs/refs/heads/main/scripts/tooldrawFE.lua"))()
+    end
+})
+
 FunTab:Toggle({
     Title = "Escorregador Divertido",
     Description = "Teleporta para ponto específico e volta se passar certo limite",
@@ -3283,16 +3300,13 @@ FunTab:Toggle({
         local player = game.Players.LocalPlayer
         local character = player.Character or player.CharacterAdded:Wait()
         local hrp = character:WaitForChild("HumanoidRootPart")
-
         if state then
             TeleportCarro:MostrarNotificacao("Escorregador Divertido ativado!")
-
             -- Salvar posição original e teleportar apenas uma vez
             if not originalCFrame then
                 originalCFrame = hrp.CFrame
                 hrp.CFrame = CFrame.new(-547, 158, 948)
             end
-
             task.spawn(function()
                 while droneTPActive and character.Parent do
                     -- Checa se passou do limite
@@ -3304,7 +3318,6 @@ FunTab:Toggle({
                     task.wait(0.1)
                 end
             end)
-
         else
             TeleportCarro:MostrarNotificacao("Escorregador Divertido desativado!")
             originalCFrame = nil -- reseta posição salva
