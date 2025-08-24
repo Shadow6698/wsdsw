@@ -12028,7 +12028,7 @@ ProtectionTab:AddToggle({
 ProtectionTab:AddSection({ "Anti Flings" })
 
 ProtectionTab:AddToggle({
-    Title = "Anti flings de fdps",
+   Title = "Anti flings de fdps",
     Description = "Remove veículos de outros jogadores automaticamente",
     Default = false,
     Callback = function(state)
@@ -12075,17 +12075,15 @@ ProtectionTab:AddToggle({
                 while antiCanoeActive and LocalPlayer.Character do
                     local workspaceCom = Workspace:FindFirstChild("WorkspaceCom")
                     if workspaceCom then
-                        -- Remove CanoeCloneButton
                         if workspaceCom:FindFirstChild("001_CanoeCloneButton") then
                             workspaceCom["001_CanoeCloneButton"]:Destroy()
                         end
-                        -- Remove Canoes no CanoeStorage
                         if workspaceCom:FindFirstChild("001_CanoeStorage") then
                             local storage = workspaceCom["001_CanoeStorage"]
                             for _, canoe in ipairs(storage:GetChildren()) do
                                 local dono = canoe:FindFirstChild("Owner")
                                 if dono and dono.Value ~= LocalPlayer or not dono then
-                                    table.insert(removedCanoes, canoe:Clone()) -- guarda clone
+                                    table.insert(removedCanoes, canoe:Clone())
                                     canoe:Destroy()
                                 end
                             end
@@ -12096,7 +12094,6 @@ ProtectionTab:AddToggle({
             end)
         else
             TeleportCarro:MostrarNotificacao("Anti Canoe Fling desativado!")
-            -- Reaparecer Canoes removidos
             local workspaceCom = Workspace:FindFirstChild("WorkspaceCom")
             if workspaceCom and workspaceCom:FindFirstChild("001_CanoeStorage") then
                 local storage = workspaceCom["001_CanoeStorage"]
@@ -12104,24 +12101,21 @@ ProtectionTab:AddToggle({
                     canoeClone.Parent = storage
                 end
             end
-            removedCanoes = {} -- limpa tabela
+            removedCanoes = {}
         end
     end
 })
 
 ProtectionTab:AddToggle({
-    Title = "Anti Fling Jets",
+   Title = "Anti Fling Jets",
     Description = "Remove jets de outros jogadores automaticamente",
     Default = false,
     Callback = function(state)
         antiJetsActive = state
-
         if state then
             TeleportCarro:MostrarNotificacao("Anti Fling Jets ativado!")
-
             task.spawn(function()
                 while antiJetsActive do
-                    -- Busca o folder toda vez
                     local jetFolder = workspace.WorkspaceCom:FindFirstChild("001_Airport")
                         and workspace.WorkspaceCom["001_Airport"]:FindFirstChild("AirportHanger")
                         and workspace.WorkspaceCom["001_Airport"].AirportHanger:FindFirstChild("001_JetStorage")
@@ -12134,17 +12128,14 @@ ProtectionTab:AddToggle({
                             end
                         end
                     end
-
-                    task.wait(0.1) -- intervalo do loop
+                    task.wait(0.1)
                 end
             end)
-
         else
             TeleportCarro:MostrarNotificacao("Anti Fling Jets desativado!")
         end
     end
 })
-
 
 ProtectionTab:AddToggle({
     Title = "Anti Fling Helicópteros",
@@ -12152,12 +12143,10 @@ ProtectionTab:AddToggle({
     Default = false,
     Callback = function(state)
         antiHeliActive = state
-
         if state then
             TeleportCarro:MostrarNotificacao("Anti Fling Helicópteros ativado!")
             task.spawn(function()
                 while antiHeliActive and LocalPlayer.Character do
-                    -- Procura a pasta toda vez
                     local heliFolder = workspace.WorkspaceCom:FindFirstChild("001_HeliStorage")
                         and workspace.WorkspaceCom["001_HeliStorage"]:FindFirstChild("PoliceStationHeli")
                     
@@ -12168,17 +12157,14 @@ ProtectionTab:AddToggle({
                             end
                         end
                     end
-
-                    task.wait(0.03) -- loop rápido
+                    task.wait(0.03)
                 end
             end)
-
         else
             TeleportCarro:MostrarNotificacao("Anti Fling Helicópteros desativado!")
         end
     end
 })
-
 
 ProtectionTab:AddToggle({
     Title = "Anti Fling Ball",
@@ -12187,7 +12173,6 @@ ProtectionTab:AddToggle({
     Callback = function(state)
         antiBallActive = state
         local ballFolder = workspace.WorkspaceCom:FindFirstChild("001_SoccerBalls")
-
         if state then
             TeleportCarro:MostrarNotificacao("Anti Fling Ball ativado!")
             task.spawn(function()
@@ -12197,7 +12182,7 @@ ProtectionTab:AddToggle({
                             ball:Destroy()
                         end
                     end
-                    task.wait(0.03) -- frequência do loop
+                    task.wait(0.03)
                 end
             end)
         else
@@ -12206,9 +12191,10 @@ ProtectionTab:AddToggle({
     end
 })
 
+
 ProtectionTab:AddSection({ "Anti Sit" })
 ProtectionTab:AddToggle({
-    Title = "Anti Sit",
+     Title = "Anti Sit",
     Description = "Não deixa seu personagem sentar",
     Default = false,
     Callback = function(state)
