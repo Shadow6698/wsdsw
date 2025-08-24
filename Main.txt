@@ -3363,39 +3363,30 @@ FunTab:Toggle({
     end
 })
 FunTab:Toggle({
-    Title = "Sit",
+    Title = "sla esse crlh",
     Description = "Ativa/Desativa a animação WheelChairAnimation",
     Default = false,
     Callback = function(state)
-        local player = game.Players.LocalPlayer
-        local char = player.Character or player.CharacterAdded:Wait()
-        local humanoid = char:WaitForChild("Humanoid")
-
         local RepStorage = game:GetService("ReplicatedStorage")
         local remotes = RepStorage:WaitForChild("Remotes")
         local noMotorAnims = RepStorage:WaitForChild("NoMotorAnimations")
         local wheelChairAnim = noMotorAnims:WaitForChild("WheelChairAnimation")
 
-        if state then
-            -- Ativar animação
-            if remotes:FindFirstChild("t_animationPlayed") then
+        if remotes:FindFirstChild("t_animationPlayed") then
+            if state then
+                -- Ativar a animação
                 remotes.t_animationPlayed:FireServer(wheelChairAnim)
                 TeleportCarro:MostrarNotificacao("✅ Sit ativado!")
             else
-                warn("Remote t_animationPlayed não encontrado!")
+                -- Desativar a animação
+                remotes.t_animationPlayed:FireServer(nil) -- envia nil para parar a animação
+                TeleportCarro:MostrarNotificacao("❌ Sit desativado!")
             end
         else
-            -- Desativar animação
-            for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
-                if track.Animation == wheelChairAnim then
-                    track:Stop()
-                end
-            end
-            TeleportCarro:MostrarNotificacao("❌ Sit desativado!")
+            warn("Remote t_animationPlayed não encontrado!")
         end
     end
 })
-
 
 -- ============================== 
 -- TELEPORTES/TELEPORTS SCRIPTS 
