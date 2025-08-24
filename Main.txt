@@ -11937,38 +11937,33 @@ UniversalTab:AddButton({
 
 local ProtectionTab = Window:MakeTab({ Title = "Proteção", Icon = "rbxassetid://13364900349" })
 
-local ImunesSection = ProtectionTab:Section({
-    Title = "Proteções e Imunidades",
-    TextXAlignment = "Left",
-    TextSize = 17,
-})
-ProtectionTab:Button({
-    Title = "AntiBug",
-    Desc = "Devs: cahh,Night",
-    Locked = false,
+ProtectionTab:AddSection("Scripts De Proteção")
+
+ProtectionTab:AddButton({
+    Name = "AntiBug",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/antbug/refs/heads/main/Main.txt"))()
     end
 })
-ProtectionTab:Button({
-    Title = "Anti Chaos Hub",
-    Desc = "Proteção contra Chaos Hub",
-    Locked = false,
+
+ProtectionTab:AddButton({
+    Name = "Anti Chaos Hub",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/removeplayers/main/Main.txt"))()
     end
 })
-ProtectionTab:Button({
-    Title = "Anti Som",
-    Desc = "DEU MO TRABALHO SE NÃO GOSTOU FAZ MELHOR AI DESGRAÇA",
-    Locked = false,
+
+ProtectionTab:AddButton({
+    Name = "Anti Som",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/antsom/refs/heads/main/Main.txt"))()
     end
 })
-ProtectionTab:Toggle({
-    Title = "Anti flings de fdps",
-    Description = "Remove veículos de outros jogadores automaticamente",
+
+ProtectionTab:AddSection("Anti Flings")
+
+ProtectionTab:AddToggle({
+    Name = "Anti flings de fdps",
     Default = false,
     Callback = function(state)
         antiVeiculosActive = state
@@ -12000,9 +11995,9 @@ ProtectionTab:Toggle({
         end
     end
 })
-ProtectionTab:Toggle({
-    Title = "Anti Canoe Fling",
-    Description = "Remove canoas de outros players automaticamente (reaparecem ao desativar)",
+
+ProtectionTab:AddToggle({
+    Name = "Anti Canoe Fling",
     Default = false,
     Callback = function(state)
         antiCanoeActive = state
@@ -12045,9 +12040,9 @@ ProtectionTab:Toggle({
         end
     end
 })
-ProtectionTab:Toggle({
-    Title = "Anti Fling Jets",
-    Description = "Remove jets de outros jogadores automaticamente",
+
+ProtectionTab:AddToggle({
+    Name = "Anti Fling Jets",
     Default = false,
     Callback = function(state)
         antiJetsActive = state
@@ -12081,9 +12076,9 @@ ProtectionTab:Toggle({
         end
     end
 })
-ProtectionTab:Toggle({
-    Title = "Anti Fling Helicópteros",
-    Description = "Remove helicópteros de outros jogadores automaticamente",
+
+ProtectionTab:AddToggle({
+    Name = "Anti Fling Helicópteros",
     Default = false,
     Callback = function(state)
         antiHeliActive = state
@@ -12114,9 +12109,9 @@ ProtectionTab:Toggle({
         end
     end
 })
-ProtectionTab:Toggle({
-    Title = "Anti Fling Ball",
-    Description = "Remove SoccerBalls automaticamente",
+
+ProtectionTab:AddToggle({
+    Name = "Anti Fling Ball",
     Default = false,
     Callback = function(state)
         antiBallActive = state
@@ -12140,9 +12135,11 @@ ProtectionTab:Toggle({
         end
     end
 })
-ProtectionTab:Toggle({
-    Title = "Anti Sit",
-    Description = "Não deixa seu personagem sentar",
+
+ProtectionTab:AddSection("Anti Sit")
+
+ProtectionTab:AddToggle({
+    Name = "Anti Sit",
     Default = false,
     Callback = function(state)
         antiSitActive = state
