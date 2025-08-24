@@ -3371,13 +3371,6 @@ FunTab:Button({
     end
 })
 
-FunTab:Button({
-    Title = "UGC Emotes",
-    Description = "ta meio bugado kk",
-    Callback = function()
-        loadstring(game:HttpGet("https://angelical.me/ak.lua"))()
-    end
-})
 -- ============================== 
 -- TELEPORTES/TELEPORTS SCRIPTS 
 -- ============================== 
