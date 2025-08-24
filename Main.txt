@@ -2223,10 +2223,20 @@ BrookhavenTab:Button({
 -- R6/R15 ANIMATIONS
 -- ==============================
 
+
 local R6R15Section = R6R15Tab:Section({
     Title = "Scripts de Animações",
     TextXAlignment = "Left",
     TextSize = 17,
+})
+
+R6R15Tab:Button({
+    Title = "🌟 Hub Universal",
+    Desc = "Hub universal de scripts",
+    Locked = false,
+    Callback = function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/Piw5bqGq"))()
+    end
 })
 
 R6R15Tab:Button({
