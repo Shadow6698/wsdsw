@@ -3367,22 +3367,31 @@ FunTab:Toggle({
     Description = "Liga/Desliga a animação de cadeira de rodas (sit)",
     Default = false,
     Callback = function(state)
-        local player = game.Players.LocalPlayer
+        local Players = game:GetService("Players")
+        local player = Players.LocalPlayer
         local char = player.Character or player.CharacterAdded:Wait()
 
-        local remotes = game:GetService("ReplicatedStorage"):WaitForChild("Remotes")
-        local anim = game:GetService("ReplicatedStorage"):WaitForChild("NoMotorAnimations"):WaitForChild("WheelChairAnimation")
+        local RepStorage = game:GetService("ReplicatedStorage")
+        local remotes = RepStorage:WaitForChild("Remotes")
+        local noMotorAnims = RepStorage:WaitForChild("NoMotorAnimations")
+        local wheelChairAnim = noMotorAnims:WaitForChild("WheelChairAnimation")
 
         if state then
-            -- Ativa a animação via Remote
-            remotes.t_animationPlayed:FireServer(anim)
-            TeleportCarro:MostrarNotificacao("✅ Sit ativado!")
+            -- Ativa a animação de sentar via Remote
+            if remotes:FindFirstChild("t_animationPlayed") then
+                remotes.t_animationPlayed:FireServer(wheelChairAnim)
+                TeleportCarro:MostrarNotificacao("✅ Sit ativado!")
+            else
+                warn("Remote t_animationPlayed não encontrado!")
+            end
         else
-            -- Para a animação via Remote
-            local humanoid = char:WaitForChild("Humanoid")
-            for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
-                if track.Animation == anim then
-                    track:Stop()
+            -- Tenta parar a animação para todos players
+            local humanoid = char:FindFirstChild("Humanoid")
+            if humanoid then
+                for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
+                    if track.Animation == wheelChairAnim then
+                        track:Stop()
+                    end
                 end
             end
             TeleportCarro:MostrarNotificacao("❌ Sit desativado!")
