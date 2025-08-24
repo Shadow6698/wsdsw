@@ -3362,36 +3362,12 @@ FunTab:Toggle({
         end
     end
 })
-FunTab:Toggle({
-    Title = "Sit (WheelChair)",
-    Description = "Ativa ou desativa a animação WheelChairAnimation no Humanoid",
-    Default = false,
-    Callback = function(state)
-        local Players = game:GetService("Players")
-        local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-        local player = Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-
-        -- pega a animação
-        local wheelChairAnim = ReplicatedStorage.NoMotorAnimations:WaitForChild("WheelChairAnimation")
-
-        -- checa se já carregou antes
-        local animTrack = humanoid:FindFirstChild("WheelChairAnimTrack")
-        if not animTrack then
-            animTrack = humanoid:LoadAnimation(wheelChairAnim)
-            animTrack.Name = "WheelChairAnimTrack"
-            animTrack.Parent = humanoid
-        end
-
-        if state then
-            animTrack:Play()
-            TeleportCarro:MostrarNotificacao("✅ Sit ativado!")
-        else
-            animTrack:Stop()
-            TeleportCarro:MostrarNotificacao("❌ Sit desativado!")
-        end
+FunTab:Button({
+    Title = "Animation GUI",
+    Description = "é so um treco de animação de brookhaven vou atualizar logo logo",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/animationgui/refs/heads/main/Main.txt"))()
     end
 })
 
