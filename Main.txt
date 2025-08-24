@@ -14,7 +14,7 @@ function TeleportCarro:MostrarNotificacao(mensagem)
     WindUI:Notify({
         Title = "System",
         Content = mensagem,
-        Duration = 3,
+        Duration = 2,
         Icon = "info",
     })
 end
