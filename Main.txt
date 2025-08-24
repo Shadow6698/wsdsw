@@ -3363,8 +3363,8 @@ FunTab:Toggle({
     end
 })
 FunTab:Toggle({
-    Title = "meupaukkj",
-    Description = "Ativa/Desativa a animação WheelChairAnimation no Humanoid",
+    Title = "Sit (WheelChair)",
+    Description = "Ativa ou desativa a animação WheelChairAnimation no Humanoid",
     Default = false,
     Callback = function(state)
         local Players = game:GetService("Players")
@@ -3374,27 +3374,23 @@ FunTab:Toggle({
         local character = player.Character or player.CharacterAdded:Wait()
         local humanoid = character:WaitForChild("Humanoid")
 
-        -- Pega a animação
+        -- pega a animação
         local wheelChairAnim = ReplicatedStorage.NoMotorAnimations:WaitForChild("WheelChairAnimation")
 
-        -- Armazena o AnimationTrack no próprio humanoid (como atributo)
-        if not humanoid:FindFirstChild("WheelChairAnimTrack") then
-            local animTrack = humanoid:LoadAnimation(wheelChairAnim)
-            animTrack.Name = "WheelChairAnimTrack"
-            animTrack.Looped = true
-            animTrack.Parent = humanoid -- opcional, para guardar referência
-        end
-
+        -- checa se já carregou antes
         local animTrack = humanoid:FindFirstChild("WheelChairAnimTrack")
+        if not animTrack then
+            animTrack = humanoid:LoadAnimation(wheelChairAnim)
+            animTrack.Name = "WheelChairAnimTrack"
+            animTrack.Parent = humanoid
+        end
 
         if state then
             animTrack:Play()
             TeleportCarro:MostrarNotificacao("✅ Sit ativado!")
         else
-            if animTrack.IsPlaying then
-                animTrack:Stop()
-                TeleportCarro:MostrarNotificacao("❌ Sit desativado!")
-            end
+            animTrack:Stop()
+            TeleportCarro:MostrarNotificacao("❌ Sit desativado!")
         end
     end
 })
