@@ -3363,13 +3363,13 @@ FunTab:Toggle({
     end
 })
 FunTab:Toggle({
-    Title = "Ativar Sit",
-    Description = "Liga/Desliga a animação de cadeira de rodas (sit)",
+    Title = "Sit",
+    Description = "Ativa/Desativa a animação WheelChairAnimation",
     Default = false,
     Callback = function(state)
-        local Players = game:GetService("Players")
-        local player = Players.LocalPlayer
+        local player = game.Players.LocalPlayer
         local char = player.Character or player.CharacterAdded:Wait()
+        local humanoid = char:WaitForChild("Humanoid")
 
         local RepStorage = game:GetService("ReplicatedStorage")
         local remotes = RepStorage:WaitForChild("Remotes")
@@ -3377,7 +3377,7 @@ FunTab:Toggle({
         local wheelChairAnim = noMotorAnims:WaitForChild("WheelChairAnimation")
 
         if state then
-            -- Ativa a animação de sentar via Remote
+            -- Ativar animação
             if remotes:FindFirstChild("t_animationPlayed") then
                 remotes.t_animationPlayed:FireServer(wheelChairAnim)
                 TeleportCarro:MostrarNotificacao("✅ Sit ativado!")
@@ -3385,13 +3385,10 @@ FunTab:Toggle({
                 warn("Remote t_animationPlayed não encontrado!")
             end
         else
-            -- Tenta parar a animação para todos players
-            local humanoid = char:FindFirstChild("Humanoid")
-            if humanoid then
-                for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
-                    if track.Animation == wheelChairAnim then
-                        track:Stop()
-                    end
+            -- Desativar animação
+            for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
+                if track.Animation == wheelChairAnim then
+                    track:Stop()
                 end
             end
             TeleportCarro:MostrarNotificacao("❌ Sit desativado!")
