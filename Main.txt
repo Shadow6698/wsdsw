@@ -295,7 +295,7 @@ WindUI:Notify({
 
 -- Tag de versão
 Window:Tag({
-    Title = "v3.2.0",
+    Title = "v3.4.0",
     Color = Color3.fromHex("#ff6b6b")
 })
 
@@ -3442,11 +3442,13 @@ for locationName, position in pairs(locations) do
     })
 end
 
--- ============================== 
--- SCRIPTS +18 
--- ============================== 
-local AdultSection = FunTab:Section({
-    Title = "+18",
+-- ==============================
+-- Aba SCRIPTS +18
+-- ==============================
+
+-- Seção dentro da aba
+local AdultSection = AdultTab:Section({
+    Title = "Hubs +18",
 })
 
 -- Hub 1
@@ -3484,5 +3486,6 @@ AdultSection:Button({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Markklol/aw/refs/heads/main/Protected/BangScript.lua"))()
     end
 })
+
 
 print("🐧 Linux Hub V3 WindUI carregado com sucesso! - Criado por Nightmare")
