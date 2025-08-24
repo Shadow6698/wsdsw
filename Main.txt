@@ -3364,24 +3364,29 @@ FunTab:Toggle({
 })
 FunTab:Toggle({
     Title = "Ativar Sit",
-    Description = "Liga/Desliga a animação de cadeira de rodas",
+    Description = "Liga/Desliga a animação de cadeira de rodas (sit)",
     Default = false,
     Callback = function(state)
-        local ReplicatedStorage = game:GetService("ReplicatedStorage")
-        local remotes = ReplicatedStorage:FindFirstChild("Remotes")
-        local anims = ReplicatedStorage:FindFirstChild("NoMotorAnimations")
-        local humanoid = game.Players.LocalPlayer.Character:WaitForChild("Humanoid")
+        local player = game.Players.LocalPlayer
+        local char = player.Character or player.CharacterAdded:Wait()
+        local humanoid = char:WaitForChild("Humanoid")
+
+        local remotes = game:GetService("ReplicatedStorage").Remotes
+        local anim = game:GetService("ReplicatedStorage").NoMotorAnimations.WheelChairAnimation
 
         if state then
-            if remotes and remotes:FindFirstChild("t_animationPlayed") and anims and anims:FindFirstChild("WheelChairAnimation") then
-                remotes.t_animationPlayed:FireServer(anims.WheelChairAnimation, true)
-                TeleportCarro:MostrarNotificacao("🪑 Sit ativado!")
-            else
-                warn("⚠️ Remote ou animação não encontrada")
-            end
+            -- Dispara a animação pelo Remote
+            remotes.t_animationPlayed:FireServer(anim)
+
+            TeleportCarro:MostrarNotificacao("✅ Sit ativado!")
         else
-            -- Desativa a animação (resetando o humanoid ou mandando stop)
-            humanoid:LoadAnimation(anims.WheelChairAnimation):Stop()
+            -- Para a animação
+            for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+                if track.Animation == anim then
+                    track:Stop()
+                end
+            end
+
             TeleportCarro:MostrarNotificacao("❌ Sit desativado!")
         end
     end
