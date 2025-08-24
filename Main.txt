@@ -276,6 +276,11 @@ local TeleportTab = Window:Tab({
     Icon = "zap",
     Locked = false,
 })
+local AdultTab = Window:Tab({
+    Title = "SCRIPTS +18",
+    Icon = "lock",
+    Locked = false,
+})
 
 -- Seleciona a primeira aba (agora é RGB)
 Window:SelectTab(1)
@@ -3436,5 +3441,48 @@ for locationName, position in pairs(locations) do
         end
     })
 end
+
+-- ============================== 
+-- SCRIPTS +18 
+-- ============================== 
+local AdultSection = FunTab:Section({
+    Title = "+18",
+})
+
+-- Hub 1
+AdultSection:Button({
+    Title = "Hub 1",
+    Description = "Executa o Hub 1",
+    Callback = function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/hkyuHQ7Y"))()
+    end
+})
+
+-- Hub 2
+AdultSection:Button({
+    Title = "Hub 2",
+    Description = "Executa o Hub 2",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/4gh9/Bang-Script-Gui/main/bang%20gui.lua"))()
+    end
+})
+
+-- Hub 3
+AdultSection:Button({
+    Title = "Hub 3",
+    Description = "Executa o Hub 3",
+    Callback = function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/FWwdST5Y"))()
+    end
+})
+
+-- Hub 4
+AdultSection:Button({
+    Title = "Hub 4",
+    Description = "Executa o Hub 4",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Markklol/aw/refs/heads/main/Protected/BangScript.lua"))()
+    end
+})
 
 print("🐧 Linux Hub V3 WindUI carregado com sucesso! - Criado por Nightmare")
