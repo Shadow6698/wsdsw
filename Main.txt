@@ -3363,27 +3363,38 @@ FunTab:Toggle({
     end
 })
 FunTab:Toggle({
-    Title = "sla esse crlh",
-    Description = "Ativa/Desativa a animação WheelChairAnimation",
+    Title = "Sit",
+    Description = "Ativa/Desativa a animação WheelChairAnimation no Humanoid",
     Default = false,
     Callback = function(state)
-        local RepStorage = game:GetService("ReplicatedStorage")
-        local remotes = RepStorage:WaitForChild("Remotes")
-        local noMotorAnims = RepStorage:WaitForChild("NoMotorAnimations")
-        local wheelChairAnim = noMotorAnims:WaitForChild("WheelChairAnimation")
+        local Players = game:GetService("Players")
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-        if remotes:FindFirstChild("t_animationPlayed") then
-            if state then
-                -- Ativar a animação
-                remotes.t_animationPlayed:FireServer(wheelChairAnim)
-                TeleportCarro:MostrarNotificacao("✅ Sit ativado!")
-            else
-                -- Desativar a animação
-                remotes.t_animationPlayed:FireServer(nil) -- envia nil para parar a animação
+        local player = Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
+
+        -- Pega a animação
+        local wheelChairAnim = ReplicatedStorage.NoMotorAnimations:WaitForChild("WheelChairAnimation")
+
+        -- Cria o AnimationTrack se ainda não existir
+        if not humanoid:FindFirstChild("WheelChairAnimTrack") then
+            local animTrack = humanoid:LoadAnimation(wheelChairAnim)
+            animTrack.Name = "WheelChairAnimTrack"
+        end
+
+        local animTrack = humanoid:FindFirstChild("WheelChairAnimTrack")
+
+        if state then
+            -- Ativa animação
+            animTrack:Play()
+            TeleportCarro:MostrarNotificacao("✅ Sit ativado!")
+        else
+            -- Para animação
+            if animTrack.IsPlaying then
+                animTrack:Stop()
                 TeleportCarro:MostrarNotificacao("❌ Sit desativado!")
             end
-        else
-            warn("Remote t_animationPlayed não encontrado!")
         end
     end
 })
