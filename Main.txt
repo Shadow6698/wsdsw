@@ -1853,6 +1853,15 @@ AdminTab:Button({
     end
 })
 
+AdminTab:Button({
+   Title = "Sistema Anti-Kids",
+   Desc = "pra parar digite /stop ou /parar",
+   Locked = false,
+   Callback = function()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/sistema-ant-machistas/refs/heads/main/Main.txt"))()
+   end
+})
+
 -- ==============================
 -- SCRIPTS NOVOS
 -- ==============================
