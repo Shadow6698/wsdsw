@@ -11937,33 +11937,99 @@ UniversalTab:AddButton({
 
 local ProtectionTab = Window:MakeTab({ Title = "Proteção", Icon = "rbxassetid://13364900349" })
 
-ProtectionTab:AddSection("Scripts De Proteção")
-
-ProtectionTab:AddButton({
-    Name = "AntiBug",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/antbug/refs/heads/main/Main.txt"))()
+ProtectionTab:AddSection({ "Anti Freeze" })
+ProtectionTab:AddToggle({
+    Title = "Anti Freeze",
+    Description = "proteção contra glitchs e freeze",
+    Default = false,
+    Callback = function(state)
+        local antiFreezeActive = state
+        local antiFreezeConnections = {}
+        local Players = game:GetService("Players")
+        local LocalPlayer = Players.LocalPlayer
+        local blacklist = {
+            {Name = "water", Class = "Part"},
+        }
+        -- Função que neutraliza partes de freeze
+        local function neutralize(part)
+            if part and part:IsA("BasePart") then
+                pcall(function()
+                    part.Anchored = true
+                    part.CanCollide = false
+                    part.Massless = true
+                    part.Transparency = 1
+                    part:ClearAllChildren()
+                    part:Destroy()
+                end)
+            end
+        end
+        -- Função pra limpar conexões
+        local function cleanupConnections()
+            for _, conn in ipairs(antiFreezeConnections) do
+                conn:Disconnect()
+            end
+            antiFreezeConnections = {}
+        end
+        -- Sempre limpar antes
+        cleanupConnections()
+        if state then
+            TeleportCarro:MostrarNotificacao("Anti Freeze ativado!")
+            -- Monitorar partes novas no workspace
+            table.insert(antiFreezeConnections,
+                workspace.DescendantAdded:Connect(function(obj)
+                    for _, rule in ipairs(blacklist) do
+                        if obj.Name == rule.Name and obj.ClassName == rule.Class then
+                            neutralize(obj)
+                        end
+                    end
+                end)
+            )
+            -- Checar já existentes
+            for _, obj in ipairs(workspace:GetDescendants()) do
+                for _, rule in ipairs(blacklist) do
+                    if obj.Name == rule.Name and obj.ClassName == rule.Class then
+                        neutralize(obj)
+                    end
+                end
+            end
+            -- Loop para nil-instances
+            task.spawn(function()
+                while antiFreezeActive do
+                    for _, rule in ipairs(blacklist) do
+                        for _, v in next, getnilinstances() do
+                            if v.Name == rule.Name and v.ClassName == rule.Class then
+                                neutralize(v)
+                            end
+                        end
+                    end
+                    task.wait(0.25)
+                end
+            end)
+            -- Proteção extra no Humanoid
+            table.insert(antiFreezeConnections,
+                LocalPlayer.CharacterAdded:Connect(function(char)
+                    local hum = char:WaitForChild("Humanoid")
+                    hum.Touched:Connect(function(hit)
+                        for _, rule in ipairs(blacklist) do
+                            if hit.Name == rule.Name and hit.ClassName == rule.Class then
+                                neutralize(hit)
+                            end
+                        end
+                    end)
+                end)
+            )
+        else
+            TeleportCarro:MostrarNotificacao("Anti Freeze desativado!")
+            cleanupConnections()
+        end
     end
 })
 
-ProtectionTab:AddButton({
-    Name = "Anti Chaos Hub",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/removeplayers/main/Main.txt"))()
-    end
-})
-
-ProtectionTab:AddButton({
-    Name = "Anti Som",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/antsom/refs/heads/main/Main.txt"))()
-    end
-})
-
-ProtectionTab:AddSection("Anti Flings")
+ProtectionTab:AddSection({ "Anti Flings" })
 
 ProtectionTab:AddToggle({
-    Name = "Anti flings de fdps",
+    Title = "Anti flings de fdps",
+    Description = "Remove veículos de outros jogadores automaticamente",
     Default = false,
     Callback = function(state)
         antiVeiculosActive = state
@@ -11996,8 +12062,10 @@ ProtectionTab:AddToggle({
     end
 })
 
+
 ProtectionTab:AddToggle({
-    Name = "Anti Canoe Fling",
+    Title = "Anti Canoe Fling",
+    Description = "Remove canoas de outros players automaticamente (reaparecem ao desativar)",
     Default = false,
     Callback = function(state)
         antiCanoeActive = state
@@ -12040,9 +12108,9 @@ ProtectionTab:AddToggle({
         end
     end
 })
-
 ProtectionTab:AddToggle({
-    Name = "Anti Fling Jets",
+    Title = "Anti Fling Jets",
+    Description = "Remove jets de outros jogadores automaticamente",
     Default = false,
     Callback = function(state)
         antiJetsActive = state
@@ -12077,8 +12145,10 @@ ProtectionTab:AddToggle({
     end
 })
 
+
 ProtectionTab:AddToggle({
-    Name = "Anti Fling Helicópteros",
+    Title = "Anti Fling Helicópteros",
+    Description = "Remove helicópteros de outros jogadores automaticamente",
     Default = false,
     Callback = function(state)
         antiHeliActive = state
@@ -12110,8 +12180,10 @@ ProtectionTab:AddToggle({
     end
 })
 
+
 ProtectionTab:AddToggle({
-    Name = "Anti Fling Ball",
+    Title = "Anti Fling Ball",
+    Description = "Remove SoccerBalls automaticamente",
     Default = false,
     Callback = function(state)
         antiBallActive = state
@@ -12136,10 +12208,10 @@ ProtectionTab:AddToggle({
     end
 })
 
-ProtectionTab:AddSection("Anti Sit")
-
+ProtectionTab:AddSection({ "Anti Sit" })
 ProtectionTab:AddToggle({
-    Name = "Anti Sit",
+    Title = "Anti Sit",
+    Description = "Não deixa seu personagem sentar",
     Default = false,
     Callback = function(state)
         antiSitActive = state
@@ -12167,5 +12239,26 @@ ProtectionTab:AddToggle({
                 humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
             end
         end
+    end
+})
+
+ProtectionTab:AddSection({ "Scripts De Proteção Linux Hub" })
+
+ProtectionTab:AddButton({
+    Title = "Anti Chaos Hub",
+    Desc = "Proteção contra Chaos Hub",
+    Locked = false,
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/removeplayers/main/Main.txt"))()
+    end
+})
+
+
+ProtectionTab:AddButton({
+    Title = "Anti Som",
+    Desc = "DEU MO TRABALHO SE NÃO GOSTOU FAZ MELHOR AI DESGRAÇA",
+    Locked = false,
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/antsom/refs/heads/main/Main.txt"))()
     end
 })
