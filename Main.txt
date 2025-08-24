@@ -3363,7 +3363,7 @@ FunTab:Toggle({
     end
 })
 FunTab:Toggle({
-    Title = "Sit",
+    Title = "mia pika",
     Description = "Ativa/Desativa a animação WheelChairAnimation no Humanoid",
     Default = false,
     Callback = function(state)
@@ -3377,7 +3377,7 @@ FunTab:Toggle({
         -- Pega a animação
         local wheelChairAnim = ReplicatedStorage.NoMotorAnimations:WaitForChild("WheelChairAnimation")
 
-        -- Cria o AnimationTrack se ainda não existir
+        -- Guardar AnimationTrack no Humanoid para conseguir parar depois
         if not humanoid:FindFirstChild("WheelChairAnimTrack") then
             local animTrack = humanoid:LoadAnimation(wheelChairAnim)
             animTrack.Name = "WheelChairAnimTrack"
@@ -3386,11 +3386,9 @@ FunTab:Toggle({
         local animTrack = humanoid:FindFirstChild("WheelChairAnimTrack")
 
         if state then
-            -- Ativa animação
             animTrack:Play()
             TeleportCarro:MostrarNotificacao("✅ Sit ativado!")
         else
-            -- Para animação
             if animTrack.IsPlaying then
                 animTrack:Stop()
                 TeleportCarro:MostrarNotificacao("❌ Sit desativado!")
