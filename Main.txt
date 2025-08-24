@@ -3369,24 +3369,22 @@ FunTab:Toggle({
     Callback = function(state)
         local player = game.Players.LocalPlayer
         local char = player.Character or player.CharacterAdded:Wait()
-        local humanoid = char:WaitForChild("Humanoid")
 
-        local remotes = game:GetService("ReplicatedStorage").Remotes
-        local anim = game:GetService("ReplicatedStorage").NoMotorAnimations.WheelChairAnimation
+        local remotes = game:GetService("ReplicatedStorage"):WaitForChild("Remotes")
+        local anim = game:GetService("ReplicatedStorage"):WaitForChild("NoMotorAnimations"):WaitForChild("WheelChairAnimation")
 
         if state then
-            -- Dispara a animação pelo Remote
+            -- Ativa a animação via Remote
             remotes.t_animationPlayed:FireServer(anim)
-
             TeleportCarro:MostrarNotificacao("✅ Sit ativado!")
         else
-            -- Para a animação
-            for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+            -- Para a animação via Remote
+            local humanoid = char:WaitForChild("Humanoid")
+            for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
                 if track.Animation == anim then
                     track:Stop()
                 end
             end
-
             TeleportCarro:MostrarNotificacao("❌ Sit desativado!")
         end
     end
