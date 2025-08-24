@@ -11937,19 +11937,33 @@ UniversalTab:AddButton({
 
 local ProtectionTab = Window:MakeTab({ Title = "Proteção", Icon = "rbxassetid://13364900349" })
 
+-- Variáveis globais para controlar estados
+local antiFreezeActive = false
+local antiVeiculosActive = false
+local antiCanoeActive = false
+local antiJetsActive = false
+local antiHeliActive = false
+local antiBallActive = false
+local antiSitActive = false
+local removedCanoes = {}
+
+-- Serviços
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local LocalPlayer = Players.LocalPlayer
+
 ProtectionTab:AddSection({ "Anti Freeze" })
 ProtectionTab:AddToggle({
     Title = "Anti Freeze",
     Description = "proteção contra glitchs e freeze",
     Default = false,
     Callback = function(state)
-        local antiFreezeActive = state
+        antiFreezeActive = state
         local antiFreezeConnections = {}
-        local Players = game:GetService("Players")
-        local LocalPlayer = Players.LocalPlayer
         local blacklist = {
             {Name = "water", Class = "Part"},
         }
+        
         -- Função que neutraliza partes de freeze
         local function neutralize(part)
             if part and part:IsA("BasePart") then
@@ -11963,20 +11977,29 @@ ProtectionTab:AddToggle({
                 end)
             end
         end
+        
         -- Função pra limpar conexões
         local function cleanupConnections()
             for _, conn in ipairs(antiFreezeConnections) do
-                conn:Disconnect()
+                if conn then
+                    conn:Disconnect()
+                end
             end
             antiFreezeConnections = {}
         end
+        
         -- Sempre limpar antes
         cleanupConnections()
+        
         if state then
-            TeleportCarro:MostrarNotificacao("Anti Freeze ativado!")
+            if TeleportCarro and TeleportCarro.MostrarNotificacao then
+                TeleportCarro:MostrarNotificacao("Anti Freeze ativado!")
+            end
+            
             -- Monitorar partes novas no workspace
             table.insert(antiFreezeConnections,
-                workspace.DescendantAdded:Connect(function(obj)
+                Workspace.DescendantAdded:Connect(function(obj)
+                    if not antiFreezeActive then return end
                     for _, rule in ipairs(blacklist) do
                         if obj.Name == rule.Name and obj.ClassName == rule.Class then
                             neutralize(obj)
@@ -11984,42 +12007,53 @@ ProtectionTab:AddToggle({
                     end
                 end)
             )
+            
             -- Checar já existentes
-            for _, obj in ipairs(workspace:GetDescendants()) do
+            for _, obj in ipairs(Workspace:GetDescendants()) do
                 for _, rule in ipairs(blacklist) do
                     if obj.Name == rule.Name and obj.ClassName == rule.Class then
                         neutralize(obj)
                     end
                 end
             end
-            -- Loop para nil-instances
+            
+            -- Loop para nil-instances (se a função existir)
             task.spawn(function()
                 while antiFreezeActive do
-                    for _, rule in ipairs(blacklist) do
-                        for _, v in next, getnilinstances() do
-                            if v.Name == rule.Name and v.ClassName == rule.Class then
-                                neutralize(v)
+                    if getnilinstances then
+                        for _, rule in ipairs(blacklist) do
+                            for _, v in next, getnilinstances() do
+                                if v.Name == rule.Name and v.ClassName == rule.Class then
+                                    neutralize(v)
+                                end
                             end
                         end
                     end
                     task.wait(0.25)
                 end
             end)
+            
             -- Proteção extra no Humanoid
             table.insert(antiFreezeConnections,
                 LocalPlayer.CharacterAdded:Connect(function(char)
-                    local hum = char:WaitForChild("Humanoid")
-                    hum.Touched:Connect(function(hit)
-                        for _, rule in ipairs(blacklist) do
-                            if hit.Name == rule.Name and hit.ClassName == rule.Class then
-                                neutralize(hit)
+                    if not antiFreezeActive then return end
+                    local hum = char:WaitForChild("Humanoid", 5)
+                    if hum then
+                        hum.Touched:Connect(function(hit)
+                            if not antiFreezeActive then return end
+                            for _, rule in ipairs(blacklist) do
+                                if hit.Name == rule.Name and hit.ClassName == rule.Class then
+                                    neutralize(hit)
+                                end
                             end
-                        end
-                    end)
+                        end)
+                    end
                 end)
             )
         else
-            TeleportCarro:MostrarNotificacao("Anti Freeze desativado!")
+            if TeleportCarro and TeleportCarro.MostrarNotificacao then
+                TeleportCarro:MostrarNotificacao("Anti Freeze desativado!")
+            end
             cleanupConnections()
         end
     end
@@ -12028,16 +12062,18 @@ ProtectionTab:AddToggle({
 ProtectionTab:AddSection({ "Anti Flings" })
 
 ProtectionTab:AddToggle({
-   Title = "Anti flings de fdps",
+    Title = "Anti flings de fdps",
     Description = "Remove veículos de outros jogadores automaticamente",
     Default = false,
     Callback = function(state)
         antiVeiculosActive = state
         if state then
-            TeleportCarro:MostrarNotificacao("Anti Veículos ativado!")
+            if TeleportCarro and TeleportCarro.MostrarNotificacao then
+                TeleportCarro:MostrarNotificacao("Anti Veículos ativado!")
+            end
             task.spawn(function()
-                while antiVeiculosActive and LocalPlayer.Character do
-                    if Workspace:FindFirstChild("Vehicles") then
+                while antiVeiculosActive do
+                    if LocalPlayer.Character and Workspace:FindFirstChild("Vehicles") then
                         for _, vehicle in ipairs(Workspace.Vehicles:GetChildren()) do
                             local isMeuVeiculo = false
                             for _, seat in ipairs(vehicle:GetDescendants()) do
@@ -12049,7 +12085,7 @@ ProtectionTab:AddToggle({
                                 end
                             end
                             if not isMeuVeiculo then
-                                vehicle:Destroy()
+                                pcall(function() vehicle:Destroy() end)
                             end
                         end
                     end
@@ -12057,11 +12093,12 @@ ProtectionTab:AddToggle({
                 end
             end)
         else
-            TeleportCarro:MostrarNotificacao("Anti Veículos desativado!")
+            if TeleportCarro and TeleportCarro.MostrarNotificacao then
+                TeleportCarro:MostrarNotificacao("Anti Veículos desativado!")
+            end
         end
     end
 })
-
 
 ProtectionTab:AddToggle({
     Title = "Anti Canoe Fling",
@@ -12070,21 +12107,27 @@ ProtectionTab:AddToggle({
     Callback = function(state)
         antiCanoeActive = state
         if state then
-            TeleportCarro:MostrarNotificacao("Anti Canoe Fling ativado!")
+            if TeleportCarro and TeleportCarro.MostrarNotificacao then
+                TeleportCarro:MostrarNotificacao("Anti Canoe Fling ativado!")
+            end
             task.spawn(function()
-                while antiCanoeActive and LocalPlayer.Character do
-                    local workspaceCom = Workspace:FindFirstChild("WorkspaceCom")
-                    if workspaceCom then
-                        if workspaceCom:FindFirstChild("001_CanoeCloneButton") then
-                            workspaceCom["001_CanoeCloneButton"]:Destroy()
-                        end
-                        if workspaceCom:FindFirstChild("001_CanoeStorage") then
-                            local storage = workspaceCom["001_CanoeStorage"]
-                            for _, canoe in ipairs(storage:GetChildren()) do
-                                local dono = canoe:FindFirstChild("Owner")
-                                if dono and dono.Value ~= LocalPlayer or not dono then
-                                    table.insert(removedCanoes, canoe:Clone())
-                                    canoe:Destroy()
+                while antiCanoeActive do
+                    if LocalPlayer.Character then
+                        local workspaceCom = Workspace:FindFirstChild("WorkspaceCom")
+                        if workspaceCom then
+                            if workspaceCom:FindFirstChild("001_CanoeCloneButton") then
+                                pcall(function() workspaceCom["001_CanoeCloneButton"]:Destroy() end)
+                            end
+                            if workspaceCom:FindFirstChild("001_CanoeStorage") then
+                                local storage = workspaceCom["001_CanoeStorage"]
+                                for _, canoe in ipairs(storage:GetChildren()) do
+                                    local dono = canoe:FindFirstChild("Owner")
+                                    if (dono and dono.Value ~= LocalPlayer) or not dono then
+                                        pcall(function()
+                                            table.insert(removedCanoes, canoe:Clone())
+                                            canoe:Destroy()
+                                        end)
+                                    end
                                 end
                             end
                         end
@@ -12093,46 +12136,56 @@ ProtectionTab:AddToggle({
                 end
             end)
         else
-            TeleportCarro:MostrarNotificacao("Anti Canoe Fling desativado!")
-            local workspaceCom = Workspace:FindFirstChild("WorkspaceCom")
-            if workspaceCom and workspaceCom:FindFirstChild("001_CanoeStorage") then
-                local storage = workspaceCom["001_CanoeStorage"]
-                for _, canoeClone in ipairs(removedCanoes) do
-                    canoeClone.Parent = storage
-                end
+            if TeleportCarro and TeleportCarro.MostrarNotificacao then
+                TeleportCarro:MostrarNotificacao("Anti Canoe Fling desativado!")
             end
+            pcall(function()
+                local workspaceCom = Workspace:FindFirstChild("WorkspaceCom")
+                if workspaceCom and workspaceCom:FindFirstChild("001_CanoeStorage") then
+                    local storage = workspaceCom["001_CanoeStorage"]
+                    for _, canoeClone in ipairs(removedCanoes) do
+                        canoeClone.Parent = storage
+                    end
+                end
+            end)
             removedCanoes = {}
         end
     end
 })
 
 ProtectionTab:AddToggle({
-   Title = "Anti Fling Jets",
+    Title = "Anti Fling Jets",
     Description = "Remove jets de outros jogadores automaticamente",
     Default = false,
     Callback = function(state)
         antiJetsActive = state
         if state then
-            TeleportCarro:MostrarNotificacao("Anti Fling Jets ativado!")
+            if TeleportCarro and TeleportCarro.MostrarNotificacao then
+                TeleportCarro:MostrarNotificacao("Anti Fling Jets ativado!")
+            end
             task.spawn(function()
                 while antiJetsActive do
-                    local jetFolder = workspace.WorkspaceCom:FindFirstChild("001_Airport")
-                        and workspace.WorkspaceCom["001_Airport"]:FindFirstChild("AirportHanger")
-                        and workspace.WorkspaceCom["001_Airport"].AirportHanger:FindFirstChild("001_JetStorage")
-                        and workspace.WorkspaceCom["001_Airport"].AirportHanger["001_JetStorage"]:FindFirstChild("JetAirport")
+                    pcall(function()
+                        local jetFolder = Workspace.WorkspaceCom:FindFirstChild("001_Airport")
+                            and Workspace.WorkspaceCom["001_Airport"]:FindFirstChild("AirportHanger")
+                            and Workspace.WorkspaceCom["001_Airport"].AirportHanger:FindFirstChild("001_JetStorage")
+                            and Workspace.WorkspaceCom["001_Airport"].AirportHanger["001_JetStorage"]:FindFirstChild("JetAirport")
 
-                    if jetFolder then
-                        for _, jet in ipairs(jetFolder:GetChildren()) do
-                            if jet.Name ~= game.Players.LocalPlayer.Name then
-                                jet:Destroy()
+                        if jetFolder then
+                            for _, jet in ipairs(jetFolder:GetChildren()) do
+                                if jet.Name ~= LocalPlayer.Name then
+                                    jet:Destroy()
+                                end
                             end
                         end
-                    end
+                    end)
                     task.wait(0.1)
                 end
             end)
         else
-            TeleportCarro:MostrarNotificacao("Anti Fling Jets desativado!")
+            if TeleportCarro and TeleportCarro.MostrarNotificacao then
+                TeleportCarro:MostrarNotificacao("Anti Fling Jets desativado!")
+            end
         end
     end
 })
@@ -12144,24 +12197,32 @@ ProtectionTab:AddToggle({
     Callback = function(state)
         antiHeliActive = state
         if state then
-            TeleportCarro:MostrarNotificacao("Anti Fling Helicópteros ativado!")
+            if TeleportCarro and TeleportCarro.MostrarNotificacao then
+                TeleportCarro:MostrarNotificacao("Anti Fling Helicópteros ativado!")
+            end
             task.spawn(function()
-                while antiHeliActive and LocalPlayer.Character do
-                    local heliFolder = workspace.WorkspaceCom:FindFirstChild("001_HeliStorage")
-                        and workspace.WorkspaceCom["001_HeliStorage"]:FindFirstChild("PoliceStationHeli")
-                    
-                    if heliFolder then
-                        for _, heli in ipairs(heliFolder:GetChildren()) do
-                            if heli.Name ~= LocalPlayer.Name then
-                                heli:Destroy()
+                while antiHeliActive do
+                    if LocalPlayer.Character then
+                        pcall(function()
+                            local heliFolder = Workspace.WorkspaceCom:FindFirstChild("001_HeliStorage")
+                                and Workspace.WorkspaceCom["001_HeliStorage"]:FindFirstChild("PoliceStationHeli")
+                            
+                            if heliFolder then
+                                for _, heli in ipairs(heliFolder:GetChildren()) do
+                                    if heli.Name ~= LocalPlayer.Name then
+                                        heli:Destroy()
+                                    end
+                                end
                             end
-                        end
+                        end)
                     end
                     task.wait(0.03)
                 end
             end)
         else
-            TeleportCarro:MostrarNotificacao("Anti Fling Helicópteros desativado!")
+            if TeleportCarro and TeleportCarro.MostrarNotificacao then
+                TeleportCarro:MostrarNotificacao("Anti Fling Helicópteros desativado!")
+            end
         end
     end
 })
@@ -12172,56 +12233,70 @@ ProtectionTab:AddToggle({
     Default = false,
     Callback = function(state)
         antiBallActive = state
-        local ballFolder = workspace.WorkspaceCom:FindFirstChild("001_SoccerBalls")
         if state then
-            TeleportCarro:MostrarNotificacao("Anti Fling Ball ativado!")
+            if TeleportCarro and TeleportCarro.MostrarNotificacao then
+                TeleportCarro:MostrarNotificacao("Anti Fling Ball ativado!")
+            end
             task.spawn(function()
                 while antiBallActive do
-                    if ballFolder then
-                        for _, ball in ipairs(ballFolder:GetChildren()) do
-                            ball:Destroy()
+                    pcall(function()
+                        local ballFolder = Workspace.WorkspaceCom:FindFirstChild("001_SoccerBalls")
+                        if ballFolder then
+                            for _, ball in ipairs(ballFolder:GetChildren()) do
+                                ball:Destroy()
+                            end
                         end
-                    end
+                    end)
                     task.wait(0.03)
                 end
             end)
         else
-            TeleportCarro:MostrarNotificacao("Anti Fling Ball desativado!")
+            if TeleportCarro and TeleportCarro.MostrarNotificacao then
+                TeleportCarro:MostrarNotificacao("Anti Fling Ball desativado!")
+            end
         end
     end
 })
 
-
 ProtectionTab:AddSection({ "Anti Sit" })
 ProtectionTab:AddToggle({
-     Title = "Anti Sit",
+    Title = "Anti Sit",
     Description = "Não deixa seu personagem sentar",
     Default = false,
     Callback = function(state)
         antiSitActive = state
 
         if state then
-            TeleportCarro:MostrarNotificacao("Anti Sit ativado!")
+            if TeleportCarro and TeleportCarro.MostrarNotificacao then
+                TeleportCarro:MostrarNotificacao("Anti Sit ativado!")
+            end
             task.spawn(function()
-                while antiSitActive and LocalPlayer.Character do
-                    local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-                    if humanoid then
-                        humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
-                        if humanoid:GetState() == Enum.HumanoidStateType.Seated then
-                            humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+                while antiSitActive do
+                    if LocalPlayer.Character then
+                        local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                        if humanoid then
+                            pcall(function()
+                                humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+                                if humanoid:GetState() == Enum.HumanoidStateType.Seated then
+                                    humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+                                end
+                            end)
                         end
                     end
-                    task.wait(0.05) -- loop rápido
+                    task.wait(0.05)
                 end
             end)
-
         else
-            TeleportCarro:MostrarNotificacao("Anti Sit desativado!")
-            -- Restaurar habilidade de sentar
-            local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-            if humanoid then
-                humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+            if TeleportCarro and TeleportCarro.MostrarNotificacao then
+                TeleportCarro:MostrarNotificacao("Anti Sit desativado!")
             end
+            -- Restaurar habilidade de sentar
+            pcall(function()
+                local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+                end
+            end)
         end
     end
 })
@@ -12233,16 +12308,19 @@ ProtectionTab:AddButton({
     Desc = "Proteção contra Chaos Hub",
     Locked = false,
     Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/removeplayers/main/Main.txt"))()
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/removeplayers/main/Main.txt"))()
+        end)
     end
 })
-
 
 ProtectionTab:AddButton({
     Title = "Anti Som",
     Desc = "DEU MO TRABALHO SE NÃO GOSTOU FAZ MELHOR AI DESGRAÇA",
     Locked = false,
     Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/antsom/refs/heads/main/Main.txt"))()
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/antsom/refs/heads/main/Main.txt"))()
+        end)
     end
 })
