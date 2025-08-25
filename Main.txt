@@ -3454,8 +3454,15 @@ end
 -- ==============================
 -- Aba SCRIPTS +18
 -- ==============================
+local AdultTab = Window:Tab({
+    Title = "SCRIPTS +18",
+    Icon = "lock",
+    Locked = false,
+})
 
--- Seção dentro da aba
+-- ==============================
+-- Seção de Hubs
+-- ==============================
 local AdultSection = AdultTab:Section({
     Title = "Hubs +18",
 })
@@ -3495,6 +3502,40 @@ AdultSection:Button({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Markklol/aw/refs/heads/main/Protected/BangScript.lua"))()
     end
 })
+
+-- ==============================
+-- Seção de Jogadores
+-- ==============================
+local PlayersSection = AdultTab:Section({
+    Title = "Lista de Jogadores",
+})
+
+-- Função para criar botões de players
+local function AtualizarPlayers()
+    PlayersSection:Clear() -- limpa antes de recriar
+    for _, plr in ipairs(game:GetService("Players"):GetPlayers()) do
+        PlayersSection:Button({
+            Title = plr.Name,
+            Description = "Jogador do servidor",
+            Callback = function()
+                print("Você clicou em: " .. plr.Name)
+                -- aqui você pode colocar qualquer ação com o player
+            end
+        })
+    end
+end
+
+-- Botão para atualizar a lista
+PlayersSection:Button({
+    Title = "🔄 Atualizar Jogadores",
+    Description = "Recarrega a lista de players",
+    Callback = function()
+        AtualizarPlayers()
+    end
+})
+
+-- Primeira atualização automática
+AtualizarPlayers()
 
 
 print("🐧 Linux Hub V3 WindUI carregado com sucesso! - Criado por Nightmare")
