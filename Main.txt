@@ -1,3 +1,4 @@
+
 -- ===============================================
 -- SISTEMA DE WHITELIST - Linux Hub V3
 -- ===============================================
@@ -12,11 +13,19 @@ local WHITELIST = {
 
 -- Verificação de autorização
 local LocalPlayer = game.Players.LocalPlayer
+local playerName = LocalPlayer.Name
+local displayName = LocalPlayer.DisplayName
 local isAuthorized = false
 
+-- Debug: Mostrar o nome do jogador
+print("Verificando autorização para:", playerName)
+print("Display Name:", displayName)
+
+-- Verifica tanto o nome normal quanto o display name
 for _, whitelistedName in ipairs(WHITELIST) do
-    if LocalPlayer.Name == whitelistedName then
+    if playerName == whitelistedName or displayName == whitelistedName then
         isAuthorized = true
+        print("Usuário autorizado:", whitelistedName)
         break
     end
 end
@@ -26,10 +35,19 @@ if not isAuthorized then
     local StarterGui = game:GetService("StarterGui")
     StarterGui:SetCore("SendNotification", {
         Title = "Acesso Negado",
-        Text = "Você não tem permissão para usar este script.",
-        Duration = 5,
+        Text = "Você não tem permissão para usar este script.\nSeu nick: " .. playerName,
+        Duration = 8,
     })
+    print("Acesso negado para:", playerName, "Display:", displayName)
     return -- Para a execução do script
+else
+    -- Notificação de sucesso
+    local StarterGui = game:GetService("StarterGui")
+    StarterGui:SetCore("SendNotification", {
+        Title = "Linux Hub V3",
+        Text = "Acesso autorizado! Bem-vindo " .. playerName,
+        Duration = 3,
+    })
 end
 
 -- ===============================================
