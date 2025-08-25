@@ -6,9 +6,16 @@
 -- Lista de usuários autorizados
 local WHITELIST = {
     "LinuxhubDev",
-    -- Adicione outros usuários aqui:
-    -- "OutroUsuario1",
-    -- "OutroUsuario2",
+    "carol00941",
+    "kanakiwhakO",
+    "crmmff2",
+    "thurr_blox666",
+    "pedroxxjr018",
+    "LBD_NICOLAS",
+    "Geison006",
+    "loki48932",
+    "anthonyroblo3x",
+    "gabrielgg1551r",
 }
 
 -- Verificação de autorização
