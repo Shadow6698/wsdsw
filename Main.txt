@@ -16,6 +16,7 @@ local WHITELIST = {
     "loki48932",
     "anthonyroblo3x",
     "gabrielgg1551r",
+    "Kayro20112p",
 }
 
 -- Verificação de autorização
