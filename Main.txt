@@ -353,7 +353,7 @@ Window:SelectTab(1)
 -- Notificação de boas-vindas
 WindUI:Notify({
     Title = "Linux Hub Carregado!",
-    Content = "Bem-vindo ao Linux Hub V3 - Nova Aba RGB!",
+    Content = "Bem-vindo ao Linux Hub V4 - Nova Aba RGB!",
     Duration = 6.5,
     Icon = "check-circle",
 })
