@@ -3315,6 +3315,15 @@ GhostHubTab:Button({
     end
 })
 
+GhostHubTab:Button({
+    Title = "Câmeras FE",
+    Desc = "Sistema de Câmeras FE",
+    Locked = false,
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/GhostPlayer352/Test4/main/CCTV Camera"))()
+    end
+})
+
 -- ==============================
 -- MINECRAFT SCRIPTS
 -- ==============================
