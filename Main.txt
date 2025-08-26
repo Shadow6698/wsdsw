@@ -52,7 +52,7 @@ else
     -- Notificação de sucesso
     local StarterGui = game:GetService("StarterGui")
     StarterGui:SetCore("SendNotification", {
-        Title = "Linux Hub V3",
+        Title = "Linux Hub V5",
         Text = "Acesso autorizado! Bem-vindo " .. playerName,
         Duration = 3,
     })
