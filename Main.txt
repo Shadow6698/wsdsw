@@ -1927,6 +1927,15 @@ AdminTab:Button({
    end
 })
 
+AdminTab:Button({
+    Title = "CopyAvatar",
+    Desc = "Sistema CopyAvatar",
+    Locked = false,
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/copyavatar/refs/heads/main/Main.txt"))()
+    end
+})
+
 -- ==============================
 -- SCRIPTS NOVOS
 -- ==============================
