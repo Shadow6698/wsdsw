@@ -2656,11 +2656,11 @@ PrisonTab:Button({
 })
 
 PrisonTab:Button({
-    Title = "📋 Admin Commands V2",
+    Title = "comandos fodas de prison life esse sim",
     Desc = "Comandos administrativos V2",
     Locked = false,
     Callback = function()
-        loadstring(game:HttpGet("https://pastebin.com/raw/KA7xFcbL", true))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/SkidMaster999/RobloxScript/refs/heads/main/Game/PrisonLife/PissAdmin.lua"))()
     end
 })
 
