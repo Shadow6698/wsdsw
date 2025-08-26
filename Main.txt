@@ -1,6 +1,6 @@
 
 -- ===============================================
--- SISTEMA DE WHITELIST - Linux Hub V3
+-- SISTEMA DE WHITELIST - Linux Hub V4
 -- ===============================================
 
 -- Lista de usuários autorizados
@@ -179,7 +179,7 @@ end
 
 -- Cria a janela principal
 local Window = WindUI:CreateWindow({
-    Title = "Linux Hub V3",
+    Title = "Linux Hub V4",
     Icon = "penguin",
     Author = "by Nightmare",
     Folder = "LinuxHubV3",
