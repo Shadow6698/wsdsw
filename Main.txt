@@ -3211,115 +3211,6 @@ ImunesTab:Toggle({
         end
     end
 })
-ImunesTab:Toggle({
-    Title = "ant lag laptop",
-    Description = "Fica imune à deduplicação de laptops",
-    Default = false,
-    Callback = function(state)
-        local Players = game:GetService("Players")
-        local ITEM_NAME = "laptop"
-        local dedupLock = {}
-        local IGNORED_PLAYER = nil
-
-        -- Funções internas
-        local function isTargetTool(inst)
-            return inst:IsA("Tool") and string.lower(inst.Name) == string.lower(ITEM_NAME)
-        end
-
-        local function gatherTools(player)
-            local found = {}
-            local containers = {}
-
-            if player.Character then table.insert(containers, player.Character) end
-            local backpack = player:FindFirstChildOfClass("Backpack")
-            if backpack then table.insert(containers, backpack) end
-            local sg = player:FindFirstChild("StarterGear")
-            if sg then table.insert(containers, sg) end
-
-            for _, container in ipairs(containers) do
-                for _, child in ipairs(container:GetChildren()) do
-                    if isTargetTool(child) then
-                        table.insert(found, child)
-                    end
-                end
-            end
-            return found
-        end
-
-        local function dedupePlayer(player)
-            if state and player == IGNORED_PLAYER then return end -- ignora jogador local
-            if dedupLock[player] then return end
-            dedupLock[player] = true
-
-            local tools = gatherTools(player)
-            if #tools > 1 then
-                for i = 2, #tools do
-                    pcall(function() tools[i]:Destroy() end)
-                end
-            end
-
-            dedupLock[player] = false
-        end
-
-        local function hookPlayer(player)
-            -- Marca o player local como ignorado se toggle ativada
-            if state and not IGNORED_PLAYER then
-                IGNORED_PLAYER = Players.LocalPlayer
-            end
-
-            task.defer(dedupePlayer, player)
-
-            player.CharacterAdded:Connect(function(char)
-                task.delay(0.5, function() dedupePlayer(player) end)
-                char.ChildAdded:Connect(function(child)
-                    if isTargetTool(child) then
-                        task.delay(0.1, function() dedupePlayer(player) end)
-                    end
-                end)
-            end)
-
-            local backpack = player:FindFirstChild("Backpack")
-            if backpack then
-                backpack.ChildAdded:Connect(function(child)
-                    if isTargetTool(child) then
-                        task.delay(0.1, function() dedupePlayer(player) end)
-                    end
-                end)
-            end
-
-            local sg = player:FindFirstChild("StarterGear")
-            if sg then
-                sg.ChildAdded:Connect(function(child)
-                    if isTargetTool(child) then
-                        task.delay(0.1, function() dedupePlayer(player) end)
-                    end
-                end)
-            end
-        end
-
-        -- Conecta todos os players atuais e futuros
-        for _, plr in ipairs(Players:GetPlayers()) do
-            hookPlayer(plr)
-        end
-        Players.PlayerAdded:Connect(hookPlayer)
-
-        -- Loop periódico dentro da toggle
-        task.spawn(function()
-            while state do
-                for _, plr in ipairs(Players:GetPlayers()) do
-                    dedupePlayer(plr)
-                end
-                task.wait(2)
-            end
-        end)
-
-        if state then
-            TeleportCarro:MostrarNotificacao("🛡️ Imunidade ativada!")
-        else
-            TeleportCarro:MostrarNotificacao("⚠️ Imunidade desativada!")
-        end
-    end
-})
 
 -- ==============================
 -- PLAYERS
@@ -3554,6 +3445,21 @@ FunTab:Button({
     Description = "é so um treco de animação de brookhaven vou atualizar logo logo",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/animationgui/refs/heads/main/Main.txt"))()
+    end
+})
+
+FunTab:Button({
+    Title = "Bug Hammer",
+    Description = "Executa o Bug Hammer",
+    Callback = function()
+        local success, err = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/bugtool/refs/heads/main/Main.txt"))()
+        end)
+        if success then
+            TeleportCarro:MostrarNotificacao("✅ Bug Hammer carregado!")
+        else
+            TeleportCarro:MostrarNotificacao("❌ Erro ao carregar: " .. tostring(err))
+        end
     end
 })
 
