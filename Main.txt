@@ -3464,6 +3464,21 @@ FunTab:Button({
     end
 })
 
+FunTab:Button({
+    Title = "Espada Bugadora",
+    Description = "Executa a Espada Bugadora",
+    Callback = function()
+        local success, err = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/espadabugadora/refs/heads/main/Main.txt"))()
+        end)
+        if success then
+            TeleportCarro:MostrarNotificacao("✅ Espada Bugadora carregada!")
+        else
+            TeleportCarro:MostrarNotificacao("❌ Erro ao carregar: " .. tostring(err))
+        end
+    end
+})
+
 -- ============================== 
 -- TELEPORTES/TELEPORTS SCRIPTS 
 -- ============================== 
