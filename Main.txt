@@ -18,6 +18,7 @@ local WHITELIST = {
     "gabrielgg1551r",
     "kayro20112p",
     "minhairmapertuba",
+    "ea_clarinhakkj",
 }
 
 -- Verificação de autorização
@@ -44,7 +45,7 @@ if not isAuthorized then
     local StarterGui = game:GetService("StarterGui")
     StarterGui:SetCore("SendNotification", {
         Title = "Acesso Negado",
-        Text = "Você não tem permissão para usar este script.\nSeu nick: " .. playerName,
+        Text = "Você não tem permissão para usar este script agora chore kkj.\nSeu nick: " .. playerName,
         Duration = 8,
     })
     print("Acesso negado para:", playerName, "Display:", displayName)
