@@ -16,7 +16,7 @@ local WHITELIST = {
     "loki48932",
     "anthonyroblo3x",
     "gabrielgg1551r",
-    "Kayro20112p",
+    "kayro20112p",
 }
 
 -- Verificação de autorização
@@ -3469,7 +3469,7 @@ FunTab:Button({
     Description = "Executa a Espada Bugadora",
     Callback = function()
         local success, err = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/espadabugadora/refs/heads/main/Main.txt"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/swordbug/refs/heads/main/Main.txt"))()
         end)
         if success then
             TeleportCarro:MostrarNotificacao("✅ Espada Bugadora carregada!")
