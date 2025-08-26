@@ -17,6 +17,7 @@ local WHITELIST = {
     "anthonyroblo3x",
     "gabrielgg1551r",
     "kayro20112p",
+    "minhairmapertuba",
 }
 
 -- Verificação de autorização
@@ -52,7 +53,7 @@ else
     -- Notificação de sucesso
     local StarterGui = game:GetService("StarterGui")
     StarterGui:SetCore("SendNotification", {
-        Title = "Linux Hub V5",
+        Title = "Linux Hub V4",
         Text = "Acesso autorizado! Bem-vindo " .. playerName,
         Duration = 3,
     })
