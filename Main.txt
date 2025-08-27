@@ -3501,7 +3501,7 @@ FunTab:Button({
 })
 
 FunTab:Toggle({
-    Title = "🔥 Ativar Fogo",
+    Title = "Ativar Fogo",
     Description = "Liga/Desliga o efeito CatchFire grudado no personagem",
     Default = false,
     Callback = function(state)
