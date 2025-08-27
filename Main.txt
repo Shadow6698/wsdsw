@@ -3500,6 +3500,66 @@ FunTab:Button({
     end
 })
 
+FunTab:Toggle({
+    Title = "🔥 Ativar Fogo",
+    Description = "Liga/Desliga o sistema CatchFire no personagem",
+    Default = false,
+    Callback = function(state)
+        local Players = game:GetService("Players")
+        local player = Players.LocalPlayer
+        local workspace = game:GetService("Workspace")
+
+        local catchFires = {}
+        local root
+
+        local function getRoot()
+            local char = player.Character or player.CharacterAdded:Wait()
+            return char:WaitForChild("HumanoidRootPart")
+        end
+
+        root = getRoot()
+
+        player.CharacterAdded:Connect(function(char)
+            root = char:WaitForChild("HumanoidRootPart")
+        end)
+
+        local function addCatchFire(part)
+            if part:IsA("BasePart") and part.Name == "CatchFire" then
+                part.CanCollide = false
+                table.insert(catchFires, part)
+            end
+        end
+
+        -- Resetar lista sempre que ativar
+        catchFires = {}
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            addCatchFire(obj)
+        end
+
+        workspace.DescendantAdded:Connect(function(obj)
+            addCatchFire(obj)
+        end)
+
+        if state then
+            TeleportCarro:MostrarNotificacao("🔥 Fogo ativado!")
+            -- Loop de ativação
+            task.spawn(function()
+                while state and root and root.Parent do
+                    task.wait(0.05)
+                    for _, part in ipairs(catchFires) do
+                        if part and part.Parent then
+                            part.CanCollide = false
+                            part.CFrame = root.CFrame
+                        end
+                    end
+                end
+            end)
+        else
+            TeleportCarro:MostrarNotificacao("❌ Fogo desativado!")
+        end
+    end
+})
+
 -- ============================== 
 -- TELEPORTES/TELEPORTS SCRIPTS 
 -- ============================== 
