@@ -3502,7 +3502,7 @@ FunTab:Button({
 
 FunTab:Toggle({
     Title = "Ativar Fogo",
-    Description = "Liga/Desliga o efeito CatchFire grudado no personagem",
+    Description = "Pode funcionar ou não",
     Default = false,
     Callback = function(state)
         local Players = game:GetService("Players")
