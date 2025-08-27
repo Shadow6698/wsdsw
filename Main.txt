@@ -3502,7 +3502,7 @@ FunTab:Button({
 
 FunTab:Toggle({
     Title = "🔥 Ativar Fogo",
-    Description = "Liga/Desliga o sistema CatchFire no personagem",
+    Description = "Liga/Desliga o efeito CatchFire grudado no personagem",
     Default = false,
     Callback = function(state)
         local Players = game:GetService("Players")
@@ -3512,6 +3512,7 @@ FunTab:Toggle({
         local catchFires = {}
         local root
 
+        -- Função para pegar HumanoidRootPart
         local function getRoot()
             local char = player.Character or player.CharacterAdded:Wait()
             return char:WaitForChild("HumanoidRootPart")
@@ -3523,6 +3524,7 @@ FunTab:Toggle({
             root = char:WaitForChild("HumanoidRootPart")
         end)
 
+        -- Função para registrar CatchFire
         local function addCatchFire(part)
             if part:IsA("BasePart") and part.Name == "CatchFire" then
                 part.CanCollide = false
@@ -3535,21 +3537,21 @@ FunTab:Toggle({
         for _, obj in ipairs(workspace:GetDescendants()) do
             addCatchFire(obj)
         end
-
         workspace.DescendantAdded:Connect(function(obj)
             addCatchFire(obj)
         end)
 
         if state then
             TeleportCarro:MostrarNotificacao("🔥 Fogo ativado!")
-            -- Loop de ativação
+            -- Loop ativo
             task.spawn(function()
-                while state and root and root.Parent do
-                    task.wait(0.05)
-                    for _, part in ipairs(catchFires) do
-                        if part and part.Parent then
-                            part.CanCollide = false
-                            part.CFrame = root.CFrame
+                while state and task.wait(0.01) do
+                    if root and root.Parent then
+                        for _, part in ipairs(catchFires) do
+                            if part and part.Parent then
+                                part.CanCollide = false
+                                part.CFrame = root.CFrame
+                            end
                         end
                     end
                 end
@@ -3559,6 +3561,7 @@ FunTab:Toggle({
         end
     end
 })
+
 
 -- ============================== 
 -- TELEPORTES/TELEPORTS SCRIPTS 
