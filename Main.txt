@@ -3183,27 +3183,27 @@ ImunesTab:Toggle({
 })
 
 ImunesTab:Toggle({
-    Title = "Anti-Lag",
-    Description = "Ativa ou desativa a deduplicação de ferramentas",
+    Title = "Anti-Lag (Todas Tools)",
+    Description = "Ativa ou desativa a deduplicação de todas as ferramentas",
     Default = false,
     Callback = function(state)
         local Players = game:GetService("Players")
-        local ITEM_NAME = "laptop"
         local dedupLock = {}
-        local IGNORED_PLAYER -- jogador ignorado
+        local IGNORED_PLAYER -- jogador que executou
 
         if not state then
-            -- Desativar: simplesmente não faz nada mais
+            -- Toggle desativada, para automaticamente
             return
         end
 
-        -- Detecta automaticamente quem executou o script (o primeiro player que rodar)
+        -- Marca automaticamente quem executou o script
         local function marcarIgnorado(player)
             IGNORED_PLAYER = player
         end
 
+        -- Aceita qualquer Tool
         local function isTargetTool(inst)
-            return inst:IsA("Tool") and string.lower(inst.Name) == string.lower(ITEM_NAME)
+            return inst:IsA("Tool")
         end
 
         local function gatherTools(player)
@@ -3287,7 +3287,7 @@ ImunesTab:Toggle({
             hookPlayer(plr)
         end
 
-        -- Varredura periódica enquanto a toggle estiver ativa
+        -- Varredura periódica
         task.spawn(function()
             while state do
                 for _, plr in ipairs(Players:GetPlayers()) do
