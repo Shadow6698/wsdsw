@@ -2989,253 +2989,198 @@ ToolsTab:Button({
 -- ==============================
 -- IMUNES
 -- ==============================
-
--- Criar aba
-local ImunesTab = Window:MakeTab({"Proteção", "shield"})
+local ImunesSection = ImunesTab:Section({
+    Title = "Proteções e Imunidades",
+    TextXAlignment = "Left",
+    TextSize = 17,
+})
 
 -- Serviços
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
 
--- ==============================
--- SISTEMA DE BACKUP
--- ==============================
-local function moveToBackup(obj, backupTable)
-    table.insert(backupTable, { object = obj, originalParent = obj.Parent })
-    obj.Parent = nil -- Remove do jogo sem destruir
+-- Backup tables
+local backupTables = {
+    Vehicles = {},
+    Canoes = {},
+    Jets = {},
+    Helis = {},
+    Balls = {}
+}
+
+-- Notificação simples
+local TeleportCarro = {}
+function TeleportCarro:MostrarNotificacao(msg)
+    print("🔔 "..msg)
 end
 
-local function restoreFromBackup(backupTable)
-    for _, data in ipairs(backupTable) do
-        if data.object and data.originalParent then
-            data.object.Parent = data.originalParent
+-- Função genérica anti-fling
+local function AntiFlingLoop(name, getFolderFunc)
+    local active = false
+    task.spawn(function()
+        while true do
+            if active and LocalPlayer.Character then
+                local folder = getFolderFunc()
+                if folder then
+                    for _, item in ipairs(folder:GetChildren()) do
+                        local isMine = false
+                        if name == "Vehicles" then
+                            for _, seat in ipairs(item:GetDescendants()) do
+                                if (seat:IsA("VehicleSeat") or seat:IsA("Seat")) and seat.Occupant and seat.Occupant.Parent == LocalPlayer.Character then
+                                    isMine = true
+                                    break
+                                end
+                            end
+                        elseif name == "Canoes" then
+                            local owner = item:FindFirstChild("Owner")
+                            isMine = owner and owner.Value == LocalPlayer
+                        elseif name == "Jets" or name == "Helis" then
+                            isMine = item.Name == LocalPlayer.Name
+                        end
+                        if not isMine then
+                            table.insert(backupTables[name], item:Clone())
+                            item:Destroy()
+                        end
+                    end
+                end
+            end
+            task.wait(0.03)
+        end
+    end)
+    return function(state)
+        active = state
+        TeleportCarro:MostrarNotificacao(name.." "..(state and "ativado!" or "desativado!"))
+        if not state then
+            for _, item in ipairs(backupTables[name]) do
+                local parentFolder = getFolderFunc()
+                if parentFolder then item.Parent = parentFolder end
+            end
+            backupTables[name] = {}
         end
     end
-    table.clear(backupTable)
 end
 
 -- ==============================
--- VARIÁVEIS DE CONTROLE
+-- BOTÕES DE PROTEÇÃO
 -- ==============================
-local removedVehicles, removedCanoes, removedJets, removedHelis, removedBalls = {}, {}, {}, {}, {}
-local antiVehicleConnection, antiCanoeConnection, antiJetConnection, antiHeliConnection, antiBallConnection, antiSitConnection
-
--- ==============================
--- SISTEMA DE NOTIFICAÇÃO
--- ==============================
-local TeleportCarro = {}
-function TeleportCarro:MostrarNotificacao(mensagem)
-    print("🔔 " .. mensagem)
-end
-
--- ==============================
--- SCRIPTS DE PROTEÇÃO BÁSICOS
--- ==============================
-ImunesTab:AddSection({ Name = "Scripts de Proteção Linux Hub" })
-
-ImunesTab:AddButton({
-    Name = "AntiBug",
+ImunesTab:Button({
+    Title = "AntiBug",
+    Desc = "Devs: cahh,Night",
+    Locked = false,
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/antbug/refs/heads/main/Main.txt"))()
-        TeleportCarro:MostrarNotificacao("AntiBug carregado!")
     end
 })
 
-ImunesTab:AddButton({
-    Name = "Anti Chaos Hub",
+ImunesTab:Button({
+    Title = "Anti Chaos Hub",
+    Desc = "Proteção contra Chaos Hub",
+    Locked = false,
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/removeplayers/main/Main.txt"))()
-        TeleportCarro:MostrarNotificacao("Anti Chaos Hub carregado!")
     end
 })
 
-ImunesTab:AddButton({
-    Name = "Anti Som",
+ImunesTab:Button({
+    Title = "Anti Som",
+    Desc = "DEU MO TRABALHO SE NÃO GOSTOU FAZ MELHOR AI DESGRAÇA",
+    Locked = false,
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/antsom/refs/heads/main/Main.txt"))()
-        TeleportCarro:MostrarNotificacao("Anti Som carregado!")
     end
 })
 
 -- ==============================
--- SISTEMA ANTI-FLING COMPLETO
+-- TOGGLES DE ANTI-FLING / SIT
 -- ==============================
-ImunesTab:AddSection({ Name = "Anti Flings" })
 
--- 🚗 Veículos
-ImunesTab:AddToggle({
-    Name = "Anti Fling Veículos",
+-- Veículos
+ImunesTab:Toggle({
+    Title = "Anti flings de fdps",
+    Description = "Remove veículos de outros jogadores automaticamente",
     Default = false,
-    Callback = function(state)
-        if state then
-            TeleportCarro:MostrarNotificacao("Anti Veículos ON")
-            antiVehicleConnection = RunService.Heartbeat:Connect(function()
-                local vehiclesFolder = Workspace:FindFirstChild("Vehicles")
-                if vehiclesFolder then
-                    for _, vehicle in ipairs(vehiclesFolder:GetChildren()) do
-                        local isMeu = false
-                        for _, seat in ipairs(vehicle:GetDescendants()) do
-                            if (seat:IsA("VehicleSeat") or seat:IsA("Seat")) and seat.Occupant and seat.Occupant.Parent == LocalPlayer.Character then
-                                isMeu = true
-                                break
-                            end
-                        end
-                        if not isMeu and vehicle.Parent == vehiclesFolder then
-                            moveToBackup(vehicle, removedVehicles)
-                        end
-                    end
-                end
-            end)
-        else
-            if antiVehicleConnection then antiVehicleConnection:Disconnect() end
-            restoreFromBackup(removedVehicles)
-            TeleportCarro:MostrarNotificacao("Anti Veículos OFF")
-        end
-    end
+    Callback = AntiFlingLoop("Vehicles", function()
+        return Workspace:FindFirstChild("Vehicles")
+    end)
 })
 
--- 🛶 Canoas
-ImunesTab:AddToggle({
-    Name = "Anti Canoe Fling",
+-- Canoes
+ImunesTab:Toggle({
+    Title = "Anti Canoe Fling",
+    Description = "Remove canoas de outros players automaticamente (reaparecem ao desativar)",
     Default = false,
-    Callback = function(state)
-        if state then
-            TeleportCarro:MostrarNotificacao("Anti Canoe ON")
-            antiCanoeConnection = RunService.Heartbeat:Connect(function()
-                local storage = Workspace:FindFirstChild("WorkspaceCom") and Workspace.WorkspaceCom:FindFirstChild("001_CanoeStorage")
-                if storage then
-                    for _, canoe in ipairs(storage:GetChildren()) do
-                        local dono = canoe:FindFirstChild("Owner")
-                        if not dono or dono.Value ~= LocalPlayer then
-                            if canoe.Parent == storage then
-                                moveToBackup(canoe, removedCanoes)
-                            end
-                        end
-                    end
-                end
-            end)
-        else
-            if antiCanoeConnection then antiCanoeConnection:Disconnect() end
-            restoreFromBackup(removedCanoes)
-            TeleportCarro:MostrarNotificacao("Anti Canoe OFF")
-        end
-    end
+    Callback = AntiFlingLoop("Canoes", function()
+        local workspaceCom = Workspace:FindFirstChild("WorkspaceCom")
+        return workspaceCom and workspaceCom:FindFirstChild("001_CanoeStorage")
+    end)
 })
 
--- ✈️ Jets
-ImunesTab:AddToggle({
-    Name = "Anti Fling Jets",
+-- Jets
+ImunesTab:Toggle({
+    Title = "Anti Fling Jets",
+    Description = "Remove jets de outros jogadores automaticamente",
     Default = false,
-    Callback = function(state)
-        if state then
-            TeleportCarro:MostrarNotificacao("Anti Jets ON")
-            antiJetConnection = RunService.Heartbeat:Connect(function()
-                local jetFolder = Workspace:FindFirstChild("WorkspaceCom")
-                if jetFolder and jetFolder:FindFirstChild("001_Airport") then
-                    local storage = jetFolder["001_Airport"]:FindFirstChild("AirportHanger")
-                    if storage and storage:FindFirstChild("001_JetStorage") and storage["001_JetStorage"]:FindFirstChild("JetAirport") then
-                        for _, jet in ipairs(storage["001_JetStorage"].JetAirport:GetChildren()) do
-                            if jet.Name ~= LocalPlayer.Name and jet.Parent == storage["001_JetStorage"].JetAirport then
-                                moveToBackup(jet, removedJets)
-                            end
-                        end
-                    end
-                end
-            end)
-        else
-            if antiJetConnection then antiJetConnection:Disconnect() end
-            restoreFromBackup(removedJets)
-            TeleportCarro:MostrarNotificacao("Anti Jets OFF")
+    Callback = AntiFlingLoop("Jets", function()
+        local folder = Workspace:FindFirstChild("WorkspaceCom")
+        if folder and folder:FindFirstChild("001_Airport") then
+            local storage = folder["001_Airport"]:FindFirstChild("AirportHanger")
+            if storage then return storage:FindFirstChild("001_JetStorage") and storage["001_JetStorage"]:FindFirstChild("JetAirport") end
         end
-    end
+    end)
 })
 
--- 🚁 Helicópteros
-ImunesTab:AddToggle({
-    Name = "Anti Fling Helicópteros",
+-- Helicópteros
+ImunesTab:Toggle({
+    Title = "Anti Fling Helicópteros",
+    Description = "Remove helicópteros de outros jogadores automaticamente",
     Default = false,
-    Callback = function(state)
-        if state then
-            TeleportCarro:MostrarNotificacao("Anti Helis ON")
-            antiHeliConnection = RunService.Heartbeat:Connect(function()
-                local heliFolder = Workspace:FindFirstChild("WorkspaceCom") and Workspace.WorkspaceCom:FindFirstChild("001_HeliStorage")
-                if heliFolder and heliFolder:FindFirstChild("PoliceStationHeli") then
-                    for _, heli in ipairs(heliFolder.PoliceStationHeli:GetChildren()) do
-                        if heli.Name ~= LocalPlayer.Name and heli.Parent == heliFolder.PoliceStationHeli then
-                            moveToBackup(heli, removedHelis)
-                        end
-                    end
-                end
-            end)
-        else
-            if antiHeliConnection then antiHeliConnection:Disconnect() end
-            restoreFromBackup(removedHelis)
-            TeleportCarro:MostrarNotificacao("Anti Helis OFF")
-        end
-    end
+    Callback = AntiFlingLoop("Helis", function()
+        local folder = Workspace:FindFirstChild("WorkspaceCom")
+        return folder and folder:FindFirstChild("001_HeliStorage") and folder["001_HeliStorage"]:FindFirstChild("PoliceStationHeli")
+    end)
 })
 
--- ⚽ Bolas
-ImunesTab:AddToggle({
-    Name = "Anti Fling Ball",
+-- Bolas
+ImunesTab:Toggle({
+    Title = "Anti Fling Ball",
+    Description = "Remove SoccerBalls automaticamente",
     Default = false,
-    Callback = function(state)
-        if state then
-            TeleportCarro:MostrarNotificacao("Anti Ball ON")
-            antiBallConnection = RunService.Heartbeat:Connect(function()
-                local ballFolder = Workspace:FindFirstChild("WorkspaceCom") and Workspace.WorkspaceCom:FindFirstChild("001_SoccerBalls")
-                if ballFolder then
-                    for _, ball in ipairs(ballFolder:GetChildren()) do
-                        if ball.Parent == ballFolder then
-                            moveToBackup(ball, removedBalls)
-                        end
-                    end
-                end
-            end)
-        else
-            if antiBallConnection then antiBallConnection:Disconnect() end
-            restoreFromBackup(removedBalls)
-            TeleportCarro:MostrarNotificacao("Anti Ball OFF")
-        end
-    end
+    Callback = AntiFlingLoop("Balls", function()
+        local folder = Workspace:FindFirstChild("WorkspaceCom")
+        return folder and folder:FindFirstChild("001_SoccerBalls")
+    end)
 })
 
--- ==============================
--- ANTI SIT
--- ==============================
-ImunesTab:AddSection({ Name = "Anti SIT" })
-
-ImunesTab:AddToggle({
-    Name = "Anti Sit",
+-- Anti Sit
+local antiSitActive = false
+ImunesTab:Toggle({
+    Title = "Anti Sit",
+    Description = "Não deixa seu personagem sentar",
     Default = false,
     Callback = function(state)
-        if state then
-            TeleportCarro:MostrarNotificacao("Anti Sit ON")
-            antiSitConnection = RunService.Heartbeat:Connect(function()
-                local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        antiSitActive = state
+        TeleportCarro:MostrarNotificacao("Anti Sit "..(state and "ativado!" or "desativado!"))
+        task.spawn(function()
+            while antiSitActive and LocalPlayer.Character do
+                local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
                 if humanoid then
                     humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
                     if humanoid:GetState() == Enum.HumanoidStateType.Seated then
-                        humanoid:ChangeState(Enum.HumanoidStateType.Running)
-                    end
-                    if humanoid.SeatPart then
-                        humanoid.Sit = false
-                        humanoid.SeatPart = nil
+                        humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
                     end
                 end
-            end)
-        else
-            if antiSitConnection then antiSitConnection:Disconnect() end
-            local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-            if humanoid then
-                humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+                task.wait(0.05)
             end
-            TeleportCarro:MostrarNotificacao("Anti Sit OFF")
-        end
+            if not antiSitActive then
+                local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+                end
+            end
+        end)
     end
 })
-
 
 -- ==============================
 -- PLAYERS
