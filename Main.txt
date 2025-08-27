@@ -3428,39 +3428,6 @@ FunTab:Toggle({
         end
     end
 })
-FunTab:Toggle({
-    Title = "Ativar Fogo",
-    Description = "pra funcionar tem que ta com o fogo da hamburgueria ligado",
-    Default = false,
-    Callback = function(state)
-        local player = game.Players.LocalPlayer
-        local char = player.Character or player.CharacterAdded:Wait()
-        local hrp = char:WaitForChild("HumanoidRootPart")
-
-        if state then
-            local originalCFrame = hrp.CFrame
-            local firePart = workspace.WorkspaceCom["001_BurgerBarn"]:FindFirstChild("Fire")
-
-            if firePart and firePart:IsA("BasePart") then
-                -- Teleporta para cima do Fire (5 studs acima)
-                hrp.CFrame = firePart.CFrame + Vector3.new(0,5,0)
-                TeleportCarro:MostrarNotificacao("🔥 Teleportado para o Fire!")
-
-                -- Volta após 5 segundos
-                task.spawn(function()
-                    task.wait(5)
-                    hrp.CFrame = originalCFrame
-                    TeleportCarro:MostrarNotificacao("❌ De volta à posição original!")
-                    -- Desativa a toggle automaticamente após o retorno
-                    FunTab:UpdateToggle("Ativar Fogo", false)
-                end)
-            else
-                warn("Não foi possível encontrar a Part do Fire em WorkspaceCom['001_BurgerBarn']")
-                FunTab:UpdateToggle("Ativar Fogo", false)
-            end
-        end
-    end
-})
 
 FunTab:Button({
     Title = "Animation GUI",
@@ -3562,6 +3529,14 @@ FunTab:Toggle({
     end
 })
 
+FunTab:Button({
+    Title = "Skins Hub",
+    Desc = "Abre o Skin Hub",
+    Locked = false,
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/skinshubs/refs/heads/main/Main.txt"))()
+    end
+})
 
 -- ============================== 
 -- TELEPORTES/TELEPORTS SCRIPTS 
