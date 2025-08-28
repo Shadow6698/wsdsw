@@ -3300,30 +3300,30 @@ ImunesTab:Toggle({
 })
 
 ImunesTab:AddToggle({
-    Name = "Anti Fling Portas",
-    Description = "Ativa ou desativa a destruição/ocultação de todas as portas do mapa",
+    Name = "Anti Fling Porta",
+    Description = "Ativa ou desativa a destruição de todas as portas do mapa",
     Default = false,
     Callback = function(state)
         local hiddenDoors = {} -- declarado dentro da toggle
 
         if state then
-            -- Ativa: esconde portas
+            -- Ativa: esconde portas (não remove, só torna invisíveis)
             for _, obj in ipairs(workspace:GetDescendants()) do
                 if obj:IsA("BasePart") and obj.Name:lower():find("door") then
-                    -- Salva estado original
+                    -- Salva o estado original
                     local doorData = {
                         door = obj,
                         originalTransparency = obj.Transparency,
                         originalCanCollide = obj.CanCollide,
                         originalCastShadow = obj.CastShadow
                     }
-
-                    -- Esconde a porta
+                    
+                    -- Esconde a porta (mantém funcionalidade)
                     obj.Transparency = 1
                     obj.CanCollide = false
                     obj.CastShadow = false
-
-                    -- Esconde filhos (maçanetas, handles, GUIs)
+                    
+                    -- Esconde filhos se houver (maçanetas, etc)
                     for _, child in ipairs(obj:GetChildren()) do
                         if child:IsA("BasePart") then
                             child.Transparency = 1
@@ -3332,24 +3332,23 @@ ImunesTab:AddToggle({
                             child.Enabled = false
                         end
                     end
-
+                    
                     table.insert(hiddenDoors, doorData)
                 end
             end
             print("🔧 " .. #hiddenDoors .. " portas escondidas!")
-
+            
         else
-            -- Desativa: restaura portas
+            -- Desativa: restaura portas (volta ao estado original)
             for _, doorData in ipairs(hiddenDoors) do
-                local door = doorData.door
-                if door and door.Parent then
+                if doorData.door and doorData.door.Parent then
                     -- Restaura propriedades originais
-                    door.Transparency = doorData.originalTransparency
-                    door.CanCollide = doorData.originalCanCollide
-                    door.CastShadow = doorData.originalCastShadow
-
+                    doorData.door.Transparency = doorData.originalTransparency
+                    doorData.door.CanCollide = doorData.originalCanCollide
+                    doorData.door.CastShadow = doorData.originalCastShadow
+                    
                     -- Restaura filhos
-                    for _, child in ipairs(door:GetChildren()) do
+                    for _, child in ipairs(doorData.door:GetChildren()) do
                         if child:IsA("BasePart") then
                             child.Transparency = 0
                             child.CanCollide = true
@@ -3359,11 +3358,13 @@ ImunesTab:AddToggle({
                     end
                 end
             end
-
+            
             print("✅ " .. #hiddenDoors .. " portas restauradas com funcionalidade!")
+            hiddenDoors = {} -- Limpa a lista
         end
     end
 })
+
 
 
 -- ==============================
