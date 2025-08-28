@@ -3183,7 +3183,7 @@ ImunesTab:Toggle({
 })
 
 ImunesTab:Toggle({
-    Title = "Anti-Lag (Todas Tools)",
+    Title = "Anti-Lag (Todos os itens)",
     Description = "Ativa ou desativa a deduplicação de todas as ferramentas",
     Default = false,
     Callback = function(state)
