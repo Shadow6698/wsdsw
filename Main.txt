@@ -3299,6 +3299,38 @@ ImunesTab:Toggle({
     end
 })
 
+ImunesTab:Toggle({
+    Title = "Anti-Fling Portas",
+    Description = "Remove todas as portas (doors) e restaura quando desativar",
+    Default = false,
+    Callback = function(state)
+        local storedDoors = storedDoors or {} -- armazena as portas deletadas
+
+        if state then
+            -- Ativar: salvar e destruir as portas
+            storedDoors = {}
+            for _, obj in ipairs(workspace:GetDescendants()) do
+                if obj:IsA("BasePart") and obj.Name:lower():find("door") then
+                    table.insert(storedDoors, {Parent = obj.Parent, Obj = obj})
+                    obj.Parent = nil -- tira do workspace (como se destruísse)
+                end
+            end
+            TeleportCarro:MostrarNotificacao("🚪 Todas as portas foram removidas!")
+        else
+            -- Desativar: restaura as portas
+            if storedDoors then
+                for _, data in ipairs(storedDoors) do
+                    if data.Obj and data.Parent then
+                        data.Obj.Parent = data.Parent
+                    end
+                end
+                storedDoors = {}
+            end
+            TeleportCarro:MostrarNotificacao("✅ Todas as portas foram restauradas!")
+        end
+    end
+})
+
 -- ==============================
 -- PLAYERS
 -- ==============================
