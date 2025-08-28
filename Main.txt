@@ -3300,7 +3300,7 @@ ImunesTab:Toggle({
 })
 
 ImunesTab:Toggle({
-    Name = "Anti Fling Portas saporra",
+    Name = "Anti Fling Portas",
     Description = "Ativa ou desativa a destruição de todas as portas do mapa",
     Default = false,
     Callback = function(state)
