@@ -3300,36 +3300,39 @@ ImunesTab:Toggle({
 })
 
 ImunesTab:Toggle({
-    Title = "Anti-Fling Portas",
+    Title = "Anti-Fling Portas fdps",
     Description = "Remove todas as portas (doors) e restaura quando desativar",
     Default = false,
     Callback = function(state)
-        local storedDoors = storedDoors or {} -- armazena as portas deletadas
+        -- tabela global pra armazenar os clones das portas
+        if not getgenv().StoredDoors then
+            getgenv().StoredDoors = {}
+        end
 
         if state then
-            -- Ativar: salvar e destruir as portas
-            storedDoors = {}
+            -- Ativar: clonar e destruir portas
+            getgenv().StoredDoors = {}
             for _, obj in ipairs(workspace:GetDescendants()) do
                 if obj:IsA("BasePart") and obj.Name:lower():find("door") then
-                    table.insert(storedDoors, {Parent = obj.Parent, Obj = obj})
-                    obj.Parent = nil -- tira do workspace (como se destruísse)
+                    local clone = obj:Clone()
+                    table.insert(getgenv().StoredDoors, {Clone = clone, Parent = obj.Parent})
+                    obj:Destroy()
                 end
             end
             TeleportCarro:MostrarNotificacao("🚪 Todas as portas foram removidas!")
         else
-            -- Desativar: restaura as portas
-            if storedDoors then
-                for _, data in ipairs(storedDoors) do
-                    if data.Obj and data.Parent then
-                        data.Obj.Parent = data.Parent
-                    end
+            -- Desativar: recriar portas a partir dos clones
+            for _, data in ipairs(getgenv().StoredDoors) do
+                if data.Clone and data.Parent then
+                    data.Clone:Clone().Parent = data.Parent
                 end
-                storedDoors = {}
             end
+            getgenv().StoredDoors = {}
             TeleportCarro:MostrarNotificacao("✅ Todas as portas foram restauradas!")
         end
     end
 })
+
 
 -- ==============================
 -- PLAYERS
