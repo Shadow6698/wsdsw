@@ -3299,45 +3299,68 @@ ImunesTab:Toggle({
     end
 })
 
-ImunesTab:Toggle({
-    Title = "Anti Fling Portas",
-    Desc = "Remove as portas e restaura quando desativar",
+ImunesTab:AddToggle({
+    Name = "Anti Fling Portas",
+    Description = "Ativa ou desativa a destruição/ocultação de todas as portas do mapa",
     Default = false,
     Callback = function(state)
-        local ReplicatedStorage = game:GetService("ReplicatedStorage")
-        local workspace = game:GetService("Workspace")
-
-        -- pasta onde vamos guardar cópias originais
-        local storageFolder = ReplicatedStorage:FindFirstChild("OriginalDoors")
-        if not storageFolder then
-            storageFolder = Instance.new("Folder")
-            storageFolder.Name = "OriginalDoors"
-            storageFolder.Parent = ReplicatedStorage
-        end
+        local hiddenDoors = {} -- declarado dentro da toggle
 
         if state then
-            -- Ativar → clonar e deletar
+            -- Ativa: esconde portas
             for _, obj in ipairs(workspace:GetDescendants()) do
                 if obj:IsA("BasePart") and obj.Name:lower():find("door") then
-                    -- salva uma cópia se ainda não tiver
-                    if not storageFolder:FindFirstChild(obj:GetDebugId()) then
-                        local clone = obj:Clone()
-                        clone.Name = obj:GetDebugId() -- id único
-                        clone.Parent = storageFolder
+                    -- Salva estado original
+                    local doorData = {
+                        door = obj,
+                        originalTransparency = obj.Transparency,
+                        originalCanCollide = obj.CanCollide,
+                        originalCastShadow = obj.CastShadow
+                    }
+
+                    -- Esconde a porta
+                    obj.Transparency = 1
+                    obj.CanCollide = false
+                    obj.CastShadow = false
+
+                    -- Esconde filhos (maçanetas, handles, GUIs)
+                    for _, child in ipairs(obj:GetChildren()) do
+                        if child:IsA("BasePart") then
+                            child.Transparency = 1
+                            child.CanCollide = false
+                        elseif child:IsA("SurfaceGui") or child:IsA("BillboardGui") then
+                            child.Enabled = false
+                        end
                     end
-                    obj:Destroy()
+
+                    table.insert(hiddenDoors, doorData)
                 end
             end
-            print("🚪 Portas removidas")
+            print("🔧 " .. #hiddenDoors .. " portas escondidas!")
+
         else
-            -- Desativar → restaurar clones
-            for _, clone in ipairs(storageFolder:GetChildren()) do
-                local restored = clone:Clone()
-                restored.Name = string.gsub(clone.Name, "%p", "") -- tira caracteres especiais
-                restored.Parent = workspace
+            -- Desativa: restaura portas
+            for _, doorData in ipairs(hiddenDoors) do
+                local door = doorData.door
+                if door and door.Parent then
+                    -- Restaura propriedades originais
+                    door.Transparency = doorData.originalTransparency
+                    door.CanCollide = doorData.originalCanCollide
+                    door.CastShadow = doorData.originalCastShadow
+
+                    -- Restaura filhos
+                    for _, child in ipairs(door:GetChildren()) do
+                        if child:IsA("BasePart") then
+                            child.Transparency = 0
+                            child.CanCollide = true
+                        elseif child:IsA("SurfaceGui") or child:IsA("BillboardGui") then
+                            child.Enabled = true
+                        end
+                    end
+                end
             end
-            storageFolder:ClearAllChildren()
-            print("✅ Portas restauradas")
+
+            print("✅ " .. #hiddenDoors .. " portas restauradas com funcionalidade!")
         end
     end
 })
