@@ -1,1 +1,85 @@
-vai skiddar do theu pai misera
+-- Serviços
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+local RunService = game:GetService("RunService")
+
+-- Variáveis
+local freezeActive = false
+local humanoid = nil
+
+-- Função para atualizar o humanoid
+local function updateHumanoid()
+    local character = Player.Character or Player.CharacterAdded:Wait()
+    humanoid = character:WaitForChild("Humanoid")
+end
+
+-- Atualiza humanoid quando respawna
+Player.CharacterAdded:Connect(updateHumanoid)
+updateHumanoid()
+
+-- Criando a ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "FreezeGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = PlayerGui
+
+-- Frame principal
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 220, 0, 80)
+mainFrame.Position = UDim2.new(0.5, -110, 0.5, -40)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+mainFrame.BorderSizePixel = 0
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+mainFrame.Parent = screenGui
+mainFrame.Active = true
+mainFrame.Draggable = true
+
+-- Título
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.BackgroundTransparency = 1
+title.Text = "Freeze Legs"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.Parent = mainFrame
+
+-- Toggle Button
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0, 120, 0, 40)
+toggleButton.Position = UDim2.new(0.5, -60, 0, 40)
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+toggleButton.BorderSizePixel = 0
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.Font = Enum.Font.GothamBold
+toggleButton.TextSize = 16
+toggleButton.Text = "Ativar"
+toggleButton.Parent = mainFrame
+
+-- Função para alternar freeze
+local function toggleFreeze()
+    freezeActive = not freezeActive
+    if freezeActive then
+        toggleButton.Text = "Desativar"
+        toggleButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    else
+        toggleButton.Text = "Ativar"
+        toggleButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+    end
+end
+
+toggleButton.MouseButton1Click:Connect(toggleFreeze)
+
+-- Loop para congelar pernas
+RunService.RenderStepped:Connect(function()
+    if humanoid then
+        if freezeActive then
+            humanoid.WalkSpeed = 0
+            humanoid.JumpPower = 0
+        else
+            humanoid.WalkSpeed = 16
+            humanoid.JumpPower = 50
+        end
+    end
+end)
