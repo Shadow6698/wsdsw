@@ -1057,6 +1057,8 @@ local HouseExtraSection = HouseTab:Section({
 
 -- Sistema de gerenciamento de avatares
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
 
 -- Função para equipar avatar por ID
 local function EquiparAvatarPorID(avatarID, nome)
@@ -1084,6 +1086,38 @@ local function EquiparPartesCorpo(partes)
         print("Partes do corpo equipadas!")
     end
 end
+
+-- Função para equipar acessórios (skins normais)
+local function equiparAcessorios(accessoryIds, nomeSkin)
+    local character = player.Character or player.CharacterAdded:Wait()
+    
+    local function equipAccessory(assetId)
+        local success, accessory = pcall(function()
+            return game:GetObjects("rbxassetid://"..assetId)[1]
+        end)
+        
+        if success and accessory then
+            accessory.Parent = character
+            -- Verifica se é Accessory e adiciona ao Humanoid
+            if accessory:IsA("Accessory") then
+                character.Humanoid:AddAccessory(accessory)
+            end
+        else
+            warn("Falha ao carregar accessory com ID: "..assetId)
+        end
+    end
+    
+    -- Equipar todos os acessórios
+    for _, id in ipairs(accessoryIds) do
+        equipAccessory(id)
+    end
+    
+    print("Skin " .. nomeSkin .. " equipada com sucesso!")
+end
+
+-- ==============================
+-- ROUPAS 3D
+-- ==============================
 
 local AvatarSection = AvatarTab:Section({
     Title = "Roupas 3D",
@@ -1324,6 +1358,202 @@ AvatarTab:Button({
         EquiparAvatarPorID(76155710249925, "Simon Azul")
     end
 })
+
+-- ==============================
+-- SKINS NORMAIS
+-- ==============================
+
+local SkinsSection = AvatarTab:Section({
+    Title = "Skins Normais",
+    TextXAlignment = "Left",
+    TextSize = 17,
+})
+
+AvatarTab:Button({
+    Title = "Linux v1999",
+    Desc = "Skin normal Linux v1999",
+    Locked = false,
+    Callback = function()
+        local accessoryIds = {
+            6913613757,
+            83820363103771,
+            15827519439
+        }
+        equiparAcessorios(accessoryIds, "Linux v1999")
+    end
+})
+
+AvatarTab:Button({
+    Title = "Noob Clássico",
+    Desc = "Skin normal Noob Clássico",
+    Locked = false,
+    Callback = function()
+        local accessoryIds = {
+            2767520394,
+            144076357,
+            11884330
+        }
+        equiparAcessorios(accessoryIds, "Noob Clássico")
+    end
+})
+
+AvatarTab:Button({
+    Title = "Guest 666",
+    Desc = "Skin normal Guest 666",
+    Locked = false,
+    Callback = function()
+        local accessoryIds = {
+            1285307,
+            27112438,
+            86896488
+        }
+        equiparAcessorios(accessoryIds, "Guest 666")
+    end
+})
+
+AvatarTab:Button({
+    Title = "Robô Futurista",
+    Desc = "Skin normal Robô Futurista",
+    Locked = false,
+    Callback = function()
+        local accessoryIds = {
+            5063578607,
+            4819740796,
+            151789690
+        }
+        equiparAcessorios(accessoryIds, "Robô Futurista")
+    end
+})
+
+AvatarTab:Button({
+    Title = "Ninja Stealth",
+    Desc = "Skin normal Ninja Stealth",
+    Locked = false,
+    Callback = function()
+        local accessoryIds = {
+            86500036,
+            86500057,
+            25654401
+        }
+        equiparAcessorios(accessoryIds, "Ninja Stealth")
+    end
+})
+
+AvatarTab:Button({
+    Title = "Pirata dos Mares",
+    Desc = "Skin normal Pirata dos Mares",
+    Locked = false,
+    Callback = function()
+        local accessoryIds = {
+            1285307,
+            11748356,
+            139607770
+        }
+        equiparAcessorios(accessoryIds, "Pirata dos Mares")
+    end
+})
+
+AvatarTab:Button({
+    Title = "Soldado Militar",
+    Desc = "Skin normal Soldado Militar",
+    Locked = false,
+    Callback = function()
+        local accessoryIds = {
+            139424085,
+            102611882,
+            45695819
+        }
+        equiparAcessorios(accessoryIds, "Soldado Militar")
+    end
+})
+
+AvatarTab:Button({
+    Title = "Cavaleiro Medieval",
+    Desc = "Skin normal Cavaleiro Medieval",
+    Locked = false,
+    Callback = function()
+        local accessoryIds = {
+            1365767,
+            11748356,
+            86500036
+        }
+        equiparAcessorios(accessoryIds, "Cavaleiro Medieval")
+    end
+})
+
+AvatarTab:Button({
+    Title = "Astronauta",
+    Desc = "Skin normal Astronauta",
+    Locked = false,
+    Callback = function()
+        local accessoryIds = {
+            48474294,
+            86500218,
+            139424085
+        }
+        equiparAcessorios(accessoryIds, "Astronauta")
+    end
+})
+
+AvatarTab:Button({
+    Title = "Zombie Apocalipse",
+    Desc = "Skin normal Zombie Apocalipse",
+    Locked = false,
+    Callback = function()
+        local accessoryIds = {
+            914410606,
+            139607770,
+            102611882
+        }
+        equiparAcessorios(accessoryIds, "Zombie Apocalipse")
+    end
+})
+
+AvatarTab:Button({
+    Title = "Hacker Matrix",
+    Desc = "Skin normal Hacker Matrix",
+    Locked = false,
+    Callback = function()
+        local accessoryIds = {
+            151789690,
+            86500057,
+            25654401
+        }
+        equiparAcessorios(accessoryIds, "Hacker Matrix")
+    end
+})
+
+AvatarTab:Button({
+    Title = "Cowboy Western",
+    Desc = "Skin normal Cowboy Western",
+    Locked = false,
+    Callback = function()
+        local accessoryIds = {
+            1029025,
+            139607733,
+            45695819
+        }
+        equiparAcessorios(accessoryIds, "Cowboy Western")
+    end
+})
+
+AvatarTab:Button({
+    Title = "Mago Místico",
+    Desc = "Skin normal Mago Místico",
+    Locked = false,
+    Callback = function()
+        local accessoryIds = {
+            86896488,
+            1365767,
+            914410606
+        }
+        equiparAcessorios(accessoryIds, "Mago Místico")
+    end
+})
+
+-- ==============================
+-- AVATAR EDITOR
+-- ==============================
 
 local AvatarEditorSection = AvatarTab:Section({
     Title = "Avatar Editor",
