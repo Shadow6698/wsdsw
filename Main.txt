@@ -3304,9 +3304,15 @@ ImunesTab:AddToggle({
     Description = "Ativa ou desativa a destruição de todas as portas do mapa",
     Default = false,
     Callback = function(state)
-        local hiddenDoors = {} -- declarado dentro da toggle
-
+        -- Cria variável persistente se não existir
+        if not _G.hiddenDoors then
+            _G.hiddenDoors = {}
+        end
+        
         if state then
+            -- Limpa dados anteriores antes de começar
+            _G.hiddenDoors = {}
+            
             -- Ativa: esconde portas (não remove, só torna invisíveis)
             for _, obj in ipairs(workspace:GetDescendants()) do
                 if obj:IsA("BasePart") and obj.Name:lower():find("door") then
@@ -3333,14 +3339,14 @@ ImunesTab:AddToggle({
                         end
                     end
                     
-                    table.insert(hiddenDoors, doorData)
+                    table.insert(_G.hiddenDoors, doorData)
                 end
             end
-            print("🔧 " .. #hiddenDoors .. " portas escondidas!")
+            print("🔧 " .. #_G.hiddenDoors .. " portas escondidas!")
             
         else
             -- Desativa: restaura portas (volta ao estado original)
-            for _, doorData in ipairs(hiddenDoors) do
+            for _, doorData in ipairs(_G.hiddenDoors or {}) do
                 if doorData.door and doorData.door.Parent then
                     -- Restaura propriedades originais
                     doorData.door.Transparency = doorData.originalTransparency
@@ -3359,13 +3365,11 @@ ImunesTab:AddToggle({
                 end
             end
             
-            print("✅ " .. #hiddenDoors .. " portas restauradas com funcionalidade!")
-            hiddenDoors = {} -- Limpa a lista
+            print("✅ " .. #(_G.hiddenDoors or {}) .. " portas restauradas com funcionalidade!")
+            _G.hiddenDoors = {} -- Limpa a lista
         end
     end
 })
-
-
 
 -- ==============================
 -- PLAYERS
