@@ -20,6 +20,7 @@ local WHITELIST = {
     "minhairmapertuba",
     "ea_clarinhakkj",
     "ycarog139",
+    "Olokodois",
 }
 
 -- Verificação de autorização
