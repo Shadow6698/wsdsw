@@ -2847,38 +2847,34 @@ TrollTab:Button({
 
 TrollTab:Button({
     Title = "[🖥] Spawn Factory (não visual)",
-    Desc = "Se não funcionar, chegue na casa 6 bem perto do botão de pegar casa.",
+    Desc = "spawnar a fabrica né pae kkj.",
     Locked = false,
     Callback = function()
-        -- LocalScript
-
         local player = game.Players.LocalPlayer
         local targetPosition = Vector3.new(-37, 19, -145)
 
-        -- Espera o personagem e humanoide
-        if not player.Character or not player.Character:FindFirstChild("Humanoid") then
+        -- Espera o personagem carregar
+        if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
             player.CharacterAdded:Wait()
         end
 
         local character = player.Character
-        local humanoid = character:WaitForChild("Humanoid")
+        local root = character:WaitForChild("HumanoidRootPart")
 
-        -- 1. Move o personagem até a posição
-        humanoid:MoveTo(targetPosition)
+        -- Teleporta o personagem direto
+        root.CFrame = CFrame.new(targetPosition)
 
-        -- Aguarda chegar antes de executar os remotes
-        humanoid.MoveToFinished:Wait()
+        task.wait(0.5) -- delay curto pra garantir que tá no lugar certo
 
-        -- 2. Invoca os remotes após chegar
-        -- Lot:Claim
+        -- 2. Invoca os remotes após o teleporte
         local args1 = { 6 }
         game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Lot:Claim"):InvokeServer(unpack(args1))
 
-        -- Lot:BuildProperty
         local args2 = { 6, "001_Landmark" }
         game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Lot:BuildProperty"):FireServer(unpack(args2))
     end
 })
+
 
 -- ==============================
 -- EXTRAS
