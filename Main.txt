@@ -3891,7 +3891,7 @@ FunTab:Button({
 
 FunTab:Button({
     Title = "Hub de Áudios",
-    Desc = "Abre o Hub de Áudios FE",
+    Desc = "sla pq fiz essa desgraça kkj era pra ser uma boombox mais é isso n gostou faz melhor",
     Locked = false,
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/audiokkk/refs/heads/main/Main.txt"))()
