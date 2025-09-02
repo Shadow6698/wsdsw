@@ -3846,6 +3846,49 @@ FunTab:Button({
     end
 })
 
+FunTab:Button({
+    Title = "Fe vr 3",
+    Desc = "Equipa braçoes pretos e dps o vr dnv",
+    Locked = false,
+    Callback = function()
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        local Players = game:GetService("Players")
+        local player = Players.LocalPlayer
+
+        -- Novos IDs dos Noob Arms
+        local noobArms = {85392395166623, 131385506535381}
+
+        -- Função para equipar via Remote
+        local function equipNoobArms()
+            for _, id in ipairs(noobArms) do
+                local success, err = pcall(function()
+                    ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Wear"):InvokeServer(id)
+                end)
+                if success then
+                    print("Noob Arm ID "..id.." equipado com sucesso!")
+                else
+                    warn("Falha ao equipar Noob Arm ID "..id.." | "..tostring(err))
+                end
+            end
+        end
+
+        -- Equipar imediatamente
+        equipNoobArms()
+
+        -- Após 6 segundos, executar script externo
+        task.delay(6, function()
+            local success, err = pcall(function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/randomstring0/Qwerty/refs/heads/main/qwerty45.lua"))()
+            end)
+            if success then
+                print("Script externo executado com sucesso!")
+            else
+                warn("Falha ao executar script externo: "..tostring(err))
+            end
+        end)
+    end
+})
+
 -- ============================== 
 -- TELEPORTES/TELEPORTS SCRIPTS 
 -- ============================== 
