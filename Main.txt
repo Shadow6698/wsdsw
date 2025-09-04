@@ -51,19 +51,12 @@ end
 -- Se não autorizado, para a execução
 if not isAuthorized then
     local StarterGui = game:GetService("StarterGui")
-    StarterGui:SetCore("SendNotification", {
-        Title = "Acesso Negado",
-        Text = "Você não tem permissão para usar este script agora chore kkj.\nSeu nick: " .. playerName,
-        Duration = 8,
-    })
     print("Acesso negado para:", playerName, "Display:", displayName)
     return -- Para a execução do script
 else
     -- Notificação de sucesso
     local StarterGui = game:GetService("StarterGui")
-    StarterGui:SetCore("SendNotification", {
-        Title = "Linux Hub V4",
-        Text = "Acesso autorizado! Bem-vindo(a)" .. playerName,
+    " .. playerName,
         Duration = 3,
     })
 end
@@ -84,14 +77,7 @@ TeleportCarro.OriginalCameraSubject = nil
 TeleportCarro.OriginalCameraType = nil
 
 -- Função para mostrar notificações
-function TeleportCarro:MostrarNotificacao(mensagem)
-    WindUI:Notify({
-        Title = "System",
-        Content = mensagem,
-        Duration = 2,
-        Icon = "info",
-    })
-end
+function end
 
 -- Função para atualizar a lista de carros
 function TeleportCarro:AtualizarListaCarros()
@@ -397,8 +383,7 @@ RGBTab:Slider({
     Default = 3,
     Callback = function(value)
         rgbSpeed = value
-        TeleportCarro:MostrarNotificacao("Velocidade RGB alterada para: " .. value)
-    end
+        end
 })
 
 -- Função para criar cor RGB ultra rápida
@@ -432,7 +417,6 @@ RGBTab:Toggle({
     Callback = function(state)
         nameBioRGBActive = state
         if state then
-            TeleportCarro:MostrarNotificacao("RGB Nome + Bio ativado!")
             task.spawn(function()
                 while nameBioRGBActive and LocalPlayer.Character do
                     local color = getRainbowColor(rgbSpeed)
@@ -442,8 +426,7 @@ RGBTab:Toggle({
                 end
             end)
         else
-            TeleportCarro:MostrarNotificacao("RGB Nome + Bio desativado!")
-        end
+            end
     end
 })
 
@@ -455,7 +438,6 @@ RGBTab:Toggle({
     Callback = function(value)
         getgenv().rgbCorpo = value
         if value then
-            TeleportCarro:MostrarNotificacao("RGB Corpo ativado!")
             task.spawn(function()
                 while getgenv().rgbCorpo do
                     local remote = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
@@ -470,8 +452,7 @@ RGBTab:Toggle({
                 end
             end)
         else
-            TeleportCarro:MostrarNotificacao("RGB Corpo desativado!")
-        end
+            end
     end
 })
 
@@ -483,7 +464,6 @@ RGBTab:Toggle({
     Callback = function(value)
         getgenv().rgbCabelo = value
         if value then
-            TeleportCarro:MostrarNotificacao("RGB Cabelo ativado!")
             task.spawn(function()
                 while getgenv().rgbCabelo do
                     fireServer("1Max1y", {
@@ -494,8 +474,7 @@ RGBTab:Toggle({
                 end
             end)
         else
-            TeleportCarro:MostrarNotificacao("RGB Cabelo desativado!")
-        end
+            end
     end
 })
 
@@ -513,7 +492,6 @@ RGBTab:Toggle({
     Callback = function(value)
         getgenv().rgbCasa = value
         if value then
-            TeleportCarro:MostrarNotificacao("RGB Casa ativado!")
             task.spawn(function()
                 while getgenv().rgbCasa do
                     fireServer("1Player1sHous1e", {
@@ -524,8 +502,7 @@ RGBTab:Toggle({
                 end
             end)
         else
-            TeleportCarro:MostrarNotificacao("RGB Casa desativado!")
-        end
+            end
     end
 })
 
@@ -538,7 +515,7 @@ RGBTab:Toggle({
     Callback = function(state)
         carRGBActive = state
         if state then
-            TeleportCarro:MostrarNotificacao("RGB Carro ativado! (Premium)")
+            ")
             task.spawn(function()
                 while carRGBActive and LocalPlayer.Character do
                     local color = getRainbowColor(rgbSpeed)
@@ -547,8 +524,7 @@ RGBTab:Toggle({
                 end
             end)
         else
-            TeleportCarro:MostrarNotificacao("RGB Carro desativado!")
-        end
+            end
     end
 })
 
@@ -560,7 +536,6 @@ RGBTab:Toggle({
     Callback = function(value)
         getgenv().rgbBicicleta = value
         if value then
-            TeleportCarro:MostrarNotificacao("RGB Bicicleta ativado!")
             task.spawn(function()
                 while getgenv().rgbBicicleta do
                     fireServer("1Player1sCa1r", {
@@ -571,8 +546,7 @@ RGBTab:Toggle({
                 end
             end)
         else
-            TeleportCarro:MostrarNotificacao("RGB Bicicleta desativado!")
-        end
+            end
     end
 })
 
@@ -591,7 +565,6 @@ RGBTab:Toggle({
     Callback = function(state)
         radioRGBActive = state
         if state then
-            TeleportCarro:MostrarNotificacao("RGB Rádio ativado!")
             task.spawn(function()
                 while radioRGBActive and LocalPlayer.Character do
                     local color = getRainbowColor(rgbSpeed)
@@ -607,8 +580,7 @@ RGBTab:Toggle({
                 end
             end)
         else
-            TeleportCarro:MostrarNotificacao("RGB Rádio desativado!")
-        end
+            end
     end
 })
 
@@ -620,7 +592,6 @@ RGBTab:Toggle({
     Callback = function(value)
         getgenv().rgbMegafone = value
         if value then
-            TeleportCarro:MostrarNotificacao("RGB Megafone ativado!")
             task.spawn(function()
                 while getgenv().rgbMegafone do
                     local color = getRainbowColor(rgbSpeed)
@@ -643,8 +614,7 @@ RGBTab:Toggle({
                 end
             end)
         else
-            TeleportCarro:MostrarNotificacao("RGB Megafone desativado!")
-        end
+            end
     end
 })
 
@@ -656,7 +626,6 @@ RGBTab:Toggle({
     Callback = function(value)
         getgenv().rgbRosquinha = value
         if value then
-            TeleportCarro:MostrarNotificacao("RGB Rosquinha ativado!")
             task.spawn(function()
                 while getgenv().rgbRosquinha do
                     local color = getRainbowColor(rgbSpeed)
@@ -679,8 +648,7 @@ RGBTab:Toggle({
                 end
             end)
         else
-            TeleportCarro:MostrarNotificacao("RGB Rosquinha desativado!")
-        end
+            end
     end
 })
 
@@ -706,7 +674,7 @@ local CarDropdown = CarsTab:Dropdown({
     Options = TeleportCarro:AtualizarListaCarros(),
     Callback = function(carroSelecionado)
         _G.SelectedVehicle = carroSelecionado
-        TeleportCarro:MostrarNotificacao("Carro selecionado: " .. tostring(carroSelecionado))
+        )
     end
 })
 
@@ -718,25 +686,21 @@ CarsTab:Toggle({
     Callback = function(state)
         if state then
             if not _G.SelectedVehicle or _G.SelectedVehicle == "" then
-                TeleportCarro:MostrarNotificacao("Nenhum carro selecionado!")
                 return
             end
 
             local vehiclesFolder = TeleportCarro.Workspace:FindFirstChild("Vehicles")
             if not vehiclesFolder then
-                TeleportCarro:MostrarNotificacao("Pasta de veículos não encontrada!")
                 return
             end
 
             local vehicle = vehiclesFolder:FindFirstChild(_G.SelectedVehicle)
             if not vehicle then
-                TeleportCarro:MostrarNotificacao("Carro selecionado não encontrado!")
                 return
             end
 
             local vehicleSeat = vehicle:FindFirstChildWhichIsA("VehicleSeat", true)
             if not vehicleSeat then
-                TeleportCarro:MostrarNotificacao("Assento do carro não encontrado!")
                 return
             end
 
@@ -747,13 +711,11 @@ CarsTab:Toggle({
             -- Ajustar a câmera para o assento do carro, mesmo se ocupado
             TeleportCarro.Camera.CameraSubject = vehicleSeat
             TeleportCarro.Camera.CameraType = Enum.CameraType.Follow
-            TeleportCarro:MostrarNotificacao("Câmera ajustada para o carro " .. _G.SelectedVehicle .. "!")
-        else
+            else
             -- Restaurar a câmera ao estado original
             if TeleportCarro.OriginalCameraSubject then
                 TeleportCarro.Camera.CameraSubject = TeleportCarro.OriginalCameraSubject
                 TeleportCarro.Camera.CameraType = TeleportCarro.OriginalCameraType or Enum.CameraType.Custom
-                TeleportCarro:MostrarNotificacao("Câmera restaurada ao normal!")
                 TeleportCarro.OriginalCameraSubject = nil
                 TeleportCarro.OriginalCameraType = nil
             end
@@ -774,30 +736,25 @@ CarsTab:Button({
     Locked = false,
     Callback = function()
         if not _G.SelectedVehicle or _G.SelectedVehicle == "" then
-            TeleportCarro:MostrarNotificacao("Nenhum carro selecionado!")
             return
         end
 
         local vehiclesFolder = TeleportCarro.Workspace:FindFirstChild("Vehicles")
         if not vehiclesFolder then
-            TeleportCarro:MostrarNotificacao("Pasta de veículos não encontrada!")
             return
         end
 
         local vehicle = vehiclesFolder:FindFirstChild(_G.SelectedVehicle)
         if not vehicle then
-            TeleportCarro:MostrarNotificacao("Carro selecionado não encontrado!")
             return
         end
 
         local vehicleSeat = vehicle:FindFirstChildWhichIsA("VehicleSeat", true)
         if not vehicleSeat then
-            TeleportCarro:MostrarNotificacao("Assento do carro não encontrado!")
             return
         end
 
         if vehicleSeat.Occupant then
-            TeleportCarro:MostrarNotificacao("O kill car não foi possível, há alguém sentado no assento do motorista!")
             return
         end
 
@@ -805,7 +762,6 @@ CarsTab:Button({
         if TeleportCarro.LocalPlayer.Character and TeleportCarro.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
             originalPos = TeleportCarro.LocalPlayer.Character.HumanoidRootPart.Position
         else
-            TeleportCarro:MostrarNotificacao("Personagem do jogador não encontrado!")
             return
         end
 
@@ -813,11 +769,9 @@ CarsTab:Button({
         local success = TeleportCarro:TeleportToSeat(vehicleSeat, vehicle)
         if success then
             TeleportCarro:TeleportToVoid(vehicle)
-            TeleportCarro:MostrarNotificacao("Carro " .. _G.SelectedVehicle .. " foi teleportado para o void!")
             TeleportCarro:ExitCarAndReturn(originalPos)
         else
-            TeleportCarro:MostrarNotificacao("Falha ao sentar no carro!")
-        end
+            end
         TeleportCarro:ToggleFallDamage(false)
     end
 })
@@ -829,30 +783,25 @@ CarsTab:Button({
     Locked = false,
     Callback = function()
         if not _G.SelectedVehicle or _G.SelectedVehicle == "" then
-            TeleportCarro:MostrarNotificacao("Nenhum carro selecionado!")
             return
         end
 
         local vehiclesFolder = TeleportCarro.Workspace:FindFirstChild("Vehicles")
         if not vehiclesFolder then
-            TeleportCarro:MostrarNotificacao("Pasta de veículos não encontrada!")
             return
         end
 
         local vehicle = vehiclesFolder:FindFirstChild(_G.SelectedVehicle)
         if not vehicle then
-            TeleportCarro:MostrarNotificacao("Carro selecionado não encontrado!")
             return
         end
 
         local vehicleSeat = vehicle:FindFirstChildWhichIsA("VehicleSeat", true)
         if not vehicleSeat then
-            TeleportCarro:MostrarNotificacao("Assento do carro não encontrado!")
             return
         end
 
         if vehicleSeat.Occupant then
-            TeleportCarro:MostrarNotificacao("O teleporte do carro não foi possível, há alguém sentado no assento do motorista!")
             return
         end
 
@@ -860,7 +809,6 @@ CarsTab:Button({
         if TeleportCarro.LocalPlayer.Character and TeleportCarro.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
             originalPos = TeleportCarro.LocalPlayer.Character.HumanoidRootPart.Position
         else
-            TeleportCarro:MostrarNotificacao("Personagem do jogador não encontrado!")
             return
         end
 
@@ -868,11 +816,9 @@ CarsTab:Button({
         local success = TeleportCarro:TeleportToSeat(vehicleSeat, vehicle)
         if success then
             TeleportCarro:TeleportToPlayer(vehicle, originalPos)
-            TeleportCarro:MostrarNotificacao("Carro " .. _G.SelectedVehicle .. " foi teleportado para você!")
             TeleportCarro:ExitCarAndReturn(originalPos)
         else
-            TeleportCarro:MostrarNotificacao("Falha ao sentar no carro!")
-        end
+            end
         TeleportCarro:ToggleFallDamage(false)
     end
 })
@@ -887,13 +833,11 @@ CarsTab:Button({
         if TeleportCarro.LocalPlayer.Character and TeleportCarro.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
             originalPos = TeleportCarro.LocalPlayer.Character.HumanoidRootPart.Position
         else
-            TeleportCarro:MostrarNotificacao("Personagem do jogador não encontrado!")
             return
         end
 
         local vehiclesFolder = TeleportCarro.Workspace:FindFirstChild("Vehicles")
         if not vehiclesFolder then
-            TeleportCarro:MostrarNotificacao("Pasta de veículos não encontrada!")
             return
         end
 
@@ -912,24 +856,19 @@ CarsTab:Button({
                 if success then
                     TeleportCarro:TeleportToPlayer(car, originalPos)
                     TeleportCarro:ExitCarAndReturn(originalPos)
-                    TeleportCarro:MostrarNotificacao("Carro " .. car.Name .. " foi teleportado para você!")
                     task.wait(1)
                 else
-                    TeleportCarro:MostrarNotificacao("Falha ao sentar no carro " .. car.Name .. "!")
-                end
+                    end
             else
                 if vehicleSeat then
-                    TeleportCarro:MostrarNotificacao("Carro " .. car.Name .. " ignorado: alguém está no assento do motorista!")
-                else
-                    TeleportCarro:MostrarNotificacao("Carro " .. car.Name .. " ignorado: assento não encontrado!")
-                end
+                    else
+                    end
             end
         end
 
         TeleportCarro:ToggleFallDamage(false)
         if #cars == 0 then
-            TeleportCarro:MostrarNotificacao("Nenhum carro disponível para teleportar!")
-        end
+            end
     end
 })
 
@@ -1025,31 +964,13 @@ HouseTab:Button({
         
         -- Notificações
         if successCount > 0 then
-            WindUI:Notify({
-                Title = "Sucesso!",
-                Content = "Bans removidos de " .. successCount .. " casas!",
-                Duration = 5,
-                Icon = "check-circle",
-            })
-        end
+            end
         
         if failCount > 0 then
-            WindUI:Notify({
-                Title = "Aviso",
-                Content = "Falha ao remover bans de " .. failCount .. " casas.",
-                Duration = 5,
-                Icon = "alert-triangle",
-            })
-        end
+            end
         
         if successCount == 0 and failCount == 0 then
-            WindUI:Notify({
-                Title = "Aviso",
-                Content = "Nenhum ban encontrado para remover.",
-                Duration = 5,
-                Icon = "info",
-            })
-        end
+            end
     end
 })
 
@@ -3120,8 +3041,7 @@ local backupTables = {
 
 -- Notificação simples
 local TeleportCarro = {}
-function TeleportCarro:MostrarNotificacao(msg)
-    print("🔔 "..msg)
+function print("🔔 "..msg)
 end
 
 -- Função genérica anti-fling
@@ -3159,7 +3079,7 @@ local function AntiFlingLoop(name, getFolderFunc)
     end)
     return function(state)
         active = state
-        TeleportCarro:MostrarNotificacao(name.." "..(state and "ativado!" or "desativado!"))
+        )
         if not state then
             for _, item in ipairs(backupTables[name]) do
                 local parentFolder = getFolderFunc()
@@ -3260,7 +3180,7 @@ ImunesTab:Toggle({
     Default = false,
     Callback = function(state)
         antiSitActive = state
-        TeleportCarro:MostrarNotificacao("Anti Sit "..(state and "ativado!" or "desativado!"))
+        )
         task.spawn(function()
             while antiSitActive and LocalPlayer.Character do
                 local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
@@ -3652,7 +3572,6 @@ FunTab:Toggle({
         local character = player.Character or player.CharacterAdded:Wait()
         local hrp = character:WaitForChild("HumanoidRootPart")
         if state then
-            TeleportCarro:MostrarNotificacao("Escorregador Divertido ativado!")
             -- Salvar posição original e teleportar apenas uma vez
             if not originalCFrame then
                 originalCFrame = hrp.CFrame
@@ -3670,7 +3589,6 @@ FunTab:Toggle({
                 end
             end)
         else
-            TeleportCarro:MostrarNotificacao("Escorregador Divertido desativado!")
             originalCFrame = nil -- reseta posição salva
         end
     end
@@ -3692,9 +3610,8 @@ FunTab:Button({
             loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/bugtool/refs/heads/main/Main.txt"))()
         end)
         if success then
-            TeleportCarro:MostrarNotificacao("✅ Bug Hammer carregado!")
-        else
-            TeleportCarro:MostrarNotificacao("❌ Erro ao carregar: " .. tostring(err))
+            else
+            )
         end
     end
 })
@@ -3707,9 +3624,8 @@ FunTab:Button({
             loadstring(game:HttpGet("https://raw.githubusercontent.com/Shadow6698/swordbug/refs/heads/main/Main.txt"))()
         end)
         if success then
-            TeleportCarro:MostrarNotificacao("✅ Espada Bugadora carregada!")
-        else
-            TeleportCarro:MostrarNotificacao("❌ Erro ao carregar: " .. tostring(err))
+            else
+            )
         end
     end
 })
@@ -3756,7 +3672,6 @@ FunTab:Toggle({
         end)
 
         if state then
-            TeleportCarro:MostrarNotificacao("🔥 Fogo ativado!")
             -- Loop ativo
             task.spawn(function()
                 while state and task.wait(0.01) do
@@ -3771,8 +3686,7 @@ FunTab:Toggle({
                 end
             end)
         else
-            TeleportCarro:MostrarNotificacao("❌ Fogo desativado!")
-        end
+            end
     end
 })
 
