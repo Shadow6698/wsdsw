@@ -174,7 +174,7 @@ end
 
 -- Cria a janela principal
 local Window = WindUI:CreateWindow({
-    Title = "Linux Hub V4",
+    Title = "Linux Hub V60",
     Icon = "penguin",
     Author = "by Nightmare",
     Folder = "LinuxHubV3",
