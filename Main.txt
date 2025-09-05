@@ -16,7 +16,6 @@ local WHITELIST = {
     "loki48932",
     "anthonyroblo3x",
     "gabrielgg1551r",
-    "kayro20112p",
     "minhairmapertuba",
     "ea_clarinhakkj",
     "ycarog139",
